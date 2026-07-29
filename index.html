@@ -5,12 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Workout Pro</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #000;
@@ -18,22 +14,10 @@
       min-height: 100vh;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-    }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
 
-    h1 {
-      text-align: center;
-      margin: 30px 0;
-      font-size: 2.5em;
-    }
-
-    h2 {
-      font-size: 1.5em;
-      margin: 20px 0 15px 0;
-    }
+    h1 { text-align: center; margin: 30px 0; font-size: 2.2em; }
+    h2 { font-size: 1.4em; margin: 20px 0 12px 0; }
 
     button {
       background: #5b21b6;
@@ -45,29 +29,11 @@
       font-size: 1em;
       font-weight: bold;
       margin: 5px;
-      transition: all 0.3s;
+      transition: all 0.2s;
     }
-
-    button:hover {
-      background: #7c3aed;
-      transform: scale(1.05);
-    }
-
-    button.danger {
-      background: #dc2626;
-    }
-
-    button.danger:hover {
-      background: #ef4444;
-    }
-
-    button.success {
-      background: #16a34a;
-    }
-
-    button.success:hover {
-      background: #22c55e;
-    }
+    button:active { transform: scale(0.97); }
+    button.danger { background: #dc2626; }
+    button.success { background: #16a34a; }
 
     input {
       padding: 10px;
@@ -85,86 +51,45 @@
       padding: 15px;
       border-radius: 8px;
       margin: 10px 0;
-      border-left: 3px solid #7c3aed;
+      border-right: 3px solid #7c3aed;
     }
 
-    .workout-item img {
-      width: 60px;
-      height: 60px;
-      border-radius: 5px;
-      margin-right: 10px;
-      object-fit: cover;
-    }
+    .workout-item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .workout-item-header img { width: 56px; height: 56px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+    .workout-item-header .name { flex: 1; }
 
-    .workout-item-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
+    .times { display: flex; gap: 15px; margin-top: 10px; }
+    .time-input { flex: 1; }
+    .time-input label { font-size: 0.8em; color: #999; display: block; margin-bottom: 4px; }
+    .time-input input { width: 100%; margin: 0; text-align: center; }
 
-    .times {
-      display: flex;
-      gap: 15px;
-      margin-top: 10px;
-    }
+    .button-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
 
-    .time-input {
-      flex: 1;
-    }
+    .screen { display: none; }
+    .screen.active { display: block; }
 
-    .time-input label {
-      font-size: 0.85em;
-      color: #999;
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .time-input input {
-      width: 100%;
-      margin: 0;
-    }
-
-    .button-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-      flex-wrap: wrap;
-    }
-
-    .screen {
-      display: none;
-    }
-
-    .screen.active {
-      display: block;
-    }
-
-    .workouts-grid {
-      display: grid;
-      gap: 15px;
-    }
-
-    .workout-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    .workout-card h3 {
-      margin-bottom: 10px;
-    }
+    .workouts-grid { display: grid; gap: 15px; }
+    .workout-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; }
+    .workout-card h3 { margin-bottom: 8px; }
 
     .exercise-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
       gap: 8px;
       margin: 15px 0;
     }
 
     .exercise-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
       padding: 8px;
-      font-size: 0.85em;
+      font-size: 0.72em;
+      line-height: 1.2;
+      text-align: center;
     }
+    .exercise-btn img { width: 100%; aspect-ratio: 1; border-radius: 6px; object-fit: cover; }
 
     .workout-screen {
       position: fixed;
@@ -175,69 +100,54 @@
       z-index: 1000;
     }
 
-    .workout-bg {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      background: linear-gradient(135deg, #1a1a1a, #000);
-    }
+    .video-wrap { flex: 1; position: relative; background: #111; }
+    .video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 
-    .workout-bg img {
-      max-width: 90%;
-      max-height: 90%;
-      object-fit: contain;
+    .top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+      pointer-events: none;
     }
+    .top-bar button { pointer-events: all; }
+    .top-bar .title { text-align: center; flex: 1; }
+    .top-bar .title h1 { margin: 0; font-size: 1.1em; text-shadow: 0 1px 4px #000; }
+    .top-bar .title p { font-size: 0.75em; color: #ddd; margin-top: 2px; }
 
     .timer-box {
       position: absolute;
-      top: 30px;
-      right: 20px;
-      background: rgba(0,0,0,0.9);
-      padding: 20px;
-      border-radius: 10px;
+      bottom: 90px;
+      right: 16px;
+      z-index: 20;
+      background: rgba(0,0,0,0.8);
+      padding: 14px 18px;
+      border-radius: 14px;
       border: 2px solid #22c55e;
       text-align: center;
-      min-width: 120px;
+      min-width: 100px;
     }
-
-    .timer-box .timer-display {
-      font-size: 3em;
-      font-weight: bold;
-      font-family: monospace;
-      margin: 0;
-    }
+    .timer-box .timer-display { font-size: 2.4em; font-weight: bold; font-family: monospace; }
+    .timer-box .emoji { font-size: 1.6em; margin-top: 4px; }
 
     .workout-info {
       background: rgba(0,0,0,0.95);
-      padding: 15px;
-      text-align: center;
-      border-top: 1px solid #333;
+      padding: 12px 16px 4px 16px;
     }
 
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: #333;
-      border-radius: 4px;
-      overflow: hidden;
-      margin: 15px 0;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: #22c55e;
-      transition: width 0.3s;
-    }
+    .progress-bar { width: 100%; height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin: 8px 0; }
+    .progress-fill { height: 100%; background: #22c55e; transition: width 0.3s; }
 
     .controls {
       display: flex;
       gap: 10px;
       justify-content: center;
-      padding: 15px;
+      padding: 12px 15px 18px 15px;
       background: rgba(0,0,0,0.95);
-      border-top: 1px solid #333;
     }
   </style>
 </head>
@@ -248,7 +158,7 @@
       <div class="container">
         <h1>💪 Workout Pro</h1>
         <div id="workoutsList" class="workouts-grid"></div>
-        <button class="success" onclick="goToBuild()" style="width: 100%; font-size: 1.2em; padding: 15px;">➕ רוטינה חדשה</button>
+        <button class="success" onclick="goToBuild()" style="width: 100%; font-size: 1.15em; padding: 15px;">➕ רוטינה חדשה</button>
       </div>
     </div>
 
@@ -257,7 +167,7 @@
       <div class="container">
         <button onclick="goHome()">🏠 חזרה</button>
         <h1>בנה רוטינה</h1>
-        <input type="text" id="workoutName" placeholder="שם הרוטינה">
+        <input type="text" id="workoutNameInput" placeholder="שם הרוטינה" oninput="state.workoutName = this.value">
         <h2>בחר תרגילים:</h2>
         <div class="exercise-grid" id="exercisesGrid"></div>
         <h2>בחרת:</h2>
@@ -272,23 +182,26 @@
     <!-- Workout Screen -->
     <div id="workoutScreen" class="screen">
       <div class="workout-screen">
-        <div class="workout-bg">
-          <img id="workoutImg" src="" alt="">
+        <div class="video-wrap">
+          <iframe id="workoutFrame" src="" allow="autoplay; encrypted-media" allowfullscreen playsinline></iframe>
+          <div class="top-bar">
+            <button onclick="goHome()">🏠</button>
+            <div class="title">
+              <h1 id="exerciseName"></h1>
+              <p id="exerciseNumber"></p>
+            </div>
+            <div style="width:40px"></div>
+          </div>
           <div class="timer-box">
             <div class="timer-display" id="timerDisplay">00:00</div>
-            <div style="font-size: 2em; margin-top: 10px;" id="workingEmoji">🔥</div>
+            <div class="emoji" id="workingEmoji">🔥</div>
           </div>
         </div>
         <div class="workout-info">
-          <h2 id="exerciseName"></h2>
-          <p id="exerciseNumber"></p>
-          <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         </div>
         <div class="controls">
-          <button onclick="goHome()" style="flex: 0;">🏠</button>
-          <button class="success" onclick="toggleWorkout()" style="flex: 1;">▶️ התחל</button>
+          <button class="success" onclick="toggleWorkout()" id="startBtn" style="flex: 1;">▶️ התחל</button>
           <button class="danger" onclick="resetWorkout()" style="flex: 1;">🔄 אפס</button>
         </div>
       </div>
@@ -296,33 +209,37 @@
   </div>
 
   <script>
+    // ===== EXERCISE LIBRARY - real YouTube demonstration videos =====
     const EXERCISES = [
-      { id: 1, name: 'Push-ups', img: 'https://media.giphy.com/media/3o7ZeHJOtxJJGDmkIE/200w.gif' },
-      { id: 2, name: 'High Knees', img: 'https://media.giphy.com/media/3o7ZeWWVI7fHb3T4vK/200w.gif' },
-      { id: 3, name: 'Squats', img: 'https://media.giphy.com/media/3ohzdKcqJd58PoGkcQ/200w.gif' },
-      { id: 4, name: 'Jump Squats', img: 'https://media.giphy.com/media/l3q2K5jinAlChoCLs/200w.gif' },
-      { id: 5, name: 'Plank', img: 'https://media.giphy.com/media/3o85xIO33l7RlmLqqI/200w.gif' },
-      { id: 6, name: 'Squat Right Dumbbell', img: 'https://media.giphy.com/media/3o7ZeWWVI7fHb3T4vK/200w.gif' },
-      { id: 7, name: 'Squat Left Dumbbell', img: 'https://media.giphy.com/media/3o7ZeWWVI7fHb3T4vK/200w.gif' },
-      { id: 8, name: 'Suitcase Walk', img: 'https://media.giphy.com/media/3o6Zt6KHxJTbXCnSvu/200w.gif' },
-      { id: 9, name: 'Deadbug', img: 'https://media.giphy.com/media/xUOxeWnVpMqhqkJEdy/200w.gif' },
-      { id: 10, name: 'Bird Dog', img: 'https://media.giphy.com/media/3o6Zt6KHxJTbXCnSvu/200w.gif' },
-      { id: 11, name: 'Dumbbell RDL', img: 'https://media.giphy.com/media/l0HlDY9x8FZo0XO1i/200w.gif' },
-      { id: 12, name: 'Reverse Flies', img: 'https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/200w.gif' },
-      { id: 13, name: 'Bent Over Rows', img: 'https://media.giphy.com/media/3ohzdKcqJd58PoGkcQ/200w.gif' },
-      { id: 14, name: 'Shoulder Press', img: 'https://media.giphy.com/media/l0HlQaQ7Yrm4gXcta/200w.gif' },
-      { id: 15, name: 'Russian Twist', img: 'https://media.giphy.com/media/l0HlRnAQ7ryUJO0o0/200w.gif' },
-      { id: 16, name: 'Standing Marches', img: 'https://media.giphy.com/media/3o7ZeWWVI7fHb3T4vK/200w.gif' },
-      { id: 17, name: 'Wood Chop', img: 'https://media.giphy.com/media/3o85xIO33l7RlmLqqI/200w.gif' },
-      { id: 18, name: 'Overhead Press', img: 'https://media.giphy.com/media/l0HlQaQ7Yrm4gXcta/200w.gif' },
-      { id: 19, name: 'Bulgarian Split Squats', img: 'https://media.giphy.com/media/3ohzdKcqJd58PoGkcQ/200w.gif' },
-      { id: 20, name: 'Lunges', img: 'https://media.giphy.com/media/3o6Zt6KHxJTbXCnSvu/200w.gif' },
-      { id: 21, name: 'Chest Press', img: 'https://media.giphy.com/media/xUOxeWnVpMqhqkJEdy/200w.gif' },
-      { id: 22, name: 'Overhead Extension', img: 'https://media.giphy.com/media/l0HlDY9x8FZo0XO1i/200w.gif' },
-      { id: 23, name: 'Bicep Curls', img: 'https://media.giphy.com/media/3ohzdKcqJd58PoGkcQ/200w.gif' },
-      { id: 24, name: 'Glute Bridge', img: 'https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/200w.gif' },
-      { id: 25, name: 'Dumbbell Pullover', img: 'https://media.giphy.com/media/3o85xIO33l7RlmLqqI/200w.gif' }
+      { id: 1, name: 'Push-ups', yt: 'i9sTjhN4Z3M' },
+      { id: 2, name: 'High Knees', yt: 'WofWmk-4qU4' },
+      { id: 3, name: 'Squats', yt: 'dhhN_6B5nxE' },
+      { id: 4, name: 'Jump Squats', yt: 'tZSYZdtbONc' },
+      { id: 5, name: 'Plank', yt: 'mwlp75MS6Rg' },
+      { id: 6, name: 'Squat Right Dumbbell', yt: 'nfX7IFK9UNI' },
+      { id: 7, name: 'Squat Left Dumbbell', yt: 'nfX7IFK9UNI' },
+      { id: 8, name: 'Suitcase Walk', yt: 'lLAw6fUccKA' },
+      { id: 9, name: 'Deadbug', yt: 'bxn9FBrt4-A' },
+      { id: 10, name: 'Bird Dog', yt: 'ZdAHe9_HeEw' },
+      { id: 11, name: 'Dumbbell RDL', yt: 'V8Hdl1FiNt4' },
+      { id: 12, name: 'Reverse Flies', yt: '3MKmYlhxgOo' },
+      { id: 13, name: 'Bent Over Rows', yt: 'DJfQN6xJL28' },
+      { id: 14, name: 'Shoulder Press', yt: 'guW_ENwLOMI' },
+      { id: 15, name: 'Russian Twist', yt: 'IJDOoVyVjhc' },
+      { id: 16, name: 'Standing Marches', yt: '9jsUJPgUw6I' },
+      { id: 17, name: 'Wood Chop', yt: 'PCQCwP1Xy0g' },
+      { id: 18, name: 'Overhead Press', yt: 'guW_ENwLOMI' },
+      { id: 19, name: 'Bulgarian Split Squats', yt: 'hbw7hdyOpq0' },
+      { id: 20, name: 'Lunges', yt: 'J1khP9Xug0o' },
+      { id: 21, name: 'Chest Press', yt: 'AuNRCrdhquE' },
+      { id: 22, name: 'Overhead Extension', yt: 'O7e8j8K3cJo' },
+      { id: 23, name: 'Bicep Curls', yt: 'ykJmrZ5v0Oo' },
+      { id: 24, name: 'Glute Bridge', yt: 'wQQ6N5piDG0' },
+      { id: 25, name: 'Dumbbell Pullover', yt: 'tcHaHIQStsk' }
     ];
+
+    function thumbUrl(yt) { return `https://img.youtube.com/vi/${yt}/hqdefault.jpg`; }
+    function embedUrl(yt) { return `https://www.youtube.com/embed/${yt}?autoplay=1&mute=1&loop=1&playlist=${yt}&controls=1&rel=0&modestbranding=1&playsinline=1`; }
 
     let state = {
       screen: 'home',
@@ -355,9 +272,7 @@
 
     function initAudio() {
       if (!state.audioCtx) {
-        try {
-          state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        } catch (e) {}
+        try { state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
       }
     }
 
@@ -370,6 +285,8 @@
     function goHome() {
       clearInterval(state.timer);
       state.isRunning = false;
+      const frame = document.getElementById('workoutFrame');
+      if (frame) frame.src = '';
       showScreen('home');
       renderHome();
     }
@@ -384,12 +301,7 @@
     function addExercise(id) {
       const ex = EXERCISES.find(e => e.id === id);
       if (ex) {
-        state.workout.push({
-          id: Date.now() + Math.random(),
-          ...ex,
-          work: 30,
-          rest: 10
-        });
+        state.workout.push({ id: Date.now() + Math.random(), ...ex, work: 30, rest: 10 });
         renderBuild();
       }
     }
@@ -401,10 +313,7 @@
 
     function updateTime(id, field, value) {
       const ex = state.workout.find(e => e.id === id);
-      if (ex) {
-        ex[field] = parseInt(value) || 0;
-        renderBuild();
-      }
+      if (ex) { ex[field] = parseInt(value) || 0; }
     }
 
     function clearWorkout() {
@@ -413,15 +322,15 @@
     }
 
     function saveWorkout() {
-      if (!state.workoutName.trim() || state.workout.length === 0) {
+      if (!state.workoutName.trim()) {
         alert('תן שם לרוטינה!');
         return;
       }
-      const w = {
-        id: Date.now(),
-        name: state.workoutName,
-        exercises: JSON.parse(JSON.stringify(state.workout))
-      };
+      if (state.workout.length === 0) {
+        alert('בחר לפחות תרגיל אחד!');
+        return;
+      }
+      const w = { id: Date.now(), name: state.workoutName, exercises: JSON.parse(JSON.stringify(state.workout)) };
       state.savedWorkouts.push(w);
       localStorage.setItem('workouts', JSON.stringify(state.savedWorkouts));
       goHome();
@@ -436,6 +345,7 @@
         state.isWorking = true;
         state.timeLeft = 0;
         showScreen('workout');
+        loadExerciseMedia();
         renderWorkout();
       }
     }
@@ -444,6 +354,14 @@
       state.savedWorkouts = state.savedWorkouts.filter(w => w.id !== id);
       localStorage.setItem('workouts', JSON.stringify(state.savedWorkouts));
       renderHome();
+    }
+
+    // Loads the video for the CURRENT exercise. Only call this when the exercise changes,
+    // never on every timer tick - otherwise the video would restart every second.
+    function loadExerciseMedia() {
+      const current = state.workout[state.currentIdx];
+      const frame = document.getElementById('workoutFrame');
+      if (frame && current) frame.src = embedUrl(current.yt);
     }
 
     function tick() {
@@ -462,6 +380,7 @@
             state.isWorking = true;
             playBeep(1200, 200);
             state.timeLeft = state.workout[state.currentIdx].work;
+            loadExerciseMedia();
           } else {
             state.isRunning = false;
             clearInterval(state.timer);
@@ -481,6 +400,7 @@
         state.isWorking = true;
         state.currentIdx = 0;
         state.timeLeft = state.workout[0].work;
+        loadExerciseMedia();
       }
       state.isRunning = !state.isRunning;
       if (state.isRunning) {
@@ -497,13 +417,14 @@
       state.currentIdx = 0;
       state.isWorking = true;
       state.timeLeft = 0;
+      loadExerciseMedia();
       renderWorkout();
     }
 
     function renderHome() {
       const list = document.getElementById('workoutsList');
       if (state.savedWorkouts.length === 0) {
-        list.innerHTML = '<p style="text-align: center; padding: 30px;">עדיין אין רוטינות</p>';
+        list.innerHTML = '<p style="text-align: center; padding: 30px; color:#999;">עדיין אין רוטינות</p>';
       } else {
         list.innerHTML = state.savedWorkouts.map(w => `
           <div class="workout-card">
@@ -521,20 +442,21 @@
     function renderBuild() {
       const grid = document.getElementById('exercisesGrid');
       grid.innerHTML = EXERCISES.map(ex => `
-        <button onclick="addExercise(${ex.id})" class="exercise-btn">${ex.name}</button>
+        <button onclick="addExercise(${ex.id})" class="exercise-btn">
+          <img src="${thumbUrl(ex.yt)}" alt="${ex.name}">
+          <span>${ex.name}</span>
+        </button>
       `).join('');
 
       const selected = document.getElementById('selectedExercises');
       if (state.workout.length === 0) {
-        selected.innerHTML = '<p style="text-align: center; color: #999;">בחר תרגילים בחלק העליון</p>';
+        selected.innerHTML = '<p style="text-align: center; color: #999;">בחר תרגילים למעלה</p>';
       } else {
         selected.innerHTML = state.workout.map((ex, idx) => `
           <div class="workout-item">
             <div class="workout-item-header">
-              <img src="${ex.img}" alt="${ex.name}">
-              <div style="flex: 1;">
-                <strong>${idx + 1}. ${ex.name}</strong>
-              </div>
+              <img src="${thumbUrl(ex.yt)}" alt="${ex.name}">
+              <div class="name"><strong>${idx + 1}. ${ex.name}</strong></div>
               <button class="danger" onclick="removeExercise(${ex.id})" style="margin: 0;">🗑️</button>
             </div>
             <div class="times">
@@ -551,24 +473,27 @@
         `).join('');
       }
 
-      document.getElementById('workoutName').value = state.workoutName;
+      // restore the workout-name field's text without losing state
+      const nameInput = document.getElementById('workoutNameInput');
+      if (nameInput) nameInput.value = state.workoutName;
     }
 
     function renderWorkout() {
       const current = state.workout[state.currentIdx];
-      document.getElementById('workoutImg').src = current.img;
       document.getElementById('exerciseName').textContent = current.name;
       document.getElementById('exerciseNumber').textContent = `תרגיל ${state.currentIdx + 1}/${state.workout.length}`;
-      
+
       const mins = Math.floor(state.timeLeft / 60);
       const secs = state.timeLeft % 60;
-      document.getElementById('timerDisplay').textContent = 
+      document.getElementById('timerDisplay').textContent =
         String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
-      
+
       document.getElementById('workingEmoji').textContent = state.isWorking ? '🔥' : '😤';
-      
+
       const progress = ((state.currentIdx + 1) / state.workout.length) * 100;
       document.getElementById('progressFill').style.width = progress + '%';
+
+      document.getElementById('startBtn').textContent = state.isRunning ? '⏸️ עצור' : '▶️ התחל';
     }
 
     document.addEventListener('click', initAudio, { once: true });

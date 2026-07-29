@@ -3,15 +3,297 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#000000">
   <title>Workout Pro</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI'; margin: 0; padding: 0; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 30px 0;
+      font-size: 2.5em;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      margin: 20px 0 15px 0;
+    }
+
+    button {
+      background: #5b21b6;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+      margin: 5px;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: #7c3aed;
+      transform: scale(1.05);
+    }
+
+    button.danger {
+      background: #dc2626;
+    }
+
+    button.danger:hover {
+      background: #ef4444;
+    }
+
+    button.success {
+      background: #16a34a;
+    }
+
+    button.success:hover {
+      background: #22c55e;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: white;
+      font-size: 1em;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .workout-item {
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      border-left: 3px solid #7c3aed;
+    }
+
+    .workout-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 5px;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+
+    .workout-item-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .times {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .time-input {
+      flex: 1;
+    }
+
+    .time-input label {
+      font-size: 0.85em;
+      color: #999;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .time-input input {
+      width: 100%;
+      margin: 0;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .workouts-grid {
+      display: grid;
+      gap: 15px;
+    }
+
+    .workout-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .workout-card h3 {
+      margin-bottom: 10px;
+    }
+
+    .exercise-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 8px;
+      margin: 15px 0;
+    }
+
+    .exercise-btn {
+      padding: 8px;
+      font-size: 0.85em;
+    }
+
+    .workout-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .workout-bg {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: linear-gradient(135deg, #1a1a1a, #000);
+    }
+
+    .workout-bg img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+    }
+
+    .timer-box {
+      position: absolute;
+      top: 30px;
+      right: 20px;
+      background: rgba(0,0,0,0.9);
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #22c55e;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .timer-box .timer-display {
+      font-size: 3em;
+      font-weight: bold;
+      font-family: monospace;
+      margin: 0;
+    }
+
+    .workout-info {
+      background: rgba(0,0,0,0.95);
+      padding: 15px;
+      text-align: center;
+      border-top: 1px solid #333;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #333;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #22c55e;
+      transition: width 0.3s;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      padding: 15px;
+      background: rgba(0,0,0,0.95);
+      border-top: 1px solid #333;
+    }
   </style>
 </head>
-<body class="bg-black text-white">
-  <div id="app"></div>
+<body>
+  <div id="app">
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen active">
+      <div class="container">
+        <h1>💪 Workout Pro</h1>
+        <div id="workoutsList" class="workouts-grid"></div>
+        <button class="success" onclick="goToBuild()" style="width: 100%; font-size: 1.2em; padding: 15px;">➕ רוטינה חדשה</button>
+      </div>
+    </div>
+
+    <!-- Build Screen -->
+    <div id="buildScreen" class="screen">
+      <div class="container">
+        <button onclick="goHome()">🏠 חזרה</button>
+        <h1>בנה רוטינה</h1>
+        <input type="text" id="workoutName" placeholder="שם הרוטינה">
+        <h2>בחר תרגילים:</h2>
+        <div class="exercise-grid" id="exercisesGrid"></div>
+        <h2>בחרת:</h2>
+        <div id="selectedExercises" style="min-height: 50px;"></div>
+        <div class="button-group">
+          <button class="success" onclick="saveWorkout()" style="flex: 1;">💾 שמור</button>
+          <button class="danger" onclick="clearWorkout()" style="flex: 1;">🔄 נקה</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workout Screen -->
+    <div id="workoutScreen" class="screen">
+      <div class="workout-screen">
+        <div class="workout-bg">
+          <img id="workoutImg" src="" alt="">
+          <div class="timer-box">
+            <div class="timer-display" id="timerDisplay">00:00</div>
+            <div style="font-size: 2em; margin-top: 10px;" id="workingEmoji">🔥</div>
+          </div>
+        </div>
+        <div class="workout-info">
+          <h2 id="exerciseName"></h2>
+          <p id="exerciseNumber"></p>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+        <div class="controls">
+          <button onclick="goHome()" style="flex: 0;">🏠</button>
+          <button class="success" onclick="toggleWorkout()" style="flex: 1;">▶️ התחל</button>
+          <button class="danger" onclick="resetWorkout()" style="flex: 1;">🔄 אפס</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
     const EXERCISES = [
@@ -38,3 +320,259 @@
       { id: 21, name: 'Chest Press', img: 'https://media.giphy.com/media/xUOxeWnVpMqhqkJEdy/200w.gif' },
       { id: 22, name: 'Overhead Extension', img: 'https://media.giphy.com/media/l0HlDY9x8FZo0XO1i/200w.gif' },
       { id: 23, name: 'Bicep Curls', img: 'https://media.giphy.com/media/3ohzdKcqJd58PoGkcQ/200w.gif' },
+      { id: 24, name: 'Glute Bridge', img: 'https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/200w.gif' },
+      { id: 25, name: 'Dumbbell Pullover', img: 'https://media.giphy.com/media/3o85xIO33l7RlmLqqI/200w.gif' }
+    ];
+
+    let state = {
+      screen: 'home',
+      workoutName: '',
+      workout: [],
+      savedWorkouts: JSON.parse(localStorage.getItem('workouts') || '[]'),
+      isRunning: false,
+      currentIdx: 0,
+      timeLeft: 0,
+      isWorking: true,
+      audioCtx: null,
+      timer: null
+    };
+
+    function playBeep(freq = 800, dur = 200) {
+      if (!state.audioCtx) return;
+      try {
+        const osc = state.audioCtx.createOscillator();
+        const gain = state.audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(state.audioCtx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.3, state.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + dur / 1000);
+        osc.start(state.audioCtx.currentTime);
+        osc.stop(state.audioCtx.currentTime + dur / 1000);
+      } catch (e) {}
+    }
+
+    function initAudio() {
+      if (!state.audioCtx) {
+        try {
+          state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {}
+      }
+    }
+
+    function showScreen(name) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(name + 'Screen').classList.add('active');
+      state.screen = name;
+    }
+
+    function goHome() {
+      clearInterval(state.timer);
+      state.isRunning = false;
+      showScreen('home');
+      renderHome();
+    }
+
+    function goToBuild() {
+      state.workout = [];
+      state.workoutName = '';
+      showScreen('build');
+      renderBuild();
+    }
+
+    function addExercise(id) {
+      const ex = EXERCISES.find(e => e.id === id);
+      if (ex) {
+        state.workout.push({
+          id: Date.now() + Math.random(),
+          ...ex,
+          work: 30,
+          rest: 10
+        });
+        renderBuild();
+      }
+    }
+
+    function removeExercise(id) {
+      state.workout = state.workout.filter(e => e.id !== id);
+      renderBuild();
+    }
+
+    function updateTime(id, field, value) {
+      const ex = state.workout.find(e => e.id === id);
+      if (ex) {
+        ex[field] = parseInt(value) || 0;
+        renderBuild();
+      }
+    }
+
+    function clearWorkout() {
+      state.workout = [];
+      renderBuild();
+    }
+
+    function saveWorkout() {
+      if (!state.workoutName.trim() || state.workout.length === 0) {
+        alert('תן שם לרוטינה!');
+        return;
+      }
+      const w = {
+        id: Date.now(),
+        name: state.workoutName,
+        exercises: JSON.parse(JSON.stringify(state.workout))
+      };
+      state.savedWorkouts.push(w);
+      localStorage.setItem('workouts', JSON.stringify(state.savedWorkouts));
+      goHome();
+    }
+
+    function loadWorkout(id) {
+      const w = state.savedWorkouts.find(x => x.id === id);
+      if (w) {
+        state.workout = JSON.parse(JSON.stringify(w.exercises));
+        state.currentIdx = 0;
+        state.isRunning = false;
+        state.isWorking = true;
+        state.timeLeft = 0;
+        showScreen('workout');
+        renderWorkout();
+      }
+    }
+
+    function deleteWorkout(id) {
+      state.savedWorkouts = state.savedWorkouts.filter(w => w.id !== id);
+      localStorage.setItem('workouts', JSON.stringify(state.savedWorkouts));
+      renderHome();
+    }
+
+    function tick() {
+      if (state.timeLeft <= 3 && state.timeLeft > 0) {
+        playBeep(state.timeLeft === 3 ? 600 : state.timeLeft === 2 ? 700 : 800, 150);
+      }
+
+      if (state.timeLeft <= 1) {
+        if (state.isWorking) {
+          state.isWorking = false;
+          playBeep(1000, 200);
+          state.timeLeft = state.workout[state.currentIdx].rest;
+        } else {
+          if (state.currentIdx < state.workout.length - 1) {
+            state.currentIdx++;
+            state.isWorking = true;
+            playBeep(1200, 200);
+            state.timeLeft = state.workout[state.currentIdx].work;
+          } else {
+            state.isRunning = false;
+            clearInterval(state.timer);
+            playBeep(1200, 300);
+            renderWorkout();
+            return;
+          }
+        }
+      } else {
+        state.timeLeft--;
+      }
+      renderWorkout();
+    }
+
+    function toggleWorkout() {
+      if (!state.isRunning) {
+        state.isWorking = true;
+        state.currentIdx = 0;
+        state.timeLeft = state.workout[0].work;
+      }
+      state.isRunning = !state.isRunning;
+      if (state.isRunning) {
+        state.timer = setInterval(tick, 1000);
+      } else {
+        clearInterval(state.timer);
+      }
+      renderWorkout();
+    }
+
+    function resetWorkout() {
+      clearInterval(state.timer);
+      state.isRunning = false;
+      state.currentIdx = 0;
+      state.isWorking = true;
+      state.timeLeft = 0;
+      renderWorkout();
+    }
+
+    function renderHome() {
+      const list = document.getElementById('workoutsList');
+      if (state.savedWorkouts.length === 0) {
+        list.innerHTML = '<p style="text-align: center; padding: 30px;">עדיין אין רוטינות</p>';
+      } else {
+        list.innerHTML = state.savedWorkouts.map(w => `
+          <div class="workout-card">
+            <h3>${w.name}</h3>
+            <p>${w.exercises.length} תרגילים</p>
+            <div class="button-group">
+              <button class="success" onclick="loadWorkout(${w.id})" style="flex: 1;">▶️ התחל</button>
+              <button class="danger" onclick="deleteWorkout(${w.id})">🗑️</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderBuild() {
+      const grid = document.getElementById('exercisesGrid');
+      grid.innerHTML = EXERCISES.map(ex => `
+        <button onclick="addExercise(${ex.id})" class="exercise-btn">${ex.name}</button>
+      `).join('');
+
+      const selected = document.getElementById('selectedExercises');
+      if (state.workout.length === 0) {
+        selected.innerHTML = '<p style="text-align: center; color: #999;">בחר תרגילים בחלק העליון</p>';
+      } else {
+        selected.innerHTML = state.workout.map((ex, idx) => `
+          <div class="workout-item">
+            <div class="workout-item-header">
+              <img src="${ex.img}" alt="${ex.name}">
+              <div style="flex: 1;">
+                <strong>${idx + 1}. ${ex.name}</strong>
+              </div>
+              <button class="danger" onclick="removeExercise(${ex.id})" style="margin: 0;">🗑️</button>
+            </div>
+            <div class="times">
+              <div class="time-input">
+                <label>עבודה (שנ')</label>
+                <input type="number" value="${ex.work}" onchange="updateTime(${ex.id}, 'work', this.value)" min="1">
+              </div>
+              <div class="time-input">
+                <label>מנוחה (שנ')</label>
+                <input type="number" value="${ex.rest}" onchange="updateTime(${ex.id}, 'rest', this.value)" min="0">
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('workoutName').value = state.workoutName;
+    }
+
+    function renderWorkout() {
+      const current = state.workout[state.currentIdx];
+      document.getElementById('workoutImg').src = current.img;
+      document.getElementById('exerciseName').textContent = current.name;
+      document.getElementById('exerciseNumber').textContent = `תרגיל ${state.currentIdx + 1}/${state.workout.length}`;
+      
+      const mins = Math.floor(state.timeLeft / 60);
+      const secs = state.timeLeft % 60;
+      document.getElementById('timerDisplay').textContent = 
+        String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+      
+      document.getElementById('workingEmoji').textContent = state.isWorking ? '🔥' : '😤';
+      
+      const progress = ((state.currentIdx + 1) / state.workout.length) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+    }
+
+    document.addEventListener('click', initAudio, { once: true });
+    goHome();
+  </script>
+</body>
+</html>

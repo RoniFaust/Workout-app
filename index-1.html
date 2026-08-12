@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workout Pro</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+
+    h1 { text-align: center; margin: 30px 0; font-size: 2.2em; }
+    h2 { font-size: 1.4em; margin: 20px 0 12px 0; }
+
+    button {
+      background: #5b21b6;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: bold;
+      margin: 5px;
+      transition: all 0.2s;
+    }
+    button:active { transform: scale(0.97); }
+    button.danger { background: #dc2626; }
+    button.success { background: #16a34a; }
+
+    input {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: white;
+      font-size: 1em;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .workout-item {
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      border-right: 3px solid #7c3aed;
+    }
+
+    .workout-item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .workout-item-header img { width: 56px; height: 56px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: #333; }
+    .workout-item-header .thumb-placeholder {
+      width: 56px; height: 56px; border-radius: 6px; flex-shrink: 0;
+      background: #333; display: flex; align-items: center; justify-content: center; font-size: 0.65em; color: #888; text-align: center;
+    }
+    .workout-item-header .name { flex: 1; }
+
+    .times { display: flex; gap: 15px; margin-top: 10px; }
+    .time-input { flex: 1; }
+    .time-input label { font-size: 0.8em; color: #999; display: block; margin-bottom: 4px; }
+    .time-input input { width: 100%; margin: 0; text-align: center; }
+
+    .button-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    .workouts-grid { display: grid; gap: 15px; }
+    .workout-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; }
+    .workout-card h3 { margin-bottom: 8px; }
+
+    .exercise-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+      margin: 15px 0;
+    }
+    .exercise-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 6px;
+      font-size: 0.72em;
+      line-height: 1.25;
+      text-align: center;
+    }
+    .exercise-btn img { width: 100%; aspect-ratio: 1; border-radius: 6px; object-fit: cover; background: #333; }
+    .exercise-btn .thumb-empty {
+      width: 100%; aspect-ratio: 1; border-radius: 6px; background: #2a2a2a;
+      display: flex; align-items: center; justify-content: center; font-size: 1.3em;
+    }
+
+    .workout-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      z-index: 1000;
+    }
+
+    .media-wrap {
+      flex: 1;
+      position: relative;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .media-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .media-fallback { color: #888; text-align: center; padding: 20px; font-size: 0.9em; }
+
+    .next-up {
+      position: absolute;
+      bottom: 90px;
+      left: 16px;
+      z-index: 20;
+      background: rgba(0,0,0,0.85);
+      border: 2px solid #fbbf24;
+      border-radius: 14px;
+      padding: 10px 14px;
+      max-width: 140px;
+      text-align: center;
+    }
+    .next-up.hidden { display: none; }
+    .next-up img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-bottom: 6px; }
+    .next-up p { font-size: 0.75em; color: #fbbf24; font-weight: bold; }
+
+    .rest-screen {
+      text-align: center;
+      color: #93c5fd;
+    }
+    .rest-screen .big-emoji { font-size: 4em; }
+
+    .stats-bar { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 20px 0; }
+    .stat-pill {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.85em;
+    }
+    .achievement-card {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-radius: 10px;
+      padding: 14px;
+      margin: 8px 0;
+      text-align: right;
+      animation: pop 0.4s ease;
+    }
+    .achievement-card .emoji { font-size: 1.8em; margin-left: 10px; }
+    @keyframes pop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    .manual-search {
+      background: #111;
+      border: 1px dashed #555;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 8px 0;
+    }
+    .manual-search.hidden { display: none; }
+    .manual-search input { margin: 0; }
+    .search-result {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #222;
+      border-radius: 8px;
+      padding: 6px;
+      margin: 6px 0;
+      cursor: pointer;
+    }
+    .search-result:active { background: #333; }
+    .search-result img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
+    .search-result span { font-size: 0.8em; }
+
+    .top-bar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+    }
+    .top-bar .title { text-align: center; flex: 1; }
+    .top-bar .title h1 { margin: 0; font-size: 1.1em; text-shadow: 0 1px 4px #000; }
+    .top-bar .title p { font-size: 0.75em; color: #ddd; margin-top: 2px; }
+
+    .timer-box {
+      position: absolute;
+      bottom: 90px;
+      right: 16px;
+      z-index: 20;
+      background: rgba(0,0,0,0.8);
+      padding: 14px 18px;
+      border-radius: 14px;
+      border: 2px solid #22c55e;
+      text-align: center;
+      min-width: 100px;
+    }
+    .timer-box .timer-display { font-size: 2.4em; font-weight: bold; font-family: monospace; }
+    .timer-box .emoji { font-size: 1.6em; margin-top: 4px; }
+
+    .workout-info { background: rgba(0,0,0,0.95); padding: 12px 16px 4px 16px; }
+    .progress-bar { width: 100%; height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin: 8px 0; }
+    .progress-fill { height: 100%; background: #22c55e; transition: width 0.3s; }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      padding: 12px 15px 18px 15px;
+      background: rgba(0,0,0,0.95);
+    }
+
+    #debugPanel {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      max-height: 35vh;
+      overflow-y: auto;
+      background: #000;
+      border-top: 2px solid #7c3aed;
+      font-family: monospace;
+      font-size: 0.7em;
+      padding: 8px 8px 8px 50px;
+      z-index: 5000;
+      direction: ltr;
+      text-align: left;
+    }
+    #debugPanel.hidden { display: none; }
+    #debugPanel .line { padding: 2px 0; border-bottom: 1px solid #222; word-break: break-all; }
+    #debugPanel .ok { color: #4ade80; }
+    #debugPanel .err { color: #f87171; }
+    #debugToggle {
+      position: fixed;
+      bottom: 10px; left: 10px;
+      z-index: 5001;
+      background: #7c3aed;
+      color: white;
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1em;
+      border: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Home Screen -->
+    <div id="homeScreen" class="screen active">
+      <div class="container">
+        <h1>💪 Workout Pro</h1>
+        <div class="stats-bar" id="homeStatsBar"></div>
+        <div id="workoutsList" class="workouts-grid"></div>
+        <button class="success" onclick="goToBuild()" style="width: 100%; font-size: 1.15em; padding: 15px;">➕ רוטינה חדשה</button>
+      </div>
+    </div>
+
+    <!-- Build Screen -->
+    <div id="buildScreen" class="screen">
+      <div class="container">
+        <button onclick="goHome()">🏠 חזרה</button>
+        <button onclick="clearMediaCache()" style="background:#555;">🧹 נקה מטמון תמונות</button>
+        <h1>בנה רוטינה</h1>
+        <input type="text" id="workoutNameInput" placeholder="שם הרוטינה" oninput="state.workoutName = this.value">
+        <h2>בחר תרגילים:</h2>
+        <div class="exercise-grid" id="exercisesGrid"></div>
+        <h2>בחרת:</h2>
+        <div id="totalTimeBuild" style="color:#93c5fd; font-size:0.9em; margin-bottom:8px;"></div>
+        <div id="selectedExercises" style="min-height: 50px;"></div>
+        <div class="button-group">
+          <button class="success" onclick="saveWorkout()" style="flex: 1;">💾 שמור</button>
+          <button class="danger" onclick="clearWorkout()" style="flex: 1;">🔄 נקה</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Workout Screen -->
+    <div id="workoutScreen" class="screen">
+      <div class="workout-screen">
+        <div class="media-wrap" id="mediaWrap"></div>
+        <div id="nextUpBox" class="next-up hidden"></div>
+        <div class="top-bar">
+          <button onclick="goHome()">🏠</button>
+          <div class="title">
+            <h1 id="exerciseName"></h1>
+            <p id="exerciseNumber"></p>
+          </div>
+          <div style="width:40px"></div>
+        </div>
+        <div class="timer-box">
+          <div class="timer-display" id="timerDisplay">00:00</div>
+          <div class="emoji" id="workingEmoji">🔥</div>
+        </div>
+        <div class="workout-info">
+          <p id="totalTimeLeft" style="text-align:center; font-size:0.8em; color:#93c5fd; margin-bottom:4px;"></p>
+          <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <div class="controls" style="flex-wrap: wrap;">
+          <button class="success" onclick="toggleWorkout()" id="startBtn" style="flex: 1 1 100%;">▶️ התחל</button>
+          <button onclick="restartCurrentExercise()" style="flex: 1; background:#374151;">🔁 תרגיל זה מחדש</button>
+          <button class="danger" onclick="resetWorkout()" style="flex: 1;">🔄 אפס הכל</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Complete Screen -->
+    <div id="completeScreen" class="screen">
+      <div class="container" style="text-align:center; padding-top: 60px;">
+        <div style="font-size: 4em;">🎉</div>
+        <h1>כל הכבוד!</h1>
+        <p id="completeSummary" style="color:#aaa; margin-bottom: 25px;"></p>
+
+        <div class="stats-bar" style="justify-content:center; margin-bottom: 25px;">
+          <div class="stat-pill">🔥 רצף: <span id="completeStreak"></span> ימים</div>
+          <div class="stat-pill">💪 סה"כ: <span id="completeTotal"></span> אימונים</div>
+        </div>
+
+        <div id="newAchievements"></div>
+
+        <button class="success" onclick="goHome()" style="width:100%; font-size:1.15em; padding:15px; margin-top:20px;">חזרה הביתה</button>
+      </div>
+    </div>
+  </div>
+
+  <button id="debugToggle" onclick="toggleDebug()">🐞</button>
+  <div id="debugPanel" class="hidden"></div>
+
+  <script>
+    // ===== On-screen debug log (since mobile Chrome DevTools are hard to reach) =====
+    function toggleDebug() {
+      document.getElementById('debugPanel').classList.toggle('hidden');
+    }
+    function debugLog(msg, isError) {
+      const panel = document.getElementById('debugPanel');
+      const line = document.createElement('div');
+      line.className = 'line ' + (isError ? 'err' : 'ok');
+      const time = new Date().toLocaleTimeString('en-GB');
+      line.textContent = `[${time}] ${msg}`;
+      panel.appendChild(line);
+      panel.scrollTop = panel.scrollHeight;
+      if (isError) panel.classList.remove('hidden');
+    }
+
+    // ===== WorkoutX API =====
+    // Note: this key is visible in the page source since this is a public static site.
+    // Fine for a free-tier personal-use key; just don't reuse this key for anything sensitive.
+    const API_KEY = 'wx_27773376362414473df72b0c0396ddb96501dda934ef964ffbfc7abe';
+    const API_BASE = 'https://api.workoutxapp.com/v1';
+
+    // ===== EXERCISE LIBRARY - search terms sent to WorkoutX's fuzzy name search =====
+    const EXERCISES = [
+      { id: 13, name: 'Bent Over Rows', search: 'bent over row', equipment: 'dumbbell' },
+      { id: 23, name: 'Bicep Curls', search: 'bicep curl', equipment: 'dumbbell' },
+      { id: 10, name: 'Bird Dog', search: 'bird-dog' },
+      { id: 19, name: 'Bulgarian Split Squats', search: 'split squat', equipment: 'dumbbell' },
+      { id: 21, name: 'Chest Press', search: 'dumbbell bench press' },
+      { id: 9, name: 'Deadbug', search: 'dead bug' },
+      { id: 25, name: 'Dumbbell Pullover', search: 'dumbbell pullover' },
+      { id: 11, name: 'Dumbbell RDL', search: 'romanian deadlift', equipment: 'dumbbell' },
+      { id: 24, name: 'Glute Bridge', search: 'glute bridge' },
+      { id: 2, name: 'High Knees', search: 'high knee raise' },
+      { id: 29, name: 'Hollow Body Hold', search: 'hollow body hold' },
+      { id: 20, name: 'Lunges', search: 'lunge', equipment: 'dumbbell' },
+      { id: 22, name: 'Overhead Extension', search: 'tricep extension', equipment: 'dumbbell' },
+      { id: 18, name: 'Overhead Press', search: 'overhead press', equipment: 'dumbbell' },
+      { id: 5, name: 'Plank', search: 'plank' },
+      { id: 26, name: 'Prone Cobra', search: 'cobra' },
+      { id: 1, name: 'Push-ups', search: 'push up' },
+      { id: 12, name: 'Reverse Flies', search: 'reverse fly', equipment: 'dumbbell' },
+      { id: 15, name: 'Russian Twist', search: 'russian twist' },
+      { id: 14, name: 'Shoulder Press', search: 'shoulder press', equipment: 'dumbbell' },
+      { id: 27, name: 'Single-Leg Glute Bridge', search: 'single leg glute bridge' },
+      { id: 7, name: 'Squat Left Dumbbell', search: 'dumbbell squat', equipment: 'dumbbell' },
+      { id: 6, name: 'Squat Right Dumbbell', search: 'dumbbell squat', equipment: 'dumbbell' },
+      { id: 3, name: 'Squats', search: 'goblet squat', equipment: 'dumbbell' },
+      { id: 16, name: 'Standing Marches', search: 'march' },
+      { id: 8, name: 'Suitcase Walk', search: 'farmers walk' },
+      { id: 17, name: 'Wood Chop', search: 'chopper' },
+      { id: 28, name: 'Y-T-W', search: 'y raise' }
+    ];
+
+    // ===== Media fetching (with caching so we don't burn quota) =====
+    const mediaCache = {};
+    try {
+      Object.assign(mediaCache, JSON.parse(localStorage.getItem('gifCache') || '{}'));
+    } catch (e) {}
+    function persistCache() {
+      try { localStorage.setItem('gifCache', JSON.stringify(mediaCache)); } catch (e) {}
+    }
+
+    function formatTime(totalSeconds) {
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+    }
+
+    function withKey(url) {
+      const sep = url.includes('?') ? '&' : '?';
+      return `${url}${sep}api-key=${API_KEY}`;
+    }
+
+    async function queryWorkoutX(searchTerm, equipment) {
+      let url = `${API_BASE}/exercises?name=${encodeURIComponent(searchTerm)}&sortMethod=popularityRank&sortOrder=ascending&limit=5`;
+      if (equipment) url += `&equipment=${encodeURIComponent(equipment)}`;
+      const res = await fetch(url, { headers: { 'X-WorkoutX-Key': API_KEY } });
+      if (!res.ok) return { ok: false, status: res.status, list: [] };
+      const raw = await res.json();
+      const list = Array.isArray(raw) ? raw : (Array.isArray(raw.data) ? raw.data : []);
+      return { ok: true, list };
+    }
+
+    async function fetchExerciseMedia(searchTerm, equipment) {
+      const cacheKey = searchTerm + '|' + (equipment || '');
+      if (mediaCache[cacheKey] !== undefined) return mediaCache[cacheKey];
+      debugLog(`מחפש: "${searchTerm}"${equipment ? ' (מעדיף ' + equipment + ')' : ''}...`);
+      try {
+        let r = await queryWorkoutX(searchTerm, equipment);
+        if (r.ok && r.list.length === 0 && equipment) {
+          debugLog(`אין תוצאה עם ${equipment}, מנסה בלי סינון ציוד...`);
+          r = await queryWorkoutX(searchTerm, null);
+        }
+        if (!r.ok) {
+          debugLog(`⏳ HTTP ${r.status} עבור "${searchTerm}" - כנראה חסימת קצב זמנית, לא שומר כקבוע`, true);
+          // Do NOT cache/persist this - it's likely a temporary rate limit, not a real "not found"
+          return null;
+        }
+        if (r.list.length > 0 && r.list[0].gifUrl) {
+          debugLog(`✅ נמצא "${r.list[0].name}" עבור "${searchTerm}"`);
+          const result = { gifUrl: withKey(r.list[0].gifUrl), matchedName: r.list[0].name };
+          mediaCache[cacheKey] = result;
+          persistCache();
+          return result;
+        }
+        debugLog(`⚠️ לא נמצא כלום עבור "${searchTerm}"`, true);
+        mediaCache[cacheKey] = null;
+        persistCache();
+        return null;
+      } catch (e) {
+        debugLog(`❌ שגיאת רשת עבור "${searchTerm}": ${e.message}`, true);
+        mediaCache[cacheKey] = null;
+        return null;
+      }
+    }
+
+    // ===== Motivation: streaks, totals, achievements =====
+    let stats = JSON.parse(localStorage.getItem('stats') || 'null') || {
+      totalCompleted: 0,
+      totalExercisesDone: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+      lastCompletedDate: null,
+      unlocked: []
+    };
+    function saveStats() { localStorage.setItem('stats', JSON.stringify(stats)); }
+
+    const ACHIEVEMENTS = [
+      { id: 'first', type: 'workouts', threshold: 1, emoji: '🎉', label: 'האימון הראשון שלך!' },
+      { id: 'w5', type: 'workouts', threshold: 5, emoji: '💪', label: '5 אימונים הושלמו' },
+      { id: 'w10', type: 'workouts', threshold: 10, emoji: '🏋️', label: '10 אימונים!' },
+      { id: 'w25', type: 'workouts', threshold: 25, emoji: '🥇', label: '25 אימונים - מרשים!' },
+      { id: 'w50', type: 'workouts', threshold: 50, emoji: '🏆', label: '50 אימונים - אלופה!' },
+      { id: 's3', type: 'streak', threshold: 3, emoji: '🔥', label: 'רצף 3 ימים' },
+      { id: 's7', type: 'streak', threshold: 7, emoji: '🔥🔥', label: 'רצף שבוע שלם!' },
+      { id: 's14', type: 'streak', threshold: 14, emoji: '🔥🔥🔥', label: 'רצף שבועיים!' },
+      { id: 's30', type: 'streak', threshold: 30, emoji: '👑', label: 'רצף חודש - מדהים!' }
+    ];
+
+    function recordCompletion() {
+      const today = new Date().toISOString().slice(0, 10);
+      if (stats.lastCompletedDate !== today) {
+        stats.totalCompleted++;
+        stats.totalExercisesDone += state.workout.length;
+        if (stats.lastCompletedDate) {
+          const diffDays = Math.round((new Date(today) - new Date(stats.lastCompletedDate)) / 86400000);
+          stats.currentStreak = diffDays === 1 ? stats.currentStreak + 1 : 1;
+        } else {
+          stats.currentStreak = 1;
+        }
+        stats.longestStreak = Math.max(stats.longestStreak, stats.currentStreak);
+        stats.lastCompletedDate = today;
+      }
+      const newly = [];
+      for (const a of ACHIEVEMENTS) {
+        if (!stats.unlocked.includes(a.id)) {
+          const val = a.type === 'workouts' ? stats.totalCompleted : stats.currentStreak;
+          if (val >= a.threshold) { stats.unlocked.push(a.id); newly.push(a); }
+        }
+      }
+      saveStats();
+      return newly;
+    }
+
+    function showCompleteScreen(newAchievements) {
+      showScreen('complete');
+      document.getElementById('completeSummary').textContent = `סיימת ${state.workout.length} תרגילים 💥`;
+      document.getElementById('completeStreak').textContent = stats.currentStreak;
+      document.getElementById('completeTotal').textContent = stats.totalCompleted;
+      const box = document.getElementById('newAchievements');
+      box.innerHTML = newAchievements.map(a => `
+        <div class="achievement-card"><span class="emoji">${a.emoji}</span>${a.label}</div>
+      `).join('');
+    }
+
+    function renderHomeStats() {
+      const bar = document.getElementById('homeStatsBar');
+      if (!bar) return;
+      if (stats.totalCompleted === 0) { bar.innerHTML = ''; return; }
+      bar.innerHTML = `
+        <div class="stat-pill">🔥 רצף: ${stats.currentStreak} ימים</div>
+        <div class="stat-pill">💪 סה"כ: ${stats.totalCompleted} אימונים</div>
+      `;
+    }
+
+    // ===== State =====
+    let state = {
+      screen: 'home',
+      workoutName: '',
+      workout: [],
+      savedWorkouts: JSON.parse(localStorage.getItem('workouts') || '[]'),
+      isRunning: false,
+      currentIdx: 0,
+      timeLeft: 0,
+      isWorking: true,
+      audioCtx: null,
+      timer: null
+    };
+
+    function playBeep(freq = 800, dur = 200) {
+      if (!state.audioCtx) return;
+      try {
+        const osc = state.audioCtx.createOscillator();
+        const gain = state.audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(state.audioCtx.destination);
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.3, state.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + dur / 1000);
+        osc.start(state.audioCtx.currentTime);
+        osc.stop(state.audioCtx.currentTime + dur / 1000);
+      } catch (e) {}
+    }
+
+    function initAudio() {
+      if (!state.audioCtx) {
+        try { state.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+      }
+    }
+
+    function showScreen(name) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(name + 'Screen').classList.add('active');
+      state.screen = name;
+    }
+
+    function goHome() {
+      clearInterval(state.timer);
+      state.isRunning = false;
+      showScreen('home');
+      renderHome();
+    }
+
+    function clearMediaCache() {
+      for (const key in mediaCache) delete mediaCache[key];
+      localStorage.removeItem('gifCache');
+      preloadStarted = false;
+      debugLog('🧹 המטמון נוקה - טוען הכל מחדש...');
+      renderBuild();
+      preloadGridThumbnails();
+    }
+
+    function goToBuild() {
+      state.workout = [];
+      state.workoutName = '';
+      showScreen('build');
+      renderBuild();
+      preloadGridThumbnails();
+    }
+
+    let preloadStarted = false;
+    async function preloadGridThumbnails() {
+      if (preloadStarted) return;
+      preloadStarted = true;
+      for (const ex of EXERCISES) {
+        if (exerciseOverrides[ex.id]) continue; // already fixed manually - no need to search
+        const cacheKey = ex.search + '|' + (ex.equipment || '');
+        if (mediaCache[cacheKey] === undefined) {
+          await fetchExerciseMedia(ex.search, ex.equipment);
+          renderBuild();
+          await new Promise(r => setTimeout(r, 2200)); // safely under the 30/min rate limit
+        }
+      }
+    }
+
+    async function addExercise(id) {
+      const ex = EXERCISES.find(e => e.id === id);
+      if (!ex) return;
+      const entry = { id: Date.now() + Math.random(), originalId: ex.id, name: ex.name, search: ex.search, equipment: ex.equipment, work: 45, rest: 20, gifUrl: null, loading: true };
+      state.workout.push(entry);
+      renderBuild();
+      const el = document.getElementById('workout-item-' + entry.id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      if (exerciseOverrides[ex.id]) {
+        const ov = exerciseOverrides[ex.id];
+        if (ov.type === 'youtube') {
+          entry.youtubeId = ov.youtubeId;
+          entry.gifUrl = `https://img.youtube.com/vi/${ov.youtubeId}/hqdefault.jpg`;
+        } else {
+          entry.gifUrl = withKey(ov.gifUrl);
+        }
+        entry.loading = false;
+        renderBuild();
+        return;
+      }
+
+      const media = await fetchExerciseMedia(ex.search, ex.equipment);
+      entry.gifUrl = media ? media.gifUrl : null;
+      entry.loading = false;
+      renderBuild();
+    }
+
+    let exerciseOverrides = {};
+    try { exerciseOverrides = JSON.parse(localStorage.getItem('exerciseOverrides') || '{}'); } catch (e) {}
+    function saveOverrides() {
+      try { localStorage.setItem('exerciseOverrides', JSON.stringify(exerciseOverrides)); } catch (e) {}
+    }
+
+    let manualSearchResults = {};
+
+    function toggleManualSearch(exId) {
+      document.getElementById('manualSearch-' + exId).classList.toggle('hidden');
+    }
+
+    async function runManualSearch(exId) {
+      const input = document.getElementById('manualSearchInput-' + exId);
+      const term = input.value.trim();
+      if (!term) return;
+      const resultsDiv = document.getElementById('manualSearchResults-' + exId);
+
+      const ytMatch = term.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
+      if (ytMatch) {
+        const youtubeId = ytMatch[1];
+        resultsDiv.innerHTML = `
+          <div class="search-result" onclick="selectYoutubeResult(${exId}, '${youtubeId}')">
+            <img src="https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg" alt="YouTube">
+            <span>סרטון היוטיוב הזה - לחצי לאישור</span>
+          </div>`;
+        return;
+      }
+
+      resultsDiv.innerHTML = '<p style="color:#888; font-size:0.8em;">מחפש...</p>';
+      debugLog(`חיפוש ידני: "${term}"...`);
+      try {
+        const url = `${API_BASE}/exercises?name=${encodeURIComponent(term)}&sortMethod=popularityRank&sortOrder=ascending&limit=6`;
+        const res = await fetch(url, { headers: { 'X-WorkoutX-Key': API_KEY } });
+        if (!res.ok) {
+          resultsDiv.innerHTML = `<p style="color:#f87171; font-size:0.8em;">שגיאה (${res.status}) - נסי שוב בעוד רגע</p>`;
+          debugLog(`⏳ חיפוש ידני נכשל: HTTP ${res.status}`, true);
+          return;
+        }
+        const raw = await res.json();
+        const list = Array.isArray(raw) ? raw : (Array.isArray(raw.data) ? raw.data : []);
+        if (list.length === 0) {
+          resultsDiv.innerHTML = '<p style="color:#888; font-size:0.8em;">לא נמצא כלום עבור המילה הזו</p>';
+          return;
+        }
+        manualSearchResults[exId] = list;
+        resultsDiv.innerHTML = list.map((item, i) => `
+          <div class="search-result" onclick="selectManualResult(${exId}, ${i})">
+            <img src="${withKey(item.gifUrl)}" alt="${item.name}">
+            <span>${item.name}</span>
+          </div>
+        `).join('');
+      } catch (e) {
+        resultsDiv.innerHTML = `<p style="color:#f87171; font-size:0.8em;">שגיאת רשת: ${e.message}</p>`;
+      }
+    }
+
+    function selectYoutubeResult(exId, youtubeId) {
+      const ex = state.workout.find(e => e.id === exId);
+      if (ex) {
+        ex.youtubeId = youtubeId;
+        ex.gifUrl = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+        ex.loading = false;
+        if (ex.originalId) {
+          exerciseOverrides[ex.originalId] = { type: 'youtube', youtubeId };
+          saveOverrides();
+          debugLog(`💾 נשמר סרטון יוטיוב לצמיתות עבור ${ex.name}`);
+        }
+        document.getElementById('manualSearch-' + exId).classList.add('hidden');
+        renderBuild();
+      }
+    }
+
+    function selectManualResult(exId, idx) {
+      const item = manualSearchResults[exId][idx];
+      const ex = state.workout.find(e => e.id === exId);
+      if (ex && item) {
+        ex.gifUrl = withKey(item.gifUrl);
+        ex.loading = false;
+        if (ex.originalId) {
+          exerciseOverrides[ex.originalId] = { type: 'gif', gifUrl: item.gifUrl, matchedName: item.name };
+          saveOverrides();
+          debugLog(`💾 נשמר לצמיתות כברירת מחדל: "${item.name}" עבור ${ex.name}`);
+        }
+        document.getElementById('manualSearch-' + exId).classList.add('hidden');
+        renderBuild();
+      }
+    }
+
+    function moveExercise(id, direction) {
+      const idx = state.workout.findIndex(e => e.id === id);
+      const newIdx = idx + direction;
+      if (idx === -1 || newIdx < 0 || newIdx >= state.workout.length) return;
+      [state.workout[idx], state.workout[newIdx]] = [state.workout[newIdx], state.workout[idx]];
+      renderBuild();
+    }
+
+    function removeExercise(id) {
+      state.workout = state.workout.filter(e => e.id !== id);
+      renderBuild();
+    }
+
+    function updateTime(id, field, value) {
+      const ex = state.workout.find(e => e.id === id);
+      if (ex) { ex[field] = parseInt(value) || 0; }
+      updateTotalTimeBuild();
+    }
+
+    function updateTotalTimeBuild() {
+      const el = document.getElementById('totalTimeBuild');
+      if (!el) return;
+      const total = state.workout.reduce((sum, ex) => sum + (ex.work || 0) + (ex.rest || 0), 0);
+      el.textContent = state.workout.length ? `⏱️ זמן כולל: ${formatTime(total)} דקות` : '';
+    }
+
+    function clearWorkout() {
+      state.workout = [];
+      renderBuild();
+    }
+
+    function saveWorkout() {
+      if (!state.workoutName.trim()) { alert('תן שם לרוטינה!'); return; }
+      if (state.workout.length === 0) { alert('בחר לפחות תרגיל אחד!'); return; }
+      const w = { id: Date.now(), name: state.workoutName, exercises: JSON.parse(JSON.stringify(state.workout)) };
+      state.savedWorkouts.push(w);
+      localStorage.setItem('workouts', JSON.stringify(state.savedWorkouts));
+      goHome();
+    }
+
+    function loadWorkout(id) {
+      const w = state.savedWorkouts.find(x => x.id === id);
+      if (w) {
+        state.workout = JSON.parse(JSON.stringify(w.exercises));
+        state.currentIdx = 0;
+        state.isRunning = false;
+        state.isWorking = true;
+        state.timeLeft = 0;
+        showScreen('workout');
+        loadExerciseMedia();
+        renderWorkout();
+      }
+    }
+
+    function deleteWorkout(id) {
+      state.savedWorkouts = state.savedWorkouts.filter(w => w.id !== id);
+      localStorage.setItem('workouts', JSON.stringify(state.savedWorkouts));
+      renderHome();
+    }
+
+    // Loads (and caches) the gifUrl for the CURRENT exercise. Does not touch the DOM directly -
+    // renderMedia() decides what to actually show based on work/rest state.
+    async function loadExerciseMedia() {
+      const current = state.workout[state.currentIdx];
+      if (!current.gifUrl && current.originalId && exerciseOverrides[current.originalId]) {
+        const ov = exerciseOverrides[current.originalId];
+        if (ov.type === 'youtube') {
+          current.youtubeId = ov.youtubeId;
+          current.gifUrl = `https://img.youtube.com/vi/${ov.youtubeId}/hqdefault.jpg`;
+        } else {
+          current.gifUrl = withKey(ov.gifUrl);
+        }
+      }
+      if (!current.gifUrl) {
+        const media = await fetchExerciseMedia(current.search, current.equipment);
+        current.gifUrl = media ? media.gifUrl : null;
+      }
+      renderMedia();
+      // Prefetch the next exercise in the background so its thumbnail is ready in time
+      const next = state.workout[state.currentIdx + 1];
+      if (next && !next.gifUrl) {
+        if (next.originalId && exerciseOverrides[next.originalId]) {
+          const ov = exerciseOverrides[next.originalId];
+          if (ov.type === 'youtube') {
+            next.youtubeId = ov.youtubeId;
+            next.gifUrl = `https://img.youtube.com/vi/${ov.youtubeId}/hqdefault.jpg`;
+          } else {
+            next.gifUrl = withKey(ov.gifUrl);
+          }
+          renderMedia();
+        } else {
+          fetchExerciseMedia(next.search, next.equipment).then(media => {
+            next.gifUrl = media ? media.gifUrl : null;
+            renderMedia();
+          });
+        }
+      }
+    }
+
+    function renderMedia() {
+      const current = state.workout[state.currentIdx];
+      const wrap = document.getElementById('mediaWrap');
+      const nextBox = document.getElementById('nextUpBox');
+      nextBox.classList.add('hidden'); // replaced by the big rest-screen preview below
+
+      if (!state.isWorking) {
+        const next = state.currentIdx < state.workout.length - 1 ? state.workout[state.currentIdx + 1] : null;
+        if (next) {
+          wrap.innerHTML = `
+            <div class="rest-screen">
+              <p style="font-size:1.1em; margin-bottom:8px;">😌 מנוחה</p>
+              <p style="font-size:0.85em; color:#fbbf24; margin-bottom:8px;">👉 מתכוננים לתרגיל הבא:</p>
+              ${next.gifUrl ? `<img src="${next.gifUrl}" alt="${next.name}" style="max-width:65%; max-height:45vh; border-radius:14px; border:2px solid #fbbf24;">` : ''}
+              <p style="font-size:1.3em; font-weight:bold; margin-top:10px;">${next.name}</p>
+            </div>`;
+        } else {
+          wrap.innerHTML = `<div class="rest-screen"><div class="big-emoji">🎉</div><p>כמעט סיימת!</p></div>`;
+        }
+      } else if (current.youtubeId) {
+        wrap.innerHTML = `<iframe src="https://www.youtube.com/embed/${current.youtubeId}?autoplay=1&mute=1&loop=1&playlist=${current.youtubeId}&controls=1&rel=0&modestbranding=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen playsinline style="position:absolute;inset:0;width:100%;height:100%;border:0;"></iframe>`;
+      } else if (current.gifUrl) {
+        wrap.innerHTML = `<img src="${current.gifUrl}" alt="${current.name}">`;
+      } else if (current.loading !== false) {
+        wrap.innerHTML = '<div class="media-fallback">טוען...</div>';
+      } else {
+        wrap.innerHTML = '<div class="media-fallback">😕 לא נמצא סרטון לתרגיל הזה<br>(פתחי את 🐞 לפרטים)</div>';
+      }
+    }
+
+    function tick() {
+      if (state.timeLeft <= 3 && state.timeLeft > 0) {
+        playBeep(state.timeLeft === 3 ? 600 : state.timeLeft === 2 ? 700 : 800, 150);
+      } else if (state.isWorking && state.timeLeft > 3) {
+        // Soft rhythmic pulse during active work, to signal "keep going" - silent during rest.
+        playBeep(220, 60);
+      }
+
+      if (state.timeLeft <= 1) {
+        if (state.isWorking) {
+          state.isWorking = false;
+          playBeep(1000, 200);
+          state.timeLeft = state.workout[state.currentIdx].rest;
+        } else {
+          if (state.currentIdx < state.workout.length - 1) {
+            state.currentIdx++;
+            state.isWorking = true;
+            playBeep(1200, 200);
+            state.timeLeft = state.workout[state.currentIdx].work;
+            loadExerciseMedia();
+          } else {
+            state.isRunning = false;
+            clearInterval(state.timer);
+            playBeep(1200, 300);
+            const newAchievements = recordCompletion();
+            showCompleteScreen(newAchievements);
+            return;
+          }
+        }
+      } else {
+        state.timeLeft--;
+      }
+      renderWorkout();
+    }
+
+    function toggleWorkout() {
+      if (!state.isRunning) {
+        if (state.timeLeft === 0) {
+          // Fresh start only - not a resume after pause
+          state.isWorking = true;
+          state.currentIdx = 0;
+          state.timeLeft = state.workout[0].work;
+          loadExerciseMedia();
+        }
+        state.isRunning = true;
+        state.timer = setInterval(tick, 1000);
+      } else {
+        state.isRunning = false;
+        clearInterval(state.timer);
+      }
+      renderWorkout();
+    }
+
+    function restartCurrentExercise() {
+      const current = state.workout[state.currentIdx];
+      state.timeLeft = state.isWorking ? current.work : current.rest;
+      renderWorkout();
+    }
+
+    function resetWorkout() {
+      clearInterval(state.timer);
+      state.isRunning = false;
+      state.currentIdx = 0;
+      state.isWorking = true;
+      state.timeLeft = 0;
+      loadExerciseMedia();
+      renderWorkout();
+    }
+
+    function renderHome() {
+      renderHomeStats();
+      const list = document.getElementById('workoutsList');
+      if (state.savedWorkouts.length === 0) {
+        list.innerHTML = '<p style="text-align: center; padding: 30px; color:#999;">עדיין אין רוטינות</p>';
+      } else {
+        list.innerHTML = state.savedWorkouts.map(w => `
+          <div class="workout-card">
+            <h3>${w.name}</h3>
+            <p>${w.exercises.length} תרגילים</p>
+            <div class="button-group">
+              <button class="success" onclick="loadWorkout(${w.id})" style="flex: 1;">▶️ התחל</button>
+              <button class="danger" onclick="deleteWorkout(${w.id})">🗑️</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function renderBuild() {
+      const grid = document.getElementById('exercisesGrid');
+      grid.innerHTML = EXERCISES.map(ex => {
+        let thumb;
+        if (exerciseOverrides[ex.id]) {
+          const ov = exerciseOverrides[ex.id];
+          const thumbUrl = ov.type === 'youtube' ? `https://img.youtube.com/vi/${ov.youtubeId}/hqdefault.jpg` : withKey(ov.gifUrl);
+          thumb = `<img src="${thumbUrl}" alt="${ex.name}">`;
+        } else {
+          const cacheKey = ex.search + '|' + (ex.equipment || '');
+          const cached = mediaCache[cacheKey];
+          thumb = cached === undefined
+            ? '<div class="thumb-empty">⏳</div>'
+            : (cached && cached.gifUrl ? `<img src="${cached.gifUrl}" alt="${ex.name}">` : '<div class="thumb-empty">🚫</div>');
+        }
+        return `<button onclick="addExercise(${ex.id})" class="exercise-btn">${thumb}<span>${ex.name}</span></button>`;
+      }).join('');
+
+      const selected = document.getElementById('selectedExercises');
+      if (state.workout.length === 0) {
+        selected.innerHTML = '<p style="text-align: center; color: #999;">בחר תרגילים למעלה</p>';
+      } else {
+        selected.innerHTML = state.workout.map((ex, idx) => `
+          <div class="workout-item" id="workout-item-${ex.id}">
+            <div class="workout-item-header">
+              ${ex.loading
+                ? '<div class="thumb-placeholder">טוען</div>'
+                : (ex.gifUrl ? `<img src="${ex.gifUrl}" alt="${ex.name}">` : '<div class="thumb-placeholder">אין<br>סרטון</div>')}
+              <div class="name"><strong>${idx + 1}. ${ex.name}</strong></div>
+              <div style="display:flex; flex-direction:column; gap:3px;">
+                <button onclick="moveExercise(${ex.id}, -1)" ${idx === 0 ? 'disabled style="margin:0;opacity:0.3;"' : 'style="margin:0;background:#374151;padding:4px 10px;"'}>▲</button>
+                <button onclick="moveExercise(${ex.id}, 1)" ${idx === state.workout.length - 1 ? 'disabled style="margin:0;opacity:0.3;"' : 'style="margin:0;background:#374151;padding:4px 10px;"'}>▼</button>
+              </div>
+              <button onclick="toggleManualSearch(${ex.id})" style="margin:0; background:#374151; padding:8px;">🔍</button>
+              <button class="danger" onclick="removeExercise(${ex.id})" style="margin: 0;">🗑️</button>
+            </div>
+            <div id="manualSearch-${ex.id}" class="manual-search hidden">
+              <input type="text" id="manualSearchInput-${ex.id}" placeholder="נסי מילה אחרת, למשל: overhead carry">
+              <button onclick="runManualSearch(${ex.id})" class="success" style="width:100%; margin:6px 0;">חפש</button>
+              <div id="manualSearchResults-${ex.id}"></div>
+            </div>
+            <div class="times">
+              <div class="time-input">
+                <label>עבודה (שנ')</label>
+                <input type="number" value="${ex.work}" onchange="updateTime(${ex.id}, 'work', this.value)" min="1">
+              </div>
+              <div class="time-input">
+                <label>מנוחה (שנ')</label>
+                <input type="number" value="${ex.rest}" onchange="updateTime(${ex.id}, 'rest', this.value)" min="0">
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      const nameInput = document.getElementById('workoutNameInput');
+      if (nameInput) nameInput.value = state.workoutName;
+      updateTotalTimeBuild();
+    }
+
+    function renderWorkout() {
+      const current = state.workout[state.currentIdx];
+      document.getElementById('exerciseName').textContent = current.name;
+      document.getElementById('exerciseNumber').textContent = `תרגיל ${state.currentIdx + 1}/${state.workout.length}`;
+
+      const mins = Math.floor(state.timeLeft / 60);
+      const secs = state.timeLeft % 60;
+      document.getElementById('timerDisplay').textContent =
+        String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+
+      document.getElementById('workingEmoji').textContent = state.isWorking ? '🔥' : '😤';
+
+      const progress = ((state.currentIdx + 1) / state.workout.length) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+
+      document.getElementById('startBtn').textContent = state.isRunning ? '⏸️ עצור' : '▶️ התחל';
+
+      let totalLeft = state.timeLeft;
+      if (state.isWorking) totalLeft += current.rest;
+      for (let i = state.currentIdx + 1; i < state.workout.length; i++) {
+        totalLeft += state.workout[i].work + state.workout[i].rest;
+      }
+      document.getElementById('totalTimeLeft').textContent = `⏱️ נשאר סה"כ: ${formatTime(totalLeft)}`;
+
+      renderMedia();
+    }
+
+    document.addEventListener('click', initAudio, { once: true });
+    goHome();
+  </script>
+</body>
+</html>

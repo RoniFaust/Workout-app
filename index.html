@@ -116,6 +116,18 @@
       justify-content: center;
     }
     .media-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+    /* Force the embedded YouTube player to fill the screen and crop nicely,
+       regardless of whether the source video is portrait or landscape. */
+    #ytPlayerHost { overflow: hidden; }
+    #ytPlayerHost iframe {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 100vw; height: 56.25vw; /* 16:9 sized by width */
+      min-width: 177.78vh; min-height: 100vh; /* 16:9 sized by height, whichever is larger wins */
+      transform: translate(-50%, -50%);
+      border: 0;
+    }
     .media-fallback { color: #888; text-align: center; padding: 20px; font-size: 0.9em; }
 
     .next-up {
@@ -373,37 +385,35 @@
 
     // ===== EXERCISE LIBRARY - search terms sent to WorkoutX's fuzzy name search =====
     const EXERCISES = [
-      { id: 13, name: 'Bent Over Rows', search: 'bent over row', equipment: 'dumbbell' },
-      { id: 23, name: 'Bicep Curls', search: 'bicep curl', equipment: 'dumbbell' },
+      { id: 13, name: 'Bent Over Rows', search: 'bent over row', equipment: 'dumbbell', youtubeId: 'iCM5U0_b9Mg', start: 60, end: 106 },
+      { id: 23, name: 'Bicep Curls', search: 'bicep curl', equipment: 'dumbbell', youtubeId: 'uj001FhllVU' },
       { id: 10, name: 'Bird Dog', search: 'bird-dog', youtubeId: '5q4G0FY2bN0', instructions: 'עמדה על ארבע, ידיים מתחת לכתפיים וברכיים מתחת לירכיים. מותחים בו-זמנית יד אחת קדימה ורגל נגדית אחורה, שומרים על גב ישר ואגן יציב בלי לסובב את הירכיים. עוצרים שנייה-שתיים, חוזרים למרכז ומחליפים צד.' },
-      { id: 19, name: 'Bulgarian Split Squats', search: 'split squat', equipment: 'dumbbell' },
-      { id: 21, name: 'Chest Press', search: 'dumbbell bench press' },
+      { id: 19, name: 'Bulgarian Split Squats', search: 'split squat', equipment: 'dumbbell', youtubeId: 'PLS-pVprj2A' },
+      { id: 21, name: 'Chest Press', search: 'dumbbell bench press', youtubeId: 'X3YrlBmjWrY', start: 12, end: 46 },
       { id: 9, name: 'Deadbug', search: 'dead bug', youtubeId: 'KfhoH2Q7mpk', instructions: 'שוכבים על הגב, ידיים ישרות למעלה וברכיים כפופות בזווית 90 מעלות מעל האגן. מורידים בו-זמנית יד אחת אחורה מעל הראש ורגל נגדית ישרה כלפי הרצפה, תוך שהגב צמוד לרצפה לכל האורך. חוזרים למרכז ומחליפים צד.' },
       { id: 30, name: 'Donkey Kicks', search: 'donkey kick', youtubeId: 'AMUBBkuqcL8', instructions: 'עמדה על ארבע. מרימים רגל אחת כפופה בזווית 90 מעלות כלפי מעלה, כאילו בועטים בתקרה, תוך שמירה על האגן יציב וללא סיבוב. מורידים בשליטה וחוזרים.' },
       { id: 32, name: 'Dumbbell Halo', search: 'dumbbell halo', youtubeId: '5kiYkUth-Tw', instructions: 'עומדים זקוף, אוחזים משקולת אחת בשתי ידיים מול החזה. מסובבים אותה לאט מסביב לראש כמו הילה, תוך שמירה על הליבה מתוחה וגב זקוף. מחליפים כיוון סיבוב מדי סט.' },
-      { id: 25, name: 'Dumbbell Pullover', search: 'dumbbell pullover' },
-      { id: 11, name: 'Dumbbell RDL', search: 'romanian deadlift', equipment: 'dumbbell' },
+      { id: 25, name: 'Dumbbell Pullover', search: 'dumbbell pullover', youtubeId: 'CSkSflHdC3A' },
+      { id: 11, name: 'Dumbbell RDL', search: 'romanian deadlift', equipment: 'dumbbell', youtubeId: '5WxMW-Fu5KU', start: 10 },
       { id: 36, name: 'Frog Pumps', search: 'frog pump', youtubeId: 'y-yo8NBhs0k', instructions: 'שוכבים על הגב, כפות הרגליים מחוברות זו לזו וברכיים פתוחות הצידה. מרימים את האגן כלפי מעלה תוך לחיצת הישבן, עוצרים למעלה רגע ומורידים בשליטה.' },
-      { id: 24, name: 'Glute Bridge', search: 'glute bridge' },
+      { id: 24, name: 'Glute Bridge', search: 'glute bridge', youtubeId: 'PSMW7iSi2BU' },
       { id: 34, name: 'Glute Bridge Marches', search: 'glute bridge march', youtubeId: 'TZgb0Jd_BfI', instructions: 'שוכבים על הגב במנח גשר אגן, כפות רגליים על הרצפה. תוך שמירה על האגן יציב וגבוה, מרימים רגל אחת עם ברך כפופה כמו צעד הליכה, מורידים וחוזרים עם הרגל השנייה לסירוגין.' },
       { id: 33, name: 'Goal Post Opener', search: 'goal post opener', youtubeId: 'leyRgWSpmAI', instructions: 'עומדים זקוף, מרימים את הידיים לגובה הכתפיים עם מרפקים כפופים בזווית 90 מעלות. מסובבים את הזרועות אחורה כך שהאמות עוברות מכיוון קדימה לאחורה תוך פתיחת החזה, ומחזירים.' },
       { id: 29, name: 'Hollow Body Hold', search: 'hollow body hold', youtubeId: 'c6QTMYmou8A', instructions: 'שוכבים על הגב, מרימים בו-זמנית את הרגליים הישרות והכתפיים מהרצפה, כשהגב התחתון צמוד לרצפה לאורך כל התרגיל. הידיים מתוחות מעל הראש או לצד הגוף. מחזיקים את המנח תוך נשימה רגילה.' },
-      { id: 20, name: 'Lunges', search: 'lunge', equipment: 'dumbbell' },
-      { id: 22, name: 'Overhead Extension', search: 'tricep extension', equipment: 'dumbbell' },
-      { id: 18, name: 'Overhead Press', search: 'overhead press', equipment: 'dumbbell' },
-      { id: 5, name: 'Plank', search: 'plank' },
-      { id: 26, name: 'Prone Cobra', search: 'cobra' },
-      { id: 1, name: 'Push-ups', search: 'push up' },
+      { id: 20, name: 'Lunges', search: 'lunge', equipment: 'dumbbell', youtubeId: 'BvnVtpQkrHE', start: 9 },
+      { id: 22, name: 'Overhead Extension', search: 'tricep extension', equipment: 'dumbbell', youtubeId: '7h3lG2WnLXg', end: 8 },
+      { id: 5, name: 'Plank', search: 'plank', youtubeId: 'GQE8ASRA7t0', start: 7, end: 30 },
+      { id: 26, name: 'Prone Cobra', search: 'cobra', youtubeId: 'keErJXdp2lE' },
       { id: 12, name: 'Reverse Flies', search: 'reverse fly', equipment: 'dumbbell', youtubeId: 'M3udJ4o7ndU', instructions: 'רכונים קדימה מהמותניים, אוחזים משקולת בכל יד עם ידיים משתלשלות כלפי מטה. מרימים את הידיים הצידה עד לגובה הכתפיים, סוחטים את השכמות זו לזו, ומורידים בשליטה.' },
-      { id: 15, name: 'Russian Twist', search: 'russian twist' },
-      { id: 14, name: 'Shoulder Press', search: 'shoulder press', equipment: 'dumbbell' },
+      { id: 38, name: 'Rows', search: 'row', equipment: 'dumbbell', youtubeId: 'ZRSGpBUVcNw' },
+      { id: 15, name: 'Russian Twist', search: 'russian twist', youtubeId: '99T1EfpMwPA' },
+      { id: 14, name: 'Shoulder Press', search: 'shoulder press', equipment: 'dumbbell', youtubeId: 'TsduLWuhlFM' },
       { id: 27, name: 'Single-Leg Glute Bridge', search: 'single leg glute bridge', youtubeId: 'p-XVfkvtUPY', instructions: 'שוכבים על הגב, כף רגל אחת על הרצפה והרגל השנייה מורמת ומתוחה כלפי מעלה. מרימים את האגן תוך לחיצת הישבן ברגל התומכת, שומרים על האגן ישר (לא נוטה הצידה), ומורידים בשליטה.' },
       { id: 31, name: 'Sitting Overhead Press', search: 'seated overhead press', youtubeId: 'FghebqCF_o8', instructions: 'יושבים זקוף על כיסא או ספסל, אוחזים משקולת בכל יד בגובה הכתפיים. דוחפים את המשקולות כלפי מעלה עד ליישור מלא של הידיים מעל הראש, ומורידים בשליטה חזרה לגובה הכתפיים.' },
-      { id: 7, name: 'Squat Left Dumbbell', search: 'dumbbell squat', equipment: 'dumbbell' },
-      { id: 6, name: 'Squat Right Dumbbell', search: 'dumbbell squat', equipment: 'dumbbell' },
-      { id: 3, name: 'Squats', search: 'goblet squat', equipment: 'dumbbell' },
+      { id: 37, name: 'Squat with Dumbbell', search: 'dumbbell squat', equipment: 'dumbbell', youtubeId: 'FiqW7sXaHbw' },
       { id: 16, name: 'Standing Marches', search: 'march', youtubeId: 'M2CRyehfD6w', instructions: 'עומדים זקוף, אוחזים משקולת בשתי הידיים מעל הראש. מרימים ברך אחת כלפי מעלה לגובה הירך תוך שמירה על היציבות והמשקולת מעל הראש, מורידים ומחליפים רגל - צעידה במקום.' },
-      { id: 8, name: 'Suitcase Walk', search: 'farmers walk' },
+      { id: 8, name: 'Suitcase Walk', search: 'farmers walk', youtubeId: 'ypWHRn0Wex0' },
+      { id: 3, name: 'Sumo Squats', search: 'sumo squat', youtubeId: 'Aj-VzL78htg' },
       { id: 35, name: 'Wall Slides', search: 'wall slide', youtubeId: 'OtgQDv7u1TM', instructions: 'עומדים כשהגב, הראש והישבן צמודים לקיר. הידיים בזווית 90 מעלות (כמו האות W), גב היד וחלק מהאמה נוגעים בקיר. מחליקים את הידיים כלפי מעלה לאורך הקיר עד ליישור מלא (כמו האות Y) תוך שמירה על מגע מתמיד עם הקיר, ומחזירים.' },
       { id: 28, name: 'Y-T-W', search: 'y raise', youtubeId: 'SEyWJPaWr18', instructions: 'שוכבים על הבטן או רכונים קדימה. מרימים את הידיים לצורת האות Y (אלכסון מעל הראש), מורידים ומרימים לצורת T (ישר הצידה), מורידים ומרימים לצורת W (מרפקים כפופים לצד הגוף) - תוך סחיטת השכמות בכל תנוחה.' }
     ];
@@ -693,6 +703,8 @@
         if (start) vars.start = start;
         if (end) vars.end = end;
         currentYtPlayer = new YT.Player(containerId, {
+          width: '100%',
+          height: '100%',
           videoId: videoId,
           playerVars: vars,
           events: {

@@ -294,7 +294,7 @@
       <div class="container">
         <button onclick="goHome()">🏠 חזרה</button>
         <button onclick="clearMediaCache()" style="background:#555;">🧹 נקה מטמון תמונות</button>
-        <h1>בנה רוטינה</h1>
+        <h1 id="buildTitle">בנה רוטינה</h1>
         <input type="text" id="workoutNameInput" placeholder="שם הרוטינה" oninput="state.workoutName = this.value">
         <h2>בחר תרגילים:</h2>
         <div class="exercise-grid" id="exercisesGrid"></div>
@@ -344,7 +344,10 @@
         <h1 id="previewTitle"></h1>
         <p id="previewMeta" style="color:#93c5fd; margin-bottom:15px;"></p>
         <div id="previewList"></div>
-        <button class="success" onclick="loadWorkout(previewingWorkoutId)" style="width:100%; padding:15px; margin-top:20px;">▶️ התחל אימון זה</button>
+        <div class="button-group" style="margin-top:20px;">
+          <button onclick="editWorkout(previewingWorkoutId)" style="flex:1; background:#374151;">✏️ ערוך רוטינה</button>
+          <button class="success" onclick="loadWorkout(previewingWorkoutId)" style="flex:1;">▶️ התחל אימון זה</button>
+        </div>
       </div>
     </div>
 
@@ -561,6 +564,7 @@
 
     // ===== State =====
     let previewingWorkoutId = null;
+    let editingWorkoutId = null;
     let state = {
       screen: 'home',
       workoutName: '',
@@ -610,6 +614,7 @@
         currentYtPlayer = null;
       }
       lastMediaKey = null;
+      editingWorkoutId = null;
       showScreen('home');
       renderHome();
     }
@@ -626,6 +631,18 @@
     function goToBuild() {
       state.workout = [];
       state.workoutName = '';
+      editingWorkoutId = null;
+      showScreen('build');
+      renderBuild();
+      preloadGridThumbnails();
+    }
+
+    function editWorkout(id) {
+      const w = state.savedWorkouts.find(x => x.id === id);
+      if (!w) return;
+      state.workout = JSON.parse(JSON.stringify(w.exercises));
+      state.workoutName = w.name;
+      editingWorkoutId = id;
       showScreen('build');
       renderBuild();
       preloadGridThumbnails();
@@ -885,6 +902,8 @@
       if (!el) return;
       const total = state.workout.reduce((sum, ex) => sum + (ex.work || 0) + (ex.rest || 0), 0);
       el.textContent = state.workout.length ? `⏱️ זמן כולל: ${formatTime(total)} דקות` : '';
+      const titleEl = document.getElementById('buildTitle');
+      if (titleEl) titleEl.textContent = editingWorkoutId ? 'עריכת רוטינה' : 'בנה רוטינה';
     }
 
     function clearWorkout() {
@@ -895,8 +914,16 @@
     function saveWorkout() {
       if (!state.workoutName.trim()) { alert('תן שם לרוטינה!'); return; }
       if (state.workout.length === 0) { alert('בחר לפחות תרגיל אחד!'); return; }
-      const w = { id: Date.now(), name: state.workoutName, exercises: JSON.parse(JSON.stringify(state.workout)) };
-      state.savedWorkouts.push(w);
+      if (editingWorkoutId) {
+        const idx = state.savedWorkouts.findIndex(w => w.id === editingWorkoutId);
+        if (idx !== -1) {
+          state.savedWorkouts[idx] = { id: editingWorkoutId, name: state.workoutName, exercises: JSON.parse(JSON.stringify(state.workout)) };
+        }
+        editingWorkoutId = null;
+      } else {
+        const w = { id: Date.now(), name: state.workoutName, exercises: JSON.parse(JSON.stringify(state.workout)) };
+        state.savedWorkouts.push(w);
+      }
       localStorage.setItem('workouts', JSON.stringify(state.savedWorkouts));
       goHome();
     }

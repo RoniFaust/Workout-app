@@ -85,6 +85,17 @@
     .workout-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; }
     .workout-card h3 { margin-bottom: 8px; }
 
+    .filter-row { display: flex; gap: 8px; margin: 10px 0; }
+    .filter-row select {
+      flex: 1;
+      padding: 10px 8px;
+      border-radius: 5px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: white;
+      font-size: 0.85em;
+    }
+
     .exercise-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -297,6 +308,14 @@
         <h1 id="buildTitle">בנה רוטינה</h1>
         <input type="text" id="workoutNameInput" placeholder="שם הרוטינה" oninput="state.workoutName = this.value">
         <h2>בחר תרגילים:</h2>
+        <div class="filter-row">
+          <select id="areaFilter" onchange="onFilterChange()">
+            <option value="">כל אזורי הגוף</option>
+          </select>
+          <select id="positionFilter" onchange="onFilterChange()">
+            <option value="">כל המנחים</option>
+          </select>
+        </div>
         <div class="exercise-grid" id="exercisesGrid"></div>
         <h2>בחרת:</h2>
         <div id="totalTimeBuild" style="color:#93c5fd; font-size:0.9em; margin-bottom:8px;"></div>
@@ -396,38 +415,58 @@
     const API_BASE = 'https://api.workoutxapp.com/v1';
 
     // ===== EXERCISE LIBRARY - search terms sent to WorkoutX's fuzzy name search =====
+    // Body-area categories
+    const AREAS = {
+      glutes: 'ישבן ושרשרת אחורית',
+      back: 'גב, שכמות ופתיחת חזה',
+      chest_arms: 'חזה, כתפיים וזרועות',
+      core: 'בטן, ליבה ומחוך פנימי'
+    };
+    // Body-position categories
+    const POSITIONS = {
+      standing: 'עמידה חופשית',
+      standing_support: 'עמידה עם עזרים',
+      sitting: 'ישיבה',
+      couch: 'עם ספה/מיטה',
+      lying_back: 'שכיבה על הגב',
+      hands_knees: 'עמידת שש',
+      lying_front: 'שכיבה על הבטן'
+    };
+
     const EXERCISES = [
-      { id: 13, name: 'Bent Over Rows', search: 'bent over row', equipment: 'dumbbell', youtubeId: 'iCM5U0_b9Mg', start: 60, end: 106 },
-      { id: 23, name: 'Bicep Curls', search: 'bicep curl', equipment: 'dumbbell', youtubeId: 'uj001FhllVU' },
-      { id: 10, name: 'Bird Dog', search: 'bird-dog', youtubeId: '5q4G0FY2bN0', instructions: 'עמדה על ארבע, ידיים מתחת לכתפיים וברכיים מתחת לירכיים. מותחים בו-זמנית יד אחת קדימה ורגל נגדית אחורה, שומרים על גב ישר ואגן יציב בלי לסובב את הירכיים. עוצרים שנייה-שתיים, חוזרים למרכז ומחליפים צד.' },
-      { id: 19, name: 'Bulgarian Split Squats', search: 'split squat', equipment: 'dumbbell', youtubeId: 'PLS-pVprj2A' },
-      { id: 21, name: 'Chest Press', search: 'dumbbell bench press', youtubeId: 'X3YrlBmjWrY', start: 12, end: 46 },
-      { id: 9, name: 'Deadbug', search: 'dead bug', youtubeId: 'KfhoH2Q7mpk', instructions: 'שוכבים על הגב, ידיים ישרות למעלה וברכיים כפופות בזווית 90 מעלות מעל האגן. מורידים בו-זמנית יד אחת אחורה מעל הראש ורגל נגדית ישרה כלפי הרצפה, תוך שהגב צמוד לרצפה לכל האורך. חוזרים למרכז ומחליפים צד.' },
-      { id: 30, name: 'Donkey Kicks', search: 'donkey kick', youtubeId: 'AMUBBkuqcL8', instructions: 'עמדה על ארבע. מרימים רגל אחת כפופה בזווית 90 מעלות כלפי מעלה, כאילו בועטים בתקרה, תוך שמירה על האגן יציב וללא סיבוב. מורידים בשליטה וחוזרים.' },
-      { id: 32, name: 'Dumbbell Halo', search: 'dumbbell halo', youtubeId: '5kiYkUth-Tw', instructions: 'עומדים זקוף, אוחזים משקולת אחת בשתי ידיים מול החזה. מסובבים אותה לאט מסביב לראש כמו הילה, תוך שמירה על הליבה מתוחה וגב זקוף. מחליפים כיוון סיבוב מדי סט.' },
-      { id: 25, name: 'Dumbbell Pullover', search: 'dumbbell pullover', youtubeId: 'CSkSflHdC3A' },
-      { id: 11, name: 'Dumbbell RDL', search: 'romanian deadlift', equipment: 'dumbbell', youtubeId: '5WxMW-Fu5KU', start: 10 },
-      { id: 36, name: 'Frog Pumps', search: 'frog pump', youtubeId: 'y-yo8NBhs0k', instructions: 'שוכבים על הגב, כפות הרגליים מחוברות זו לזו וברכיים פתוחות הצידה. מרימים את האגן כלפי מעלה תוך לחיצת הישבן, עוצרים למעלה רגע ומורידים בשליטה.' },
-      { id: 24, name: 'Glute Bridge', search: 'glute bridge', youtubeId: 'PSMW7iSi2BU' },
-      { id: 34, name: 'Glute Bridge Marches', search: 'glute bridge march', youtubeId: 'TZgb0Jd_BfI', instructions: 'שוכבים על הגב במנח גשר אגן, כפות רגליים על הרצפה. תוך שמירה על האגן יציב וגבוה, מרימים רגל אחת עם ברך כפופה כמו צעד הליכה, מורידים וחוזרים עם הרגל השנייה לסירוגין.' },
-      { id: 33, name: 'Goal Post Opener', search: 'goal post opener', youtubeId: 'leyRgWSpmAI', instructions: 'עומדים זקוף, מרימים את הידיים לגובה הכתפיים עם מרפקים כפופים בזווית 90 מעלות. מסובבים את הזרועות אחורה כך שהאמות עוברות מכיוון קדימה לאחורה תוך פתיחת החזה, ומחזירים.' },
-      { id: 29, name: 'Hollow Body Hold', search: 'hollow body hold', youtubeId: 'c6QTMYmou8A', instructions: 'שוכבים על הגב, מרימים בו-זמנית את הרגליים הישרות והכתפיים מהרצפה, כשהגב התחתון צמוד לרצפה לאורך כל התרגיל. הידיים מתוחות מעל הראש או לצד הגוף. מחזיקים את המנח תוך נשימה רגילה.' },
-      { id: 20, name: 'Lunges', search: 'lunge', equipment: 'dumbbell', youtubeId: 'BvnVtpQkrHE', start: 9 },
-      { id: 22, name: 'Overhead Extension', search: 'tricep extension', equipment: 'dumbbell', youtubeId: '7h3lG2WnLXg', end: 8 },
-      { id: 5, name: 'Plank', search: 'plank', youtubeId: 'GQE8ASRA7t0', start: 7, end: 30 },
-      { id: 26, name: 'Prone Cobra', search: 'cobra', youtubeId: 'keErJXdp2lE' },
-      { id: 12, name: 'Reverse Flies', search: 'reverse fly', equipment: 'dumbbell', youtubeId: 'M3udJ4o7ndU', instructions: 'רכונים קדימה מהמותניים, אוחזים משקולת בכל יד עם ידיים משתלשלות כלפי מטה. מרימים את הידיים הצידה עד לגובה הכתפיים, סוחטים את השכמות זו לזו, ומורידים בשליטה.' },
-      { id: 38, name: 'Rows', search: 'row', equipment: 'dumbbell', youtubeId: 'ZRSGpBUVcNw' },
-      { id: 15, name: 'Russian Twist', search: 'russian twist', youtubeId: '99T1EfpMwPA' },
-      { id: 14, name: 'Shoulder Press', search: 'shoulder press', equipment: 'dumbbell', youtubeId: 'TsduLWuhlFM' },
-      { id: 27, name: 'Single-Leg Glute Bridge', search: 'single leg glute bridge', youtubeId: 'p-XVfkvtUPY', instructions: 'שוכבים על הגב, כף רגל אחת על הרצפה והרגל השנייה מורמת ומתוחה כלפי מעלה. מרימים את האגן תוך לחיצת הישבן ברגל התומכת, שומרים על האגן ישר (לא נוטה הצידה), ומורידים בשליטה.' },
-      { id: 31, name: 'Sitting Overhead Press', search: 'seated overhead press', youtubeId: 'FghebqCF_o8', instructions: 'יושבים זקוף על כיסא או ספסל, אוחזים משקולת בכל יד בגובה הכתפיים. דוחפים את המשקולות כלפי מעלה עד ליישור מלא של הידיים מעל הראש, ומורידים בשליטה חזרה לגובה הכתפיים.' },
-      { id: 37, name: 'Squat with Dumbbell', search: 'dumbbell squat', equipment: 'dumbbell', youtubeId: 'FiqW7sXaHbw' },
-      { id: 16, name: 'Standing Marches', search: 'march', youtubeId: 'M2CRyehfD6w', instructions: 'עומדים זקוף, אוחזים משקולת בשתי הידיים מעל הראש. מרימים ברך אחת כלפי מעלה לגובה הירך תוך שמירה על היציבות והמשקולת מעל הראש, מורידים ומחליפים רגל - צעידה במקום.' },
-      { id: 8, name: 'Suitcase Walk', search: 'farmers walk', youtubeId: 'ypWHRn0Wex0' },
-      { id: 3, name: 'Sumo Squats', search: 'sumo squat', youtubeId: 'Aj-VzL78htg' },
-      { id: 35, name: 'Wall Slides', search: 'wall slide', youtubeId: 'OtgQDv7u1TM', instructions: 'עומדים כשהגב, הראש והישבן צמודים לקיר. הידיים בזווית 90 מעלות (כמו האות W), גב היד וחלק מהאמה נוגעים בקיר. מחליקים את הידיים כלפי מעלה לאורך הקיר עד ליישור מלא (כמו האות Y) תוך שמירה על מגע מתמיד עם הקיר, ומחזירים.' },
-      { id: 28, name: 'Y-T-W', search: 'y raise', youtubeId: 'SEyWJPaWr18', instructions: 'שוכבים על הבטן או רכונים קדימה. מרימים את הידיים לצורת האות Y (אלכסון מעל הראש), מורידים ומרימים לצורת T (ישר הצידה), מורידים ומרימים לצורת W (מרפקים כפופים לצד הגוף) - תוך סחיטת השכמות בכל תנוחה.' }
+      { id: 13, name: 'Bent Over Rows', search: 'bent over row', equipment: 'dumbbell', youtubeId: 'iCM5U0_b9Mg', start: 60, end: 106, area: 'back', positions: ['standing_support'] },
+      { id: 23, name: 'Bicep Curls', search: 'bicep curl', equipment: 'dumbbell', youtubeId: 'uj001FhllVU', area: 'chest_arms', positions: ['standing', 'sitting'] },
+      { id: 10, name: 'Bird Dog', search: 'bird-dog', youtubeId: '5q4G0FY2bN0', area: 'core', positions: ['hands_knees'], instructions: 'עמדה על ארבע, ידיים מתחת לכתפיים וברכיים מתחת לירכיים. מותחים בו-זמנית יד אחת קדימה ורגל נגדית אחורה, שומרים על גב ישר ואגן יציב בלי לסובב את הירכיים. עוצרים שנייה-שתיים, חוזרים למרכז ומחליפים צד.' },
+      { id: 19, name: 'Bulgarian Split Squats', search: 'split squat', equipment: 'dumbbell', youtubeId: 'PLS-pVprj2A', area: 'glutes', positions: ['standing_support'] },
+      { id: 21, name: 'Chest Press', search: 'dumbbell bench press', youtubeId: 'X3YrlBmjWrY', start: 12, end: 46, area: 'chest_arms', positions: ['lying_back'] },
+      { id: 9, name: 'Deadbug', search: 'dead bug', youtubeId: 'KfhoH2Q7mpk', area: 'core', positions: ['lying_back'], instructions: 'שוכבים על הגב, ידיים ישרות למעלה וברכיים כפופות בזווית 90 מעלות מעל האגן. מורידים בו-זמנית יד אחת אחורה מעל הראש ורגל נגדית ישרה כלפי הרצפה, תוך שהגב צמוד לרצפה לכל האורך. חוזרים למרכז ומחליפים צד.' },
+      { id: 30, name: 'Donkey Kicks', search: 'donkey kick', youtubeId: 'AMUBBkuqcL8', area: 'glutes', positions: ['hands_knees'], instructions: 'עמדה על ארבע. מרימים רגל אחת כפופה בזווית 90 מעלות כלפי מעלה, כאילו בועטים בתקרה, תוך שמירה על האגן יציב וללא סיבוב. מורידים בשליטה וחוזרים.' },
+      { id: 32, name: 'Dumbbell Halo', search: 'dumbbell halo', youtubeId: '5kiYkUth-Tw', area: 'chest_arms', positions: ['standing', 'sitting'], instructions: 'עומדים זקוף, אוחזים משקולת אחת בשתי ידיים מול החזה. מסובבים אותה לאט מסביב לראש כמו הילה, תוך שמירה על הליבה מתוחה וגב זקוף. מחליפים כיוון סיבוב מדי סט.' },
+      { id: 25, name: 'Dumbbell Pullover', search: 'dumbbell pullover', youtubeId: 'CSkSflHdC3A', area: 'back', positions: ['lying_back'] },
+      { id: 11, name: 'Dumbbell RDL', search: 'romanian deadlift', equipment: 'dumbbell', youtubeId: '5WxMW-Fu5KU', start: 10, area: 'glutes', positions: ['standing'] },
+      { id: 39, name: 'Fire Hydrant', search: 'fire hydrant', youtubeId: 'dfD3qyKvJso', start: 7, area: 'glutes', positions: ['hands_knees'] },
+      { id: 36, name: 'Frog Pumps', search: 'frog pump', youtubeId: 'y-yo8NBhs0k', area: 'glutes', positions: ['lying_back'], instructions: 'שוכבים על הגב, כפות הרגליים מחוברות זו לזו וברכיים פתוחות הצידה. מרימים את האגן כלפי מעלה תוך לחיצת הישבן, עוצרים למעלה רגע ומורידים בשליטה.' },
+      { id: 24, name: 'Glute Bridge', search: 'glute bridge', youtubeId: 'PSMW7iSi2BU', area: 'glutes', positions: ['lying_back'] },
+      { id: 34, name: 'Glute Bridge Marches', search: 'glute bridge march', youtubeId: 'TZgb0Jd_BfI', area: 'glutes', positions: ['lying_back'], instructions: 'שוכבים על הגב במנח גשר אגן, כפות רגליים על הרצפה. תוך שמירה על האגן יציב וגבוה, מרימים רגל אחת עם ברך כפופה כמו צעד הליכה, מורידים וחוזרים עם הרגל השנייה לסירוגין.' },
+      { id: 33, name: 'Goal Post Opener', search: 'goal post opener', youtubeId: 'leyRgWSpmAI', area: 'back', positions: ['standing', 'sitting', 'standing_support'], instructions: 'עומדים זקוף, מרימים את הידיים לגובה הכתפיים עם מרפקים כפופים בזווית 90 מעלות. מסובבים את הזרועות אחורה כך שהאמות עוברות מכיוון קדימה לאחורה תוך פתיחת החזה, ומחזירים.' },
+      { id: 40, name: 'Hip Thrust', search: 'hip thrust', youtubeId: 'Zp3mZV6Plyg', end: 23, area: 'glutes', positions: ['couch'] },
+      { id: 29, name: 'Hollow Body Hold', search: 'hollow body hold', youtubeId: 'c6QTMYmou8A', area: 'core', positions: ['lying_back'], instructions: 'שוכבים על הגב, מרימים בו-זמנית את הרגליים הישרות והכתפיים מהרצפה, כשהגב התחתון צמוד לרצפה לאורך כל התרגיל. הידיים מתוחות מעל הראש או לצד הגוף. מחזיקים את המנח תוך נשימה רגילה.' },
+      { id: 20, name: 'Lunges', search: 'lunge', equipment: 'dumbbell', youtubeId: 'BvnVtpQkrHE', start: 9, area: 'glutes', positions: ['standing'] },
+      { id: 22, name: 'Overhead Extension', search: 'tricep extension', equipment: 'dumbbell', youtubeId: '7h3lG2WnLXg', end: 8, area: 'chest_arms', positions: ['standing', 'sitting'] },
+      { id: 5, name: 'Plank', search: 'plank', youtubeId: 'GQE8ASRA7t0', start: 7, end: 30, area: 'core', positions: ['lying_front'] },
+      { id: 26, name: 'Prone Cobra', search: 'cobra', youtubeId: 'keErJXdp2lE', area: 'back', positions: ['lying_front'] },
+      { id: 12, name: 'Reverse Flies', search: 'reverse fly', equipment: 'dumbbell', youtubeId: 'M3udJ4o7ndU', area: 'back', positions: ['standing_support'], instructions: 'רכונים קדימה מהמותניים, אוחזים משקולת בכל יד עם ידיים משתלשלות כלפי מטה. מרימים את הידיים הצידה עד לגובה הכתפיים, סוחטים את השכמות זו לזו, ומורידים בשליטה.' },
+      { id: 38, name: 'Rows', search: 'row', equipment: 'dumbbell', youtubeId: 'ZRSGpBUVcNw', area: 'back', positions: ['standing_support'] },
+      { id: 15, name: 'Russian Twist', search: 'russian twist', youtubeId: '99T1EfpMwPA', area: 'core', positions: ['sitting'] },
+      { id: 14, name: 'Shoulder Press', search: 'shoulder press', equipment: 'dumbbell', youtubeId: 'TsduLWuhlFM', area: 'chest_arms', positions: ['sitting'] },
+      { id: 27, name: 'Single-Leg Glute Bridge', search: 'single leg glute bridge', youtubeId: 'p-XVfkvtUPY', area: 'glutes', positions: ['lying_back'], instructions: 'שוכבים על הגב, כף רגל אחת על הרצפה והרגל השנייה מורמת ומתוחה כלפי מעלה. מרימים את האגן תוך לחיצת הישבן ברגל התומכת, שומרים על האגן ישר (לא נוטה הצידה), ומורידים בשליטה.' },
+      { id: 31, name: 'Sitting Overhead Press', search: 'seated overhead press', youtubeId: 'FghebqCF_o8', area: 'chest_arms', positions: ['sitting'], instructions: 'יושבים זקוף על כיסא או ספסל, אוחזים משקולת בכל יד בגובה הכתפיים. דוחפים את המשקולות כלפי מעלה עד ליישור מלא של הידיים מעל הראש, ומורידים בשליטה חזרה לגובה הכתפיים.' },
+      { id: 37, name: 'Squat with Dumbbell', search: 'dumbbell squat', equipment: 'dumbbell', youtubeId: 'FiqW7sXaHbw', area: 'glutes', positions: ['standing'] },
+      { id: 16, name: 'Standing Marches', search: 'march', youtubeId: 'M2CRyehfD6w', area: 'core', positions: ['standing'], instructions: 'עומדים זקוף, אוחזים משקולת בשתי הידיים מעל הראש. מרימים ברך אחת כלפי מעלה לגובה הירך תוך שמירה על היציבות והמשקולת מעל הראש, מורידים ומחליפים רגל - צעידה במקום.' },
+      { id: 8, name: 'Suitcase Walk', search: 'farmers walk', youtubeId: 'ypWHRn0Wex0', area: 'core', positions: ['standing'] },
+      { id: 3, name: 'Sumo Squats', search: 'sumo squat', youtubeId: 'Aj-VzL78htg', area: 'glutes', positions: ['standing'] },
+      { id: 35, name: 'Wall Slides', search: 'wall slide', youtubeId: 'OtgQDv7u1TM', area: 'back', positions: ['standing_support'], instructions: 'עומדים כשהגב, הראש והישבן צמודים לקיר. הידיים בזווית 90 מעלות (כמו האות W), גב היד וחלק מהאמה נוגעים בקיר. מחליקים את הידיים כלפי מעלה לאורך הקיר עד ליישור מלא (כמו האות Y) תוך שמירה על מגע מתמיד עם הקיר, ומחזירים.' },
+      { id: 28, name: 'Y-T-W', search: 'y raise', youtubeId: 'SEyWJPaWr18', area: 'back', positions: ['lying_front'], instructions: 'שוכבים על הבטן או רכונים קדימה. מרימים את הידיים לצורת האות Y (אלכסון מעל הראש), מורידים ומרימים לצורת T (ישר הצידה), מורידים ומרימים לצורת W (מרפקים כפופים לצד הגוף) - תוך סחיטת השכמות בכל תנוחה.' }
     ];
 
     // ===== Media fetching (with caching so we don't burn quota) =====
@@ -1019,7 +1058,15 @@
 
       if (!state.isWorking) {
         const next = state.currentIdx < state.workout.length - 1 ? state.workout[state.currentIdx + 1] : null;
-        if (next) {
+        if (next && next.youtubeId) {
+          wrap.innerHTML = `
+            <div id="ytPlayerHost" style="position:absolute;inset:0;"></div>
+            <div style="position:absolute; top:0; left:0; right:0; z-index:5; text-align:center; padding:16px; background:linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);">
+              <p style="font-size:1.05em; margin-bottom:4px;">😌 מנוחה</p>
+              <p style="font-size:0.85em; color:#fbbf24;">👉 מתכוננים ל: ${next.name}</p>
+            </div>`;
+          playYoutubeLoop('ytPlayerHost', next.youtubeId, next.ytStart, next.ytEnd);
+        } else if (next) {
           wrap.innerHTML = `
             <div class="rest-screen">
               <p style="font-size:1.1em; margin-bottom:8px;">😌 מנוחה</p>
@@ -1136,9 +1183,43 @@
       }
     }
 
+    let filterArea = '';
+    let filterPosition = '';
+    let filtersPopulated = false;
+
+    function populateFilters() {
+      if (filtersPopulated) return;
+      filtersPopulated = true;
+      const areaSel = document.getElementById('areaFilter');
+      const posSel = document.getElementById('positionFilter');
+      for (const key in AREAS) {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = AREAS[key];
+        areaSel.appendChild(opt);
+      }
+      for (const key in POSITIONS) {
+        const opt = document.createElement('option');
+        opt.value = key;
+        opt.textContent = POSITIONS[key];
+        posSel.appendChild(opt);
+      }
+    }
+
+    function onFilterChange() {
+      filterArea = document.getElementById('areaFilter').value;
+      filterPosition = document.getElementById('positionFilter').value;
+      renderBuild();
+    }
+
     function renderBuild() {
+      populateFilters();
       const grid = document.getElementById('exercisesGrid');
-      grid.innerHTML = EXERCISES.map(ex => {
+      const filtered = EXERCISES.filter(ex =>
+        (!filterArea || ex.area === filterArea) &&
+        (!filterPosition || (ex.positions && ex.positions.includes(filterPosition)))
+      );
+      grid.innerHTML = (filtered.length ? filtered : []).map(ex => {
         let thumb;
         if (resolveStaticMedia(ex.id)) {
           thumb = `<img src="${resolveStaticMedia(ex.id).gifUrl}" alt="${ex.name}">`;
@@ -1150,7 +1231,7 @@
             : (cached && cached.gifUrl ? `<img src="${cached.gifUrl}" alt="${ex.name}">` : '<div class="thumb-empty">🚫</div>');
         }
         return `<button onclick="addExercise(${ex.id})" class="exercise-btn">${thumb}<span>${ex.name}</span></button>`;
-      }).join('');
+      }).join('') || '<p style="grid-column:1/-1; text-align:center; color:#999; padding:15px;">אין תרגילים בקטגוריה הזו</p>';
 
       const selected = document.getElementById('selectedExercises');
       if (state.workout.length === 0) {

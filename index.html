@@ -379,6 +379,7 @@
         <button onclick="clearMediaCache()" style="background:#555;">🧹 נקה מטמון תמונות</button>
         <h1 id="buildTitle">בניית רוטינה</h1>
         <input type="text" id="workoutNameInput" placeholder="שם הרוטינה" oninput="state.workoutName = this.value">
+        <button onclick="addWarmupAndCooldown()" class="success" style="width:100%; margin:4px 0 12px 0;">🔥🧘 הוסף חימום ומתיחות שחרור אוטומטית</button>
         <h2>בחירת תרגילים:</h2>
         <div class="filter-row" id="areaChips"></div>
         <div class="filter-row" id="positionChips"></div>
@@ -957,6 +958,42 @@
           await new Promise(r => setTimeout(r, 2200)); // safely under the 30/min rate limit
         }
       }
+    }
+
+    async function addWarmupAndCooldown() {
+      const existingIds = new Set(state.workout.map(e => e.originalId));
+      const dynamicList = EXERCISES.filter(e => e.stretchType === 'dynamic' && !existingIds.has(e.id));
+      const staticList = EXERCISES.filter(e => e.stretchType === 'static' && !existingIds.has(e.id));
+      if (dynamicList.length === 0 && staticList.length === 0) {
+        alert('כל המתיחות כבר נמצאות ברוטינה');
+        return;
+      }
+      const makeEntry = (ex) => ({
+        id: Date.now() + Math.random(),
+        originalId: ex.id, name: ex.name, search: ex.search, equipment: ex.equipment,
+        work: ex.stretchType === 'dynamic' ? 40 : 60,
+        rest: ex.stretchType === 'dynamic' ? 5 : 10,
+        gifUrl: null, loading: true
+      });
+      const dynamicEntries = dynamicList.map(makeEntry);
+      const staticEntries = staticList.map(makeEntry);
+      state.workout = [...dynamicEntries, ...state.workout, ...staticEntries];
+      renderBuild();
+
+      for (const entry of [...dynamicEntries, ...staticEntries]) {
+        const staticMedia = resolveStaticMedia(entry.originalId);
+        if (staticMedia) {
+          entry.gifUrl = staticMedia.gifUrl;
+          entry.youtubeId = staticMedia.youtubeId;
+          entry.ytStart = staticMedia.start;
+          entry.ytEnd = staticMedia.end;
+        } else {
+          const media = await fetchExerciseMedia(entry.search, entry.equipment);
+          entry.gifUrl = media ? media.gifUrl : null;
+        }
+        entry.loading = false;
+      }
+      renderBuild();
     }
 
     async function addExercise(id) {

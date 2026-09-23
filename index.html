@@ -89,6 +89,21 @@
     .workout-item-header .name { flex: 1; }
 
     .times { display: flex; gap: 15px; margin-top: 10px; }
+    .bulk-selection-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      background: #2d1b4e;
+      border: 1px solid #7c3aed;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      font-size: 0.85em;
+    }
+    .bulk-selection-bar.hidden { display: none; }
+    .workout-item.bulk-selected { outline: 2px solid #7c3aed; }
+
     .bulk-time-row {
       display: flex;
       gap: 10px;
@@ -372,17 +387,24 @@
         <div class="exercise-grid" id="exercisesGrid"></div>
         <h2>בחרת:</h2>
         <div id="totalTimeBuild" style="color:#93c5fd; font-size:0.9em; margin-bottom:8px;"></div>
+        <div id="bulkSelectionBar" class="bulk-selection-bar hidden">
+          <span id="bulkSelectionCount"></span>
+          <button onclick="moveSelectedBlock(-1)" style="margin:0; background:#374151; padding:6px 10px;">▲ הזז</button>
+          <button onclick="moveSelectedBlock(1)" style="margin:0; background:#374151; padding:6px 10px;">▼ הזז</button>
+          <button onclick="clearBulkSelect()" style="margin:0; background:#374151; padding:6px 10px;">✕ נקה בחירה</button>
+        </div>
         <div class="bulk-time-row">
           <div class="time-input">
-            <label>עבודה לכולם (שנ')</label>
+            <label id="bulkWorkLabel">עבודה לכולם (שנ')</label>
             <input type="number" id="bulkWork" min="1" placeholder="למשל 60">
           </div>
           <div class="time-input">
-            <label>מנוחה לכולם (שנ')</label>
+            <label id="bulkRestLabel">מנוחה לכולם (שנ')</label>
             <input type="number" id="bulkRest" min="0" placeholder="למשל 30">
           </div>
-          <button class="success" onclick="applyBulkTimes()" style="margin:0;">החל על הכל</button>
+          <button class="success" id="bulkApplyBtn" onclick="applyBulkTimes()" style="margin:0;">החל על הכל</button>
         </div>
+        <p style="font-size:0.75em; color:#888; margin:-8px 0 10px 0;">סמני ☑ תרגילים ספציפיים כדי להחיל רק עליהם — אחרת זה יחול על כולם</p>
         <div id="selectedExercises" style="min-height: 50px;"></div>
         <div class="button-group">
           <button class="success" onclick="saveWorkout()" style="flex: 1;">💾 שמור</button>
@@ -452,13 +474,22 @@
         <p id="completeSummary" style="color:#aaa; margin-bottom: 25px;"></p>
 
         <div class="stats-bar" style="justify-content:center; margin-bottom: 25px;">
-          <div class="stat-pill">🔥 רצף: <span id="completeStreak"></span> ימים</div>
+          <div class="stat-pill">📅 השבוע: <span id="completeStreak"></span></div>
           <div class="stat-pill">💪 סה"כ: <span id="completeTotal"></span> אימונים</div>
         </div>
 
         <div id="newAchievements"></div>
 
         <button class="success" onclick="goHome()" style="width:100%; font-size:1.15em; padding:15px; margin-top:20px;">חזרה הביתה</button>
+      </div>
+    </div>
+
+    <!-- Workout Log Screen -->
+    <div id="logScreen" class="screen">
+      <div class="container">
+        <button onclick="goHome()">🏠 חזרה</button>
+        <h1>יומן אימונים</h1>
+        <div id="logContent"></div>
       </div>
     </div>
   </div>
@@ -575,6 +606,14 @@
       return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
     }
 
+    function formatDuration(totalSeconds) {
+      const mins = Math.round(totalSeconds / 60);
+      if (mins < 60) return `${mins} דקות`;
+      const hours = Math.floor(mins / 60);
+      const remMins = mins % 60;
+      return remMins ? `${hours} שעות ו-${remMins} דקות` : `${hours} שעות`;
+    }
+
     function withKey(url) {
       const sep = url.includes('?') ? '&' : '?';
       return `${url}${sep}api-key=${API_KEY}`;
@@ -623,16 +662,28 @@
       }
     }
 
-    // ===== Motivation: streaks, totals, achievements =====
+    // ===== Motivation: weekly goal, totals, achievements, workout log =====
     let stats = JSON.parse(localStorage.getItem('stats') || 'null') || {
       totalCompleted: 0,
       totalExercisesDone: 0,
-      currentStreak: 0,
-      longestStreak: 0,
+      weeklyGoal: 3,
+      weekStart: null,
+      weekCount: 0,
+      weeksHitGoal: 0,
       lastCompletedDate: null,
       unlocked: []
     };
     function saveStats() { localStorage.setItem('stats', JSON.stringify(stats)); }
+
+    let workoutLog = JSON.parse(localStorage.getItem('workoutLog') || '[]');
+    function saveLog() { localStorage.setItem('workoutLog', JSON.stringify(workoutLog)); }
+
+    function getWeekStart(date) {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() - d.getDay()); // week starts Sunday
+      return d.toISOString().slice(0, 10);
+    }
 
     const ACHIEVEMENTS = [
       { id: 'first', type: 'workouts', threshold: 1, emoji: '🎉', label: 'האימון הראשון שלך!' },
@@ -640,30 +691,47 @@
       { id: 'w10', type: 'workouts', threshold: 10, emoji: '🏋️', label: '10 אימונים!' },
       { id: 'w25', type: 'workouts', threshold: 25, emoji: '🥇', label: '25 אימונים - מרשים!' },
       { id: 'w50', type: 'workouts', threshold: 50, emoji: '🏆', label: '50 אימונים - אלופה!' },
-      { id: 's3', type: 'streak', threshold: 3, emoji: '🔥', label: 'רצף 3 ימים' },
-      { id: 's7', type: 'streak', threshold: 7, emoji: '🔥🔥', label: 'רצף שבוע שלם!' },
-      { id: 's14', type: 'streak', threshold: 14, emoji: '🔥🔥🔥', label: 'רצף שבועיים!' },
-      { id: 's30', type: 'streak', threshold: 30, emoji: '👑', label: 'רצף חודש - מדהים!' }
+      { id: 'wk1', type: 'weeks', threshold: 1, emoji: '⭐', label: 'עמדת ביעד השבועי!' },
+      { id: 'wk4', type: 'weeks', threshold: 4, emoji: '🌟', label: '4 שבועות ברציפות ביעד!' },
+      { id: 'wk12', type: 'weeks', threshold: 12, emoji: '👑', label: '3 חודשים ביעד - מדהים!' }
     ];
 
+    function editWeeklyGoal() {
+      const val = prompt('כמה אימונים בשבוע היעד שלך?', stats.weeklyGoal);
+      const num = parseInt(val);
+      if (num && num > 0) { stats.weeklyGoal = num; saveStats(); renderHomeStats(); }
+    }
+
     function recordCompletion() {
-      const today = new Date().toISOString().slice(0, 10);
-      if (stats.lastCompletedDate !== today) {
+      const today = new Date();
+      const todayStr = today.toISOString().slice(0, 10);
+      const thisWeekStart = getWeekStart(today);
+
+      if (stats.weekStart !== thisWeekStart) {
+        stats.weekStart = thisWeekStart;
+        stats.weekCount = 0;
+      }
+
+      if (stats.lastCompletedDate !== todayStr) {
         stats.totalCompleted++;
         stats.totalExercisesDone += state.workout.length;
-        if (stats.lastCompletedDate) {
-          const diffDays = Math.round((new Date(today) - new Date(stats.lastCompletedDate)) / 86400000);
-          stats.currentStreak = diffDays === 1 ? stats.currentStreak + 1 : 1;
-        } else {
-          stats.currentStreak = 1;
-        }
-        stats.longestStreak = Math.max(stats.longestStreak, stats.currentStreak);
-        stats.lastCompletedDate = today;
+        stats.weekCount++;
+        stats.lastCompletedDate = todayStr;
+        if (stats.weekCount === stats.weeklyGoal) stats.weeksHitGoal = (stats.weeksHitGoal || 0) + 1;
       }
+
+      const exerciseDetails = state.workout.map(ex => {
+        const base = ex.originalId ? EXERCISES.find(e => e.id === ex.originalId) : null;
+        return { name: ex.name, areas: (base && base.areas) || [], stretchType: base ? base.stretchType : undefined };
+      });
+      workoutLog.unshift({ date: todayStr, name: state.workoutName || (editingWorkoutId ? state.savedWorkouts.find(w => w.id === editingWorkoutId)?.name : '') || 'אימון', exerciseCount: state.workout.length, totalSeconds: state.workout.reduce((s, ex) => s + (ex.work || 0) + (ex.rest || 0), 0), exercises: exerciseDetails });
+      if (workoutLog.length > 200) workoutLog = workoutLog.slice(0, 200);
+      saveLog();
+
       const newly = [];
       for (const a of ACHIEVEMENTS) {
         if (!stats.unlocked.includes(a.id)) {
-          const val = a.type === 'workouts' ? stats.totalCompleted : stats.currentStreak;
+          const val = a.type === 'workouts' ? stats.totalCompleted : stats.weeksHitGoal;
           if (val >= a.threshold) { stats.unlocked.push(a.id); newly.push(a); }
         }
       }
@@ -674,7 +742,7 @@
     function showCompleteScreen(newAchievements) {
       showScreen('complete');
       document.getElementById('completeSummary').textContent = `סיימת ${state.workout.length} תרגילים 💥`;
-      document.getElementById('completeStreak').textContent = stats.currentStreak;
+      document.getElementById('completeStreak').textContent = `${stats.weekCount}/${stats.weeklyGoal}`;
       document.getElementById('completeTotal').textContent = stats.totalCompleted;
       const box = document.getElementById('newAchievements');
       box.innerHTML = newAchievements.map(a => `
@@ -686,14 +754,91 @@
       const bar = document.getElementById('homeStatsBar');
       if (!bar) return;
       if (stats.totalCompleted === 0) { bar.innerHTML = ''; return; }
+      const thisWeekStart = getWeekStart(new Date());
+      const weekCount = stats.weekStart === thisWeekStart ? stats.weekCount : 0;
       bar.innerHTML = `
-        <div class="stat-pill">🔥 רצף: ${stats.currentStreak} ימים</div>
+        <div class="stat-pill">📅 השבוע: ${weekCount}/${stats.weeklyGoal} <button onclick="editWeeklyGoal()" style="margin:0 0 0 4px; padding:2px 8px; font-size:0.85em; background:#374151;">✏️</button></div>
         <div class="stat-pill">💪 סה"כ: ${stats.totalCompleted} אימונים</div>
+        <div class="stat-pill">📖 <button onclick="showLog()" style="margin:0; padding:0; background:none; color:inherit; font-size:1em;">יומן אימונים</button></div>
       `;
+    }
+
+    function showLog() {
+      showScreen('log');
+      const content = document.getElementById('logContent');
+      if (workoutLog.length === 0) {
+        content.innerHTML = '<p style="text-align:center; color:#999; padding:30px;">עדיין אין אימונים ביומן</p>';
+        return;
+      }
+
+      // ===== Aggregate stats across the whole log =====
+      const areaCounts = {};
+      let dynamicCount = 0, staticCount = 0, totalSeconds = 0;
+      workoutLog.forEach(entry => {
+        totalSeconds += entry.totalSeconds || 0;
+        (entry.exercises || []).forEach(ex => {
+          if (ex.stretchType === 'dynamic') dynamicCount++;
+          else if (ex.stretchType === 'static') staticCount++;
+          (ex.areas || []).forEach(a => { if (a !== 'upper_body') areaCounts[a] = (areaCounts[a] || 0) + 1; });
+        });
+      });
+      const rankedAreas = Object.entries(areaCounts).sort((a, b) => b[1] - a[1]);
+      const maxCount = rankedAreas.length ? rankedAreas[0][1] : 1;
+
+      // ===== This week vs last week (total minutes) =====
+      const thisWeekStart = getWeekStart(new Date());
+      const lastWeekStart = new Date(thisWeekStart);
+      lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+      const lastWeekStartStr = lastWeekStart.toISOString().slice(0, 10);
+      const weekSeconds = (startStr, endStr) => workoutLog.filter(e => e.date >= startStr && e.date < endStr).reduce((s, e) => s + (e.totalSeconds || 0), 0);
+      const thisWeekSec = weekSeconds(thisWeekStart, new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10));
+      const lastWeekSec = weekSeconds(lastWeekStartStr, thisWeekStart);
+      const weekDiff = thisWeekSec - lastWeekSec;
+
+      let html = '<div style="background:#161616; border-radius:10px; padding:14px; margin-bottom:16px;">';
+      html += `<p style="font-size:0.9em; color:#93c5fd; margin-bottom:10px;">📊 סה"כ ${workoutLog.length} אימונים · ${formatDuration(totalSeconds)} אימון מצטבר</p>`;
+
+      if (lastWeekSec > 0 || thisWeekSec > 0) {
+        const arrow = weekDiff > 0 ? '📈' : weekDiff < 0 ? '📉' : '➡️';
+        html += `<p style="font-size:0.85em; color:#ccc; margin-bottom:10px;">${arrow} השבוע: ${formatDuration(thisWeekSec)} (שבוע שעבר: ${formatDuration(lastWeekSec)})</p>`;
+      }
+
+      if (rankedAreas.length) {
+        html += '<p style="font-size:0.85em; color:#fbbf24; margin-bottom:6px;">💪 איפה הכי התמקדת:</p>';
+        html += rankedAreas.slice(0, 6).map(([area, count]) => `
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <span style="font-size:0.75em; width:110px; flex-shrink:0;">${AREAS[area] || area}</span>
+            <div style="flex:1; background:#222; border-radius:4px; height:10px; overflow:hidden;">
+              <div style="width:${Math.round((count / maxCount) * 100)}%; height:100%; background:#7c3aed;"></div>
+            </div>
+            <span style="font-size:0.75em; color:#999; width:20px; text-align:left;">${count}</span>
+          </div>
+        `).join('');
+      }
+
+      if (dynamicCount || staticCount) {
+        html += `<p style="font-size:0.8em; color:#999; margin-top:10px;">🔥 ${dynamicCount} חימומים דינמיים · 🧘 ${staticCount} מתיחות שחרור</p>`;
+      }
+      html += '</div>';
+
+      // ===== Individual sessions =====
+      html += workoutLog.map(entry => {
+        const uniqueAreas = [...new Set((entry.exercises || []).flatMap(ex => (ex.areas || []).filter(a => a !== 'upper_body')))];
+        const tagsLine = uniqueAreas.length ? uniqueAreas.map(a => AREAS[a] || a).join(' • ') : '';
+        return `
+        <div class="workout-item">
+          <strong>${entry.name}</strong>
+          <p style="font-size:0.85em; color:#999; margin-top:4px;">${entry.date} · ${entry.exerciseCount} תרגילים · ${formatTime(entry.totalSeconds)} דקות</p>
+          ${tagsLine ? `<p style="font-size:0.75em; color:#7c3aed; margin-top:4px;">${tagsLine}</p>` : ''}
+        </div>`;
+      }).join('');
+
+      content.innerHTML = html;
     }
 
     // ===== State =====
     let previewingWorkoutId = null;
+    let bulkSelected = new Set();
     let editingWorkoutId = null;
     let state = {
       screen: 'home',
@@ -781,6 +926,7 @@
       state.workout = [];
       state.workoutName = '';
       editingWorkoutId = null;
+      bulkSelected.clear();
       showScreen('build');
       renderBuild();
       preloadGridThumbnails();
@@ -792,6 +938,7 @@
       state.workout = JSON.parse(JSON.stringify(w.exercises));
       state.workoutName = w.name;
       editingWorkoutId = id;
+      bulkSelected.clear();
       showScreen('build');
       renderBuild();
       preloadGridThumbnails();
@@ -815,7 +962,10 @@
     async function addExercise(id) {
       const ex = EXERCISES.find(e => e.id === id);
       if (!ex) return;
-      const entry = { id: Date.now() + Math.random(), originalId: ex.id, name: ex.name, search: ex.search, equipment: ex.equipment, work: 45, rest: 20, gifUrl: null, loading: true };
+      let work = 45, rest = 20;
+      if (ex.stretchType === 'dynamic') { work = 40; rest = 5; }
+      else if (ex.stretchType === 'static') { work = 60; rest = 10; }
+      const entry = { id: Date.now() + Math.random(), originalId: ex.id, name: ex.name, search: ex.search, equipment: ex.equipment, work, rest, gifUrl: null, loading: true };
       state.workout.push(entry);
       renderBuild();
       const el = document.getElementById('workout-item-' + entry.id);
@@ -1084,6 +1234,36 @@
 
     function removeExercise(id) {
       state.workout = state.workout.filter(e => e.id !== id);
+      bulkSelected.delete(id);
+      renderBuild();
+    }
+
+    function toggleBulkSelect(id) {
+      if (bulkSelected.has(id)) bulkSelected.delete(id); else bulkSelected.add(id);
+      renderBuild();
+    }
+
+    function clearBulkSelect() {
+      bulkSelected.clear();
+      renderBuild();
+    }
+
+    function moveSelectedBlock(direction) {
+      if (bulkSelected.size === 0) return;
+      const arr = state.workout;
+      if (direction === -1) {
+        for (let i = 1; i < arr.length; i++) {
+          if (bulkSelected.has(arr[i].id) && !bulkSelected.has(arr[i - 1].id)) {
+            [arr[i - 1], arr[i]] = [arr[i], arr[i - 1]];
+          }
+        }
+      } else {
+        for (let i = arr.length - 2; i >= 0; i--) {
+          if (bulkSelected.has(arr[i].id) && !bulkSelected.has(arr[i + 1].id)) {
+            [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+          }
+        }
+      }
       renderBuild();
     }
 
@@ -1099,7 +1279,8 @@
       const workVal = workInput.value ? parseInt(workInput.value) : null;
       const restVal = restInput.value ? parseInt(restInput.value) : null;
       if (!workVal && restVal === null) { alert('מלאי לפחות שדה אחד'); return; }
-      state.workout.forEach(ex => {
+      const targets = bulkSelected.size > 0 ? state.workout.filter(ex => bulkSelected.has(ex.id)) : state.workout;
+      targets.forEach(ex => {
         if (workVal) ex.work = workVal;
         if (restVal !== null) ex.rest = restVal;
       });
@@ -1115,6 +1296,19 @@
       el.textContent = state.workout.length ? `⏱️ זמן כולל: ${formatTime(total)} דקות` : '';
       const titleEl = document.getElementById('buildTitle');
       if (titleEl) titleEl.textContent = editingWorkoutId ? 'עריכת רוטינה' : 'בניית רוטינה';
+
+      const applyBtn = document.getElementById('bulkApplyBtn');
+      const selBar = document.getElementById('bulkSelectionBar');
+      if (applyBtn && selBar) {
+        if (bulkSelected.size > 0) {
+          applyBtn.textContent = `החל על ${bulkSelected.size} נבחרים`;
+          selBar.classList.remove('hidden');
+          document.getElementById('bulkSelectionCount').textContent = `${bulkSelected.size} נבחרו:`;
+        } else {
+          applyBtn.textContent = 'החל על הכל';
+          selBar.classList.add('hidden');
+        }
+      }
     }
 
     function clearWorkout() {
@@ -1460,8 +1654,9 @@
         selected.innerHTML = '<p style="text-align: center; color: #999;">בחירת תרגילים למעלה</p>';
       } else {
         selected.innerHTML = state.workout.map((ex, idx) => `
-          <div class="workout-item" id="workout-item-${ex.id}" ondragover="onDragOver(event)" ondrop="onDrop(event, ${ex.id})">
+          <div class="workout-item ${bulkSelected.has(ex.id) ? 'bulk-selected' : ''}" id="workout-item-${ex.id}" ondragover="onDragOver(event)" ondrop="onDrop(event, ${ex.id})">
             <div class="workout-item-header">
+              <input type="checkbox" onchange="toggleBulkSelect(${ex.id})" ${bulkSelected.has(ex.id) ? 'checked' : ''} style="width:20px; height:20px; margin:0; flex-shrink:0;">
               <span class="drag-handle" draggable="true" ondragstart="onDragStart(event, ${ex.id})" ondragend="onDragEnd(event)">⠿</span>
               ${ex.loading
                 ? '<div class="thumb-placeholder">טוען</div>'

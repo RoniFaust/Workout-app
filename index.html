@@ -79,6 +79,18 @@
     .workout-item-header .name { flex: 1; }
 
     .times { display: flex; gap: 15px; margin-top: 10px; }
+    .bulk-time-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      background: #161616;
+      border: 1px dashed #444;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    .bulk-time-row .time-input input { margin: 0; }
+    .bulk-time-row button { flex-shrink: 0; padding: 10px 14px; font-size: 0.85em; }
     .time-input { flex: 1; }
     .time-input label { font-size: 0.8em; color: #999; display: block; margin-bottom: 4px; }
     .time-input input { width: 100%; margin: 0; text-align: center; }
@@ -327,10 +339,22 @@
         <h2>בחר תרגילים:</h2>
         <div class="filter-row" id="areaChips"></div>
         <div class="filter-row" id="positionChips"></div>
+        <div class="filter-row" id="stretchChips"></div>
         <button onclick="clearFilters()" style="background:#374151; font-size:0.8em; padding:6px 12px;">🔄 נקה סינון</button>
         <div class="exercise-grid" id="exercisesGrid"></div>
         <h2>בחרת:</h2>
         <div id="totalTimeBuild" style="color:#93c5fd; font-size:0.9em; margin-bottom:8px;"></div>
+        <div class="bulk-time-row">
+          <div class="time-input">
+            <label>עבודה לכולם (שנ')</label>
+            <input type="number" id="bulkWork" min="1" placeholder="למשל 60">
+          </div>
+          <div class="time-input">
+            <label>מנוחה לכולם (שנ')</label>
+            <input type="number" id="bulkRest" min="0" placeholder="למשל 30">
+          </div>
+          <button class="success" onclick="applyBulkTimes()" style="margin:0;">החל על הכל</button>
+        </div>
         <div id="selectedExercises" style="min-height: 50px;"></div>
         <div class="button-group">
           <button class="success" onclick="saveWorkout()" style="flex: 1;">💾 שמור</button>
@@ -444,6 +468,11 @@
       hands_knees: 'עמידת שש',
       lying_front: 'שכיבה על הבטן'
     };
+    // Stretch type - only set for stretches, undefined for regular exercises
+    const STRETCH_TYPES = {
+      dynamic: '🔥 מתיחה דינמית (לפני)',
+      static: '🧘 מתיחה סטטית (אחרי)'
+    };
 
     const EXERCISES = [
       { id: 13, name: 'Bent Over Rows', search: 'bent over row', equipment: 'dumbbell', youtubeId: 'iCM5U0_b9Mg', start: 60, end: 106, area: 'back', positions: ['standing_support'] },
@@ -478,7 +507,16 @@
       { id: 8, name: 'Suitcase Walk', search: 'farmers walk', youtubeId: 'ypWHRn0Wex0', area: 'core', positions: ['standing'] },
       { id: 3, name: 'Sumo Squats', search: 'sumo squat', youtubeId: 'Aj-VzL78htg', area: 'glutes', positions: ['standing'] },
       { id: 35, name: 'Wall Slides', search: 'wall slide', youtubeId: 'OtgQDv7u1TM', area: 'back', positions: ['standing_support'], instructions: 'עומדים כשהגב, הראש והישבן צמודים לקיר. הידיים בזווית 90 מעלות (כמו האות W), גב היד וחלק מהאמה נוגעים בקיר. מחליקים את הידיים כלפי מעלה לאורך הקיר עד ליישור מלא (כמו האות Y) תוך שמירה על מגע מתמיד עם הקיר, ומחזירים.' },
-      { id: 28, name: 'Y-T-W', search: 'y raise', youtubeId: 'SEyWJPaWr18', area: 'back', positions: ['lying_front'], instructions: 'שוכבים על הבטן או רכונים קדימה. מרימים את הידיים לצורת האות Y (אלכסון מעל הראש), מורידים ומרימים לצורת T (ישר הצידה), מורידים ומרימים לצורת W (מרפקים כפופים לצד הגוף) - תוך סחיטת השכמות בכל תנוחה.' }
+      { id: 28, name: 'Y-T-W', search: 'y raise', youtubeId: 'SEyWJPaWr18', area: 'back', positions: ['lying_front'], instructions: 'שוכבים על הבטן או רכונים קדימה. מרימים את הידיים לצורת האות Y (אלכסון מעל הראש), מורידים ומרימים לצורת T (ישר הצידה), מורידים ומרימים לצורת W (מרפקים כפופים לצד הגוף) - תוך סחיטת השכמות בכל תנוחה.' },
+
+      // ===== Stretches - dynamic (before workout) / static (after workout) =====
+      { id: 44, name: 'חיבוק ברכיים לחזה', search: 'knee to chest stretch', youtubeId: 'yVy4L0CGbyQ', positions: ['lying_back'], stretchType: 'static' },
+      { id: 43, name: 'מתיחת חזה', search: 'chest stretch', youtubeId: 'B9uY01NoqBg', start: 5, end: 52, positions: ['standing'], stretchType: 'static' },
+      { id: 41, name: 'מתיחת חתול פרה', search: 'cat cow stretch', youtubeId: 'LIVJZZyZ2qM', positions: ['hands_knees'], stretchType: 'dynamic' },
+      { id: 42, name: 'מתיחת ספרה 4', search: 'figure four stretch', youtubeId: 'aqrD7QLwrvo', end: 57, positions: ['lying_back'], stretchType: 'static' },
+      { id: 46, name: 'פתיחות ירך', search: 'hip opener stretch', youtubeId: 'QpqlK5zzCdg', end: 34, positions: ['standing'], stretchType: 'dynamic' },
+      { id: 45, name: 'פתיחת חזה', search: 'chest opener stretch', youtubeId: 'VA73wlICf_g', positions: ['standing'], stretchType: 'dynamic' },
+      { id: 47, name: 'תנוחת הילד', search: 'childs pose', youtubeId: '_ZX_zTOBgp8', positions: ['hands_knees'], stretchType: 'static' }
     ];
 
     // ===== Media fetching (with caching so we don't burn quota) =====
@@ -954,6 +992,21 @@
       updateTotalTimeBuild();
     }
 
+    function applyBulkTimes() {
+      const workInput = document.getElementById('bulkWork');
+      const restInput = document.getElementById('bulkRest');
+      const workVal = workInput.value ? parseInt(workInput.value) : null;
+      const restVal = restInput.value ? parseInt(restInput.value) : null;
+      if (!workVal && restVal === null) { alert('מלאי לפחות שדה אחד'); return; }
+      state.workout.forEach(ex => {
+        if (workVal) ex.work = workVal;
+        if (restVal !== null) ex.rest = restVal;
+      });
+      workInput.value = '';
+      restInput.value = '';
+      renderBuild();
+    }
+
     function updateTotalTimeBuild() {
       const el = document.getElementById('totalTimeBuild');
       if (!el) return;
@@ -1203,6 +1256,7 @@
 
     let selectedAreas = new Set();
     let selectedPositions = new Set();
+    let selectedStretchTypes = new Set();
     let filtersPopulated = false;
 
     function populateFilters() {
@@ -1210,16 +1264,20 @@
       filtersPopulated = true;
       const areaContainer = document.getElementById('areaChips');
       const posContainer = document.getElementById('positionChips');
+      const stretchContainer = document.getElementById('stretchChips');
       areaContainer.innerHTML = Object.keys(AREAS).map(key =>
         `<button type="button" class="chip" id="chip-area-${key}" onclick="toggleFilter('area','${key}')">${AREAS[key]}</button>`
       ).join('');
       posContainer.innerHTML = Object.keys(POSITIONS).map(key =>
         `<button type="button" class="chip" id="chip-pos-${key}" onclick="toggleFilter('pos','${key}')">${POSITIONS[key]}</button>`
       ).join('');
+      stretchContainer.innerHTML = Object.keys(STRETCH_TYPES).map(key =>
+        `<button type="button" class="chip" id="chip-stretch-${key}" onclick="toggleFilter('stretch','${key}')">${STRETCH_TYPES[key]}</button>`
+      ).join('');
     }
 
     function toggleFilter(type, key) {
-      const set = type === 'area' ? selectedAreas : selectedPositions;
+      const set = type === 'area' ? selectedAreas : type === 'pos' ? selectedPositions : selectedStretchTypes;
       if (set.has(key)) set.delete(key); else set.add(key);
       const btn = document.getElementById(`chip-${type}-${key}`);
       if (btn) btn.classList.toggle('active');
@@ -1229,6 +1287,7 @@
     function clearFilters() {
       selectedAreas.clear();
       selectedPositions.clear();
+      selectedStretchTypes.clear();
       document.querySelectorAll('.chip.active').forEach(el => el.classList.remove('active'));
       renderBuild();
     }
@@ -1238,7 +1297,8 @@
       const grid = document.getElementById('exercisesGrid');
       const filtered = EXERCISES.filter(ex =>
         (selectedAreas.size === 0 || selectedAreas.has(ex.area)) &&
-        (selectedPositions.size === 0 || (ex.positions && ex.positions.some(p => selectedPositions.has(p))))
+        (selectedPositions.size === 0 || (ex.positions && ex.positions.some(p => selectedPositions.has(p)))) &&
+        (selectedStretchTypes.size === 0 || selectedStretchTypes.has(ex.stretchType))
       );
       grid.innerHTML = (filtered.length ? filtered : []).map(ex => {
         let thumb;
@@ -1251,7 +1311,8 @@
             ? '<div class="thumb-empty">⏳</div>'
             : (cached && cached.gifUrl ? `<img src="${cached.gifUrl}" alt="${ex.name}">` : '<div class="thumb-empty">🚫</div>');
         }
-        return `<button onclick="addExercise(${ex.id})" class="exercise-btn">${thumb}<span>${ex.name}</span></button>`;
+        const badge = ex.stretchType === 'dynamic' ? '🔥' : ex.stretchType === 'static' ? '🧘' : '';
+        return `<button onclick="addExercise(${ex.id})" class="exercise-btn">${thumb}<span>${badge} ${ex.name}</span></button>`;
       }).join('') || '<p style="grid-column:1/-1; text-align:center; color:#999; padding:15px;">אין תרגילים בקטגוריה הזו</p>';
 
       const selected = document.getElementById('selectedExercises');

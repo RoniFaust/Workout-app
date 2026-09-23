@@ -69,6 +69,16 @@
       0% { background: #7c3aed; border-right-color: #fbbf24; }
       100% { background: #1a1a1a; border-right-color: #7c3aed; }
     }
+    .drag-handle {
+      font-size: 1.4em;
+      color: #777;
+      cursor: grab;
+      padding: 4px 6px;
+      flex-shrink: 0;
+      touch-action: none;
+    }
+    .workout-item.dragging { opacity: 0.4; }
+    .workout-item.drag-over { border-top: 3px solid #fbbf24; }
 
     .workout-item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .workout-item-header img { width: 56px; height: 56px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: #333; }
@@ -194,6 +204,24 @@
     .next-up.hidden { display: none; }
     .next-up img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-bottom: 6px; }
     .next-up p { font-size: 0.75em; color: #fbbf24; font-weight: bold; }
+
+    .full-list-overlay {
+      position: fixed; inset: 0; z-index: 3000;
+      background: rgba(0,0,0,0.9);
+      display: flex; align-items: flex-end;
+    }
+    .full-list-overlay.hidden { display: none; }
+    .full-list-panel {
+      background: #111; width: 100%; max-height: 75vh; overflow-y: auto;
+      border-radius: 16px 16px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px)) 16px;
+    }
+    .full-list-item {
+      padding: 10px 12px; border-radius: 8px; margin-bottom: 6px;
+      display: flex; justify-content: space-between; align-items: center;
+      background: #1a1a1a; font-size: 0.9em;
+    }
+    .full-list-item.current { background: #7c3aed; font-weight: bold; }
+    .full-list-item.done { opacity: 0.4; text-decoration: line-through; }
 
     .rest-screen {
       text-align: center;
@@ -334,9 +362,9 @@
       <div class="container">
         <button onclick="goHome()">🏠 חזרה</button>
         <button onclick="clearMediaCache()" style="background:#555;">🧹 נקה מטמון תמונות</button>
-        <h1 id="buildTitle">בנה רוטינה</h1>
+        <h1 id="buildTitle">בניית רוטינה</h1>
         <input type="text" id="workoutNameInput" placeholder="שם הרוטינה" oninput="state.workoutName = this.value">
-        <h2>בחר תרגילים:</h2>
+        <h2>בחירת תרגילים:</h2>
         <div class="filter-row" id="areaChips"></div>
         <div class="filter-row" id="positionChips"></div>
         <div class="filter-row" id="stretchChips"></div>
@@ -374,7 +402,16 @@
             <h1 id="exerciseName"></h1>
             <p id="exerciseNumber"></p>
           </div>
-          <div style="width:40px"></div>
+          <button onclick="toggleFullList()">📋</button>
+        </div>
+        <div id="fullListOverlay" class="full-list-overlay hidden">
+          <div class="full-list-panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <h2 style="margin:0;">כל התרגילים</h2>
+              <button onclick="toggleFullList()" style="margin:0; background:#374151;">✕ סגור</button>
+            </div>
+            <div id="fullListContent"></div>
+          </div>
         </div>
         <div class="timer-box">
           <div class="timer-display" id="timerDisplay">00:00</div>
@@ -386,8 +423,9 @@
         </div>
         <div class="controls" style="flex-wrap: wrap;">
           <button class="success" onclick="toggleWorkout()" id="startBtn" style="flex: 1 1 100%;">▶️ התחל</button>
-          <button onclick="restartCurrentExercise()" style="flex: 1; background:#374151;">🔁 תרגיל זה מחדש</button>
-          <button class="danger" onclick="resetWorkout()" style="flex: 1;">🔄 אפס הכל</button>
+          <button onclick="restartCurrentExercise()" style="flex: 1; background:#374151; font-size:0.85em;">🔁 מחדש</button>
+          <button onclick="skipPhase()" style="flex: 1; background:#0891b2; font-size:0.85em;">⏭️ דלג</button>
+          <button class="danger" onclick="resetWorkout()" style="flex: 1; font-size:0.85em;">🔄 אפס הכל</button>
         </div>
       </div>
     </div>
@@ -453,10 +491,13 @@
     // ===== EXERCISE LIBRARY - search terms sent to WorkoutX's fuzzy name search =====
     // Body-area categories
     const AREAS = {
-      glutes: 'ישבן ושרשרת אחורית',
-      back: 'גב, שכמות ופתיחת חזה',
-      chest_arms: 'חזה, כתפיים וזרועות',
-      core: 'בטן, ליבה ומחוך פנימי'
+      glutes: 'ישבן וירך אחורית',
+      back: 'גב, שכמות ויציבה',
+      core: 'בטן וליבה',
+      upper_body: 'פלג גוף עליון (חזה, כתפיים וזרועות)',
+      chest: 'חזה',
+      shoulders: 'כתפיים',
+      arms: 'זרועות'
     };
     // Body-position categories
     const POSITIONS = {
@@ -470,44 +511,44 @@
     };
     // Stretch type - only set for stretches, undefined for regular exercises
     const STRETCH_TYPES = {
-      dynamic: '🔥 מתיחה דינמית (לפני)',
-      static: '🧘 מתיחה סטטית (אחרי)'
+      dynamic: '🔥 חימום דינמי',
+      static: '🧘 מתיחות שחרור'
     };
 
     const EXERCISES = [
-      { id: 13, name: 'Bent Over Rows', search: 'bent over row', equipment: 'dumbbell', youtubeId: 'iCM5U0_b9Mg', start: 60, end: 106, area: 'back', positions: ['standing_support'] },
-      { id: 23, name: 'Bicep Curls', search: 'bicep curl', equipment: 'dumbbell', youtubeId: 'uj001FhllVU', area: 'chest_arms', positions: ['standing', 'sitting'] },
-      { id: 10, name: 'Bird Dog', search: 'bird-dog', youtubeId: '5q4G0FY2bN0', area: 'core', positions: ['hands_knees'], instructions: 'עמדה על ארבע, ידיים מתחת לכתפיים וברכיים מתחת לירכיים. מותחים בו-זמנית יד אחת קדימה ורגל נגדית אחורה, שומרים על גב ישר ואגן יציב בלי לסובב את הירכיים. עוצרים שנייה-שתיים, חוזרים למרכז ומחליפים צד.' },
-      { id: 19, name: 'Bulgarian Split Squats', search: 'split squat', equipment: 'dumbbell', youtubeId: 'PLS-pVprj2A', area: 'glutes', positions: ['standing_support'] },
-      { id: 21, name: 'Chest Press', search: 'dumbbell bench press', youtubeId: 'X3YrlBmjWrY', start: 12, end: 46, area: 'chest_arms', positions: ['lying_back'] },
-      { id: 9, name: 'Deadbug', search: 'dead bug', youtubeId: 'KfhoH2Q7mpk', area: 'core', positions: ['lying_back'], instructions: 'שוכבים על הגב, ידיים ישרות למעלה וברכיים כפופות בזווית 90 מעלות מעל האגן. מורידים בו-זמנית יד אחת אחורה מעל הראש ורגל נגדית ישרה כלפי הרצפה, תוך שהגב צמוד לרצפה לכל האורך. חוזרים למרכז ומחליפים צד.' },
-      { id: 30, name: 'Donkey Kicks', search: 'donkey kick', youtubeId: 'AMUBBkuqcL8', area: 'glutes', positions: ['hands_knees'], instructions: 'עמדה על ארבע. מרימים רגל אחת כפופה בזווית 90 מעלות כלפי מעלה, כאילו בועטים בתקרה, תוך שמירה על האגן יציב וללא סיבוב. מורידים בשליטה וחוזרים.' },
-      { id: 32, name: 'Dumbbell Halo', search: 'dumbbell halo', youtubeId: '5kiYkUth-Tw', area: 'chest_arms', positions: ['standing', 'sitting'], instructions: 'עומדים זקוף, אוחזים משקולת אחת בשתי ידיים מול החזה. מסובבים אותה לאט מסביב לראש כמו הילה, תוך שמירה על הליבה מתוחה וגב זקוף. מחליפים כיוון סיבוב מדי סט.' },
-      { id: 25, name: 'Dumbbell Pullover', search: 'dumbbell pullover', youtubeId: 'CSkSflHdC3A', area: 'back', positions: ['lying_back'] },
-      { id: 11, name: 'Dumbbell RDL', search: 'romanian deadlift', equipment: 'dumbbell', youtubeId: '5WxMW-Fu5KU', start: 10, area: 'glutes', positions: ['standing'] },
-      { id: 39, name: 'Fire Hydrant', search: 'fire hydrant', youtubeId: 'dfD3qyKvJso', start: 7, area: 'glutes', positions: ['hands_knees'] },
-      { id: 36, name: 'Frog Pumps', search: 'frog pump', youtubeId: 'y-yo8NBhs0k', area: 'glutes', positions: ['lying_back'], instructions: 'שוכבים על הגב, כפות הרגליים מחוברות זו לזו וברכיים פתוחות הצידה. מרימים את האגן כלפי מעלה תוך לחיצת הישבן, עוצרים למעלה רגע ומורידים בשליטה.' },
-      { id: 24, name: 'Glute Bridge', search: 'glute bridge', youtubeId: 'PSMW7iSi2BU', area: 'glutes', positions: ['lying_back'] },
-      { id: 34, name: 'Glute Bridge Marches', search: 'glute bridge march', youtubeId: 'TZgb0Jd_BfI', area: 'glutes', positions: ['lying_back'], instructions: 'שוכבים על הגב במנח גשר אגן, כפות רגליים על הרצפה. תוך שמירה על האגן יציב וגבוה, מרימים רגל אחת עם ברך כפופה כמו צעד הליכה, מורידים וחוזרים עם הרגל השנייה לסירוגין.' },
-      { id: 33, name: 'Goal Post Opener', search: 'goal post opener', youtubeId: 'leyRgWSpmAI', area: 'back', positions: ['standing', 'sitting', 'standing_support'], instructions: 'עומדים זקוף, מרימים את הידיים לגובה הכתפיים עם מרפקים כפופים בזווית 90 מעלות. מסובבים את הזרועות אחורה כך שהאמות עוברות מכיוון קדימה לאחורה תוך פתיחת החזה, ומחזירים.' },
-      { id: 40, name: 'Hip Thrust', search: 'hip thrust', youtubeId: 'Zp3mZV6Plyg', end: 23, area: 'glutes', positions: ['couch'] },
-      { id: 29, name: 'Hollow Body Hold', search: 'hollow body hold', youtubeId: 'c6QTMYmou8A', area: 'core', positions: ['lying_back'], instructions: 'שוכבים על הגב, מרימים בו-זמנית את הרגליים הישרות והכתפיים מהרצפה, כשהגב התחתון צמוד לרצפה לאורך כל התרגיל. הידיים מתוחות מעל הראש או לצד הגוף. מחזיקים את המנח תוך נשימה רגילה.' },
-      { id: 20, name: 'Lunges', search: 'lunge', equipment: 'dumbbell', youtubeId: 'BvnVtpQkrHE', start: 9, area: 'glutes', positions: ['standing'] },
-      { id: 22, name: 'Overhead Extension', search: 'tricep extension', equipment: 'dumbbell', youtubeId: '7h3lG2WnLXg', end: 8, area: 'chest_arms', positions: ['standing', 'sitting'] },
-      { id: 5, name: 'Plank', search: 'plank', youtubeId: 'GQE8ASRA7t0', start: 7, end: 30, area: 'core', positions: ['lying_front'] },
-      { id: 26, name: 'Prone Cobra', search: 'cobra', youtubeId: 'keErJXdp2lE', area: 'back', positions: ['lying_front'] },
-      { id: 12, name: 'Reverse Flies', search: 'reverse fly', equipment: 'dumbbell', youtubeId: 'M3udJ4o7ndU', area: 'back', positions: ['standing_support'], instructions: 'רכונים קדימה מהמותניים, אוחזים משקולת בכל יד עם ידיים משתלשלות כלפי מטה. מרימים את הידיים הצידה עד לגובה הכתפיים, סוחטים את השכמות זו לזו, ומורידים בשליטה.' },
-      { id: 38, name: 'Rows', search: 'row', equipment: 'dumbbell', youtubeId: 'ZRSGpBUVcNw', area: 'back', positions: ['standing_support'] },
-      { id: 15, name: 'Russian Twist', search: 'russian twist', youtubeId: '99T1EfpMwPA', area: 'core', positions: ['sitting'] },
-      { id: 14, name: 'Shoulder Press', search: 'shoulder press', equipment: 'dumbbell', youtubeId: 'TsduLWuhlFM', area: 'chest_arms', positions: ['sitting'] },
-      { id: 27, name: 'Single-Leg Glute Bridge', search: 'single leg glute bridge', youtubeId: 'p-XVfkvtUPY', area: 'glutes', positions: ['lying_back'], instructions: 'שוכבים על הגב, כף רגל אחת על הרצפה והרגל השנייה מורמת ומתוחה כלפי מעלה. מרימים את האגן תוך לחיצת הישבן ברגל התומכת, שומרים על האגן ישר (לא נוטה הצידה), ומורידים בשליטה.' },
-      { id: 31, name: 'Sitting Overhead Press', search: 'seated overhead press', youtubeId: 'FghebqCF_o8', area: 'chest_arms', positions: ['sitting'], instructions: 'יושבים זקוף על כיסא או ספסל, אוחזים משקולת בכל יד בגובה הכתפיים. דוחפים את המשקולות כלפי מעלה עד ליישור מלא של הידיים מעל הראש, ומורידים בשליטה חזרה לגובה הכתפיים.' },
-      { id: 37, name: 'Squat with Dumbbell', search: 'dumbbell squat', equipment: 'dumbbell', youtubeId: 'FiqW7sXaHbw', area: 'glutes', positions: ['standing'] },
-      { id: 16, name: 'Standing Marches', search: 'march', youtubeId: 'M2CRyehfD6w', area: 'core', positions: ['standing'], instructions: 'עומדים זקוף, אוחזים משקולת בשתי הידיים מעל הראש. מרימים ברך אחת כלפי מעלה לגובה הירך תוך שמירה על היציבות והמשקולת מעל הראש, מורידים ומחליפים רגל - צעידה במקום.' },
-      { id: 8, name: 'Suitcase Walk', search: 'farmers walk', youtubeId: 'ypWHRn0Wex0', area: 'core', positions: ['standing'] },
-      { id: 3, name: 'Sumo Squats', search: 'sumo squat', youtubeId: 'Aj-VzL78htg', area: 'glutes', positions: ['standing'] },
-      { id: 35, name: 'Wall Slides', search: 'wall slide', youtubeId: 'OtgQDv7u1TM', area: 'back', positions: ['standing_support'], instructions: 'עומדים כשהגב, הראש והישבן צמודים לקיר. הידיים בזווית 90 מעלות (כמו האות W), גב היד וחלק מהאמה נוגעים בקיר. מחליקים את הידיים כלפי מעלה לאורך הקיר עד ליישור מלא (כמו האות Y) תוך שמירה על מגע מתמיד עם הקיר, ומחזירים.' },
-      { id: 28, name: 'Y-T-W', search: 'y raise', youtubeId: 'SEyWJPaWr18', area: 'back', positions: ['lying_front'], instructions: 'שוכבים על הבטן או רכונים קדימה. מרימים את הידיים לצורת האות Y (אלכסון מעל הראש), מורידים ומרימים לצורת T (ישר הצידה), מורידים ומרימים לצורת W (מרפקים כפופים לצד הגוף) - תוך סחיטת השכמות בכל תנוחה.' },
+      { id: 13, name: 'Bent Over Rows', search: 'bent over row', equipment: 'dumbbell', youtubeId: 'iCM5U0_b9Mg', start: 60, end: 106, areas: ['back'], positions: ['standing_support'] },
+      { id: 23, name: 'Bicep Curls', search: 'bicep curl', equipment: 'dumbbell', youtubeId: 'uj001FhllVU', areas: ['upper_body', 'arms'], positions: ['standing', 'sitting'] },
+      { id: 10, name: 'Bird Dog', search: 'bird-dog', youtubeId: '5q4G0FY2bN0', areas: ['core'], positions: ['hands_knees'], instructions: 'עמדה על ארבע, ידיים מתחת לכתפיים וברכיים מתחת לירכיים. מותחים בו-זמנית יד אחת קדימה ורגל נגדית אחורה, שומרים על גב ישר ואגן יציב בלי לסובב את הירכיים. עוצרים שנייה-שתיים, חוזרים למרכז ומחליפים צד.' },
+      { id: 19, name: 'Bulgarian Split Squats', search: 'split squat', equipment: 'dumbbell', youtubeId: 'PLS-pVprj2A', areas: ['glutes'], positions: ['standing_support'] },
+      { id: 21, name: 'Chest Press', search: 'dumbbell bench press', youtubeId: 'X3YrlBmjWrY', start: 12, end: 46, areas: ['upper_body', 'chest'], positions: ['lying_back'] },
+      { id: 9, name: 'Deadbug', search: 'dead bug', youtubeId: 'KfhoH2Q7mpk', areas: ['core'], positions: ['lying_back'], instructions: 'שוכבים על הגב, ידיים ישרות למעלה וברכיים כפופות בזווית 90 מעלות מעל האגן. מורידים בו-זמנית יד אחת אחורה מעל הראש ורגל נגדית ישרה כלפי הרצפה, תוך שהגב צמוד לרצפה לכל האורך. חוזרים למרכז ומחליפים צד.' },
+      { id: 30, name: 'Donkey Kicks', search: 'donkey kick', youtubeId: 'AMUBBkuqcL8', areas: ['glutes'], positions: ['hands_knees'], instructions: 'עמדה על ארבע. מרימים רגל אחת כפופה בזווית 90 מעלות כלפי מעלה, כאילו בועטים בתקרה, תוך שמירה על האגן יציב וללא סיבוב. מורידים בשליטה וחוזרים.' },
+      { id: 32, name: 'Dumbbell Halo', search: 'dumbbell halo', youtubeId: '5kiYkUth-Tw', areas: ['upper_body', 'shoulders'], positions: ['standing', 'sitting'], instructions: 'עומדים זקוף, אוחזים משקולת אחת בשתי ידיים מול החזה. מסובבים אותה לאט מסביב לראש כמו הילה, תוך שמירה על הליבה מתוחה וגב זקוף. מחליפים כיוון סיבוב מדי סט.' },
+      { id: 25, name: 'Dumbbell Pullover', search: 'dumbbell pullover', youtubeId: 'CSkSflHdC3A', areas: ['back'], positions: ['lying_back'] },
+      { id: 11, name: 'Dumbbell RDL', search: 'romanian deadlift', equipment: 'dumbbell', youtubeId: '5WxMW-Fu5KU', start: 10, areas: ['glutes'], positions: ['standing'] },
+      { id: 39, name: 'Fire Hydrant', search: 'fire hydrant', youtubeId: 'dfD3qyKvJso', start: 7, areas: ['glutes'], positions: ['hands_knees'] },
+      { id: 36, name: 'Frog Pumps', search: 'frog pump', youtubeId: 'y-yo8NBhs0k', areas: ['glutes'], positions: ['lying_back'], instructions: 'שוכבים על הגב, כפות הרגליים מחוברות זו לזו וברכיים פתוחות הצידה. מרימים את האגן כלפי מעלה תוך לחיצת הישבן, עוצרים למעלה רגע ומורידים בשליטה.' },
+      { id: 24, name: 'Glute Bridge', search: 'glute bridge', youtubeId: 'PSMW7iSi2BU', areas: ['glutes'], positions: ['lying_back'] },
+      { id: 34, name: 'Glute Bridge Marches', search: 'glute bridge march', youtubeId: 'TZgb0Jd_BfI', areas: ['glutes'], positions: ['lying_back'], instructions: 'שוכבים על הגב במנח גשר אגן, כפות רגליים על הרצפה. תוך שמירה על האגן יציב וגבוה, מרימים רגל אחת עם ברך כפופה כמו צעד הליכה, מורידים וחוזרים עם הרגל השנייה לסירוגין.' },
+      { id: 33, name: 'Goal Post Opener', search: 'goal post opener', youtubeId: 'leyRgWSpmAI', areas: ['back'], positions: ['standing', 'sitting', 'standing_support'], instructions: 'עומדים זקוף, מרימים את הידיים לגובה הכתפיים עם מרפקים כפופים בזווית 90 מעלות. מסובבים את הזרועות אחורה כך שהאמות עוברות מכיוון קדימה לאחורה תוך פתיחת החזה, ומחזירים.' },
+      { id: 40, name: 'Hip Thrust', search: 'hip thrust', youtubeId: 'Zp3mZV6Plyg', end: 23, areas: ['glutes'], positions: ['couch'] },
+      { id: 29, name: 'Hollow Body Hold', search: 'hollow body hold', youtubeId: 'c6QTMYmou8A', areas: ['core'], positions: ['lying_back'], instructions: 'שוכבים על הגב, מרימים בו-זמנית את הרגליים הישרות והכתפיים מהרצפה, כשהגב התחתון צמוד לרצפה לאורך כל התרגיל. הידיים מתוחות מעל הראש או לצד הגוף. מחזיקים את המנח תוך נשימה רגילה.' },
+      { id: 20, name: 'Lunges', search: 'lunge', equipment: 'dumbbell', youtubeId: 'BvnVtpQkrHE', start: 9, areas: ['glutes'], positions: ['standing'] },
+      { id: 22, name: 'Overhead Extension', search: 'tricep extension', equipment: 'dumbbell', youtubeId: '7h3lG2WnLXg', end: 8, areas: ['upper_body', 'arms'], positions: ['standing', 'sitting'] },
+      { id: 5, name: 'Plank', search: 'plank', youtubeId: 'GQE8ASRA7t0', start: 7, end: 30, areas: ['core'], positions: ['lying_front'] },
+      { id: 26, name: 'Prone Cobra', search: 'cobra', youtubeId: 'keErJXdp2lE', areas: ['back'], positions: ['lying_front'] },
+      { id: 12, name: 'Reverse Flies', search: 'reverse fly', equipment: 'dumbbell', youtubeId: 'M3udJ4o7ndU', areas: ['back'], positions: ['standing_support'], instructions: 'רכונים קדימה מהמותניים, אוחזים משקולת בכל יד עם ידיים משתלשלות כלפי מטה. מרימים את הידיים הצידה עד לגובה הכתפיים, סוחטים את השכמות זו לזו, ומורידים בשליטה.' },
+      { id: 38, name: 'Rows', search: 'row', equipment: 'dumbbell', youtubeId: 'ZRSGpBUVcNw', areas: ['back'], positions: ['standing_support'] },
+      { id: 15, name: 'Russian Twist', search: 'russian twist', youtubeId: '99T1EfpMwPA', areas: ['core'], positions: ['sitting'] },
+      { id: 14, name: 'Shoulder Press', search: 'shoulder press', equipment: 'dumbbell', youtubeId: 'TsduLWuhlFM', areas: ['upper_body', 'shoulders'], positions: ['sitting'] },
+      { id: 27, name: 'Single-Leg Glute Bridge', search: 'single leg glute bridge', youtubeId: 'p-XVfkvtUPY', areas: ['glutes'], positions: ['lying_back'], instructions: 'שוכבים על הגב, כף רגל אחת על הרצפה והרגל השנייה מורמת ומתוחה כלפי מעלה. מרימים את האגן תוך לחיצת הישבן ברגל התומכת, שומרים על האגן ישר (לא נוטה הצידה), ומורידים בשליטה.' },
+      { id: 31, name: 'Sitting Overhead Press', search: 'seated overhead press', youtubeId: 'FghebqCF_o8', areas: ['upper_body', 'shoulders'], positions: ['sitting'], instructions: 'יושבים זקוף על כיסא או ספסל, אוחזים משקולת בכל יד בגובה הכתפיים. דוחפים את המשקולות כלפי מעלה עד ליישור מלא של הידיים מעל הראש, ומורידים בשליטה חזרה לגובה הכתפיים.' },
+      { id: 37, name: 'Squat with Dumbbell', search: 'dumbbell squat', equipment: 'dumbbell', youtubeId: 'FiqW7sXaHbw', areas: ['glutes'], positions: ['standing'] },
+      { id: 16, name: 'Standing Marches', search: 'march', youtubeId: 'M2CRyehfD6w', areas: ['core'], positions: ['standing'], instructions: 'עומדים זקוף, אוחזים משקולת בשתי הידיים מעל הראש. מרימים ברך אחת כלפי מעלה לגובה הירך תוך שמירה על היציבות והמשקולת מעל הראש, מורידים ומחליפים רגל - צעידה במקום.' },
+      { id: 8, name: 'Suitcase Walk', search: 'farmers walk', youtubeId: 'ypWHRn0Wex0', areas: ['core'], positions: ['standing'] },
+      { id: 3, name: 'Sumo Squats', search: 'sumo squat', youtubeId: 'Aj-VzL78htg', areas: ['glutes'], positions: ['standing'] },
+      { id: 35, name: 'Wall Slides', search: 'wall slide', youtubeId: 'OtgQDv7u1TM', areas: ['back'], positions: ['standing_support'], instructions: 'עומדים כשהגב, הראש והישבן צמודים לקיר. הידיים בזווית 90 מעלות (כמו האות W), גב היד וחלק מהאמה נוגעים בקיר. מחליקים את הידיים כלפי מעלה לאורך הקיר עד ליישור מלא (כמו האות Y) תוך שמירה על מגע מתמיד עם הקיר, ומחזירים.' },
+      { id: 28, name: 'Y-T-W', search: 'y raise', youtubeId: 'SEyWJPaWr18', areas: ['back'], positions: ['lying_front'], instructions: 'שוכבים על הבטן או רכונים קדימה. מרימים את הידיים לצורת האות Y (אלכסון מעל הראש), מורידים ומרימים לצורת T (ישר הצידה), מורידים ומרימים לצורת W (מרפקים כפופים לצד הגוף) - תוך סחיטת השכמות בכל תנוחה.' },
 
       // ===== Stretches - dynamic (before workout) / static (after workout) =====
       { id: 44, name: 'חיבוק ברכיים לחזה', search: 'knee to chest stretch', youtubeId: 'yVy4L0CGbyQ', positions: ['lying_back'], stretchType: 'static' },
@@ -689,13 +730,18 @@
       }
     }
 
-    function showScreen(name) {
+    function switchScreenVisual(name) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(name + 'Screen').classList.add('active');
       state.screen = name;
     }
 
-    function goHome() {
+    function showScreen(name) {
+      switchScreenVisual(name);
+      history.pushState({ screen: name }, '', '');
+    }
+
+    function stopWorkoutMedia() {
       clearInterval(state.timer);
       state.isRunning = false;
       if (currentYtPlayer && currentYtPlayer.destroy) {
@@ -703,6 +749,20 @@
         currentYtPlayer = null;
       }
       lastMediaKey = null;
+    }
+
+    // Makes the phone's physical/gesture back button navigate within the app
+    // instead of closing it, by riding the browser's own history stack.
+    window.addEventListener('popstate', function (e) {
+      const targetScreen = (e.state && e.state.screen) || 'home';
+      if (state.screen === 'workout' || state.screen === 'complete') stopWorkoutMedia();
+      if (targetScreen === 'home') editingWorkoutId = null;
+      switchScreenVisual(targetScreen);
+      if (targetScreen === 'home') renderHome();
+    });
+
+    function goHome() {
+      stopWorkoutMedia();
       editingWorkoutId = null;
       showScreen('home');
       renderHome();
@@ -967,6 +1027,47 @@
       }
     }
 
+    let draggedId = null;
+
+    function onDragStart(e, id) {
+      draggedId = id;
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', String(id)); } catch (err) {}
+      const card = document.getElementById('workout-item-' + id);
+      if (card) card.classList.add('dragging');
+    }
+
+    function onDragOver(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      document.querySelectorAll('.workout-item.drag-over').forEach(el => el.classList.remove('drag-over'));
+      e.currentTarget.classList.add('drag-over');
+    }
+
+    function onDrop(e, targetId) {
+      e.preventDefault();
+      document.querySelectorAll('.workout-item.drag-over').forEach(el => el.classList.remove('drag-over'));
+      if (draggedId === null || draggedId === targetId) return;
+      const fromIdx = state.workout.findIndex(x => x.id === draggedId);
+      const toIdx = state.workout.findIndex(x => x.id === targetId);
+      if (fromIdx === -1 || toIdx === -1) return;
+      const [moved] = state.workout.splice(fromIdx, 1);
+      state.workout.splice(toIdx, 0, moved);
+      const movedId = draggedId;
+      renderBuild();
+      const el = document.getElementById('workout-item-' + movedId);
+      if (el) {
+        el.classList.add('just-moved');
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => el.classList.remove('just-moved'), 800);
+      }
+    }
+
+    function onDragEnd(e) {
+      document.querySelectorAll('.workout-item.dragging, .workout-item.drag-over').forEach(el => el.classList.remove('dragging', 'drag-over'));
+      draggedId = null;
+    }
+
     function moveExercise(id, direction) {
       const idx = state.workout.findIndex(e => e.id === id);
       const newIdx = idx + direction;
@@ -1013,7 +1114,7 @@
       const total = state.workout.reduce((sum, ex) => sum + (ex.work || 0) + (ex.rest || 0), 0);
       el.textContent = state.workout.length ? `⏱️ זמן כולל: ${formatTime(total)} דקות` : '';
       const titleEl = document.getElementById('buildTitle');
-      if (titleEl) titleEl.textContent = editingWorkoutId ? 'עריכת רוטינה' : 'בנה רוטינה';
+      if (titleEl) titleEl.textContent = editingWorkoutId ? 'עריכת רוטינה' : 'בניית רוטינה';
     }
 
     function clearWorkout() {
@@ -1224,6 +1325,45 @@
       renderWorkout();
     }
 
+    function toggleFullList() {
+      const overlay = document.getElementById('fullListOverlay');
+      overlay.classList.toggle('hidden');
+      if (!overlay.classList.contains('hidden')) renderFullList();
+    }
+
+    function renderFullList() {
+      const content = document.getElementById('fullListContent');
+      content.innerHTML = state.workout.map((ex, idx) => `
+        <div class="full-list-item ${idx === state.currentIdx ? 'current' : idx < state.currentIdx ? 'done' : ''}">
+          <span>${idx + 1}. ${ex.name}</span>
+          ${idx === state.currentIdx ? '<span>◀ עכשיו</span>' : idx < state.currentIdx ? '<span>✓</span>' : ''}
+        </div>
+      `).join('');
+    }
+
+    function skipPhase() {
+      if (state.isWorking) {
+        state.isWorking = false;
+        playBeep(1000, 200);
+        state.timeLeft = state.workout[state.currentIdx].rest;
+      } else {
+        if (state.currentIdx < state.workout.length - 1) {
+          state.currentIdx++;
+          state.isWorking = true;
+          playBeep(1200, 200);
+          state.timeLeft = state.workout[state.currentIdx].work;
+          loadExerciseMedia();
+        } else {
+          state.isRunning = false;
+          clearInterval(state.timer);
+          const newAchievements = recordCompletion();
+          showCompleteScreen(newAchievements);
+          return;
+        }
+      }
+      renderWorkout();
+    }
+
     function resetWorkout() {
       clearInterval(state.timer);
       state.isRunning = false;
@@ -1296,7 +1436,7 @@
       populateFilters();
       const grid = document.getElementById('exercisesGrid');
       const filtered = EXERCISES.filter(ex =>
-        (selectedAreas.size === 0 || selectedAreas.has(ex.area)) &&
+        (selectedAreas.size === 0 || (ex.areas && ex.areas.some(a => selectedAreas.has(a)))) &&
         (selectedPositions.size === 0 || (ex.positions && ex.positions.some(p => selectedPositions.has(p)))) &&
         (selectedStretchTypes.size === 0 || selectedStretchTypes.has(ex.stretchType))
       );
@@ -1317,11 +1457,12 @@
 
       const selected = document.getElementById('selectedExercises');
       if (state.workout.length === 0) {
-        selected.innerHTML = '<p style="text-align: center; color: #999;">בחר תרגילים למעלה</p>';
+        selected.innerHTML = '<p style="text-align: center; color: #999;">בחירת תרגילים למעלה</p>';
       } else {
         selected.innerHTML = state.workout.map((ex, idx) => `
-          <div class="workout-item" id="workout-item-${ex.id}">
+          <div class="workout-item" id="workout-item-${ex.id}" ondragover="onDragOver(event)" ondrop="onDrop(event, ${ex.id})">
             <div class="workout-item-header">
+              <span class="drag-handle" draggable="true" ondragstart="onDragStart(event, ${ex.id})" ondragend="onDragEnd(event)">⠿</span>
               ${ex.loading
                 ? '<div class="thumb-placeholder">טוען</div>'
                 : (ex.gifUrl ? `<img src="${ex.gifUrl}" alt="${ex.name}">` : '<div class="thumb-placeholder">אין<br>סרטון</div>')}
@@ -1381,11 +1522,15 @@
       }
       document.getElementById('totalTimeLeft').textContent = `⏱️ נשאר סה"כ: ${formatTime(totalLeft)}`;
 
+      if (!document.getElementById('fullListOverlay').classList.contains('hidden')) renderFullList();
+
       renderMedia();
     }
 
     document.addEventListener('click', initAudio, { once: true });
-    goHome();
+    history.replaceState({ screen: 'home' }, '', '');
+    switchScreenVisual('home');
+    renderHome();
   </script>
 </body>
 </html>

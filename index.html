@@ -69,6 +69,25 @@
       0% { background: #7c3aed; border-right-color: #fbbf24; }
       100% { background: #1a1a1a; border-right-color: #7c3aed; }
     }
+    .insert-divider {
+      display: block;
+      width: 100%;
+      background: transparent;
+      border: 1px dashed #444;
+      color: #777;
+      font-size: 0.72em;
+      padding: 4px;
+      margin: 2px 0;
+      border-radius: 6px;
+    }
+    .insert-divider.active {
+      background: #7c3aed;
+      border: 1px solid #fbbf24;
+      color: white;
+      font-weight: bold;
+      padding: 8px;
+    }
+
     .drag-handle {
       font-size: 1.4em;
       color: #777;
@@ -764,6 +783,33 @@
       `;
     }
 
+    function intensityColor(count, maxCount) {
+      if (!count || !maxCount) return '#333';
+      const t = Math.min(1, count / maxCount);
+      const r = Math.round(60 + t * 195);
+      const g = Math.round(60 - t * 30);
+      const b = Math.round(90 - t * 60);
+      return `rgb(${r}, ${Math.max(20, g)}, ${Math.max(20, b)})`;
+    }
+
+    function colorBodyMap(areaCounts, maxCount) {
+      const regionMap = {
+        chest: ['bm-chest'],
+        shoulders: ['bm-shoulders-l', 'bm-shoulders-r', 'bm-shoulders-l2', 'bm-shoulders-r2'],
+        arms: ['bm-arms-l-f', 'bm-arms-r-f', 'bm-arms-l-b', 'bm-arms-r-b'],
+        core: ['bm-core'],
+        back: ['bm-back'],
+        glutes: ['bm-glutes']
+      };
+      Object.entries(regionMap).forEach(([area, ids]) => {
+        const color = intensityColor(areaCounts[area] || 0, maxCount);
+        ids.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.setAttribute('fill', color);
+        });
+      });
+    }
+
     function showLog() {
       showScreen('log');
       const content = document.getElementById('logContent');
@@ -805,6 +851,36 @@
       }
 
       if (rankedAreas.length) {
+        html += '<p style="font-size:0.85em; color:#fbbf24; margin-bottom:8px;">🗺️ מפת אזורים (בוהק = יותר אומן):</p>';
+        html += `
+          <svg viewBox="0 0 400 220" style="width:100%; max-width:340px; display:block; margin:0 auto 10px auto;">
+            <text x="70" y="14" fill="#888" font-size="11" text-anchor="middle">קדמי</text>
+            <circle cx="70" cy="28" r="14" fill="#555"/>
+            <ellipse id="bm-shoulders-l" cx="50" cy="49" rx="12" ry="9" fill="#333"/>
+            <ellipse id="bm-shoulders-r" cx="90" cy="49" rx="12" ry="9" fill="#333"/>
+            <rect id="bm-chest" x="52" y="45" width="36" height="26" rx="7" fill="#333"/>
+            <rect id="bm-arms-l-f" x="34" y="53" width="11" height="50" rx="5" fill="#333"/>
+            <rect id="bm-arms-r-f" x="95" y="53" width="11" height="50" rx="5" fill="#333"/>
+            <rect id="bm-core" x="54" y="71" width="32" height="36" rx="5" fill="#333"/>
+            <rect x="54" y="107" width="14" height="62" rx="6" fill="#3a3a3a"/>
+            <rect x="72" y="107" width="14" height="62" rx="6" fill="#3a3a3a"/>
+
+            <g transform="translate(200,0)">
+              <text x="70" y="14" fill="#888" font-size="11" text-anchor="middle">אחורי</text>
+              <circle cx="70" cy="28" r="14" fill="#555"/>
+              <ellipse id="bm-shoulders-l2" cx="50" cy="49" rx="12" ry="9" fill="#333"/>
+              <ellipse id="bm-shoulders-r2" cx="90" cy="49" rx="12" ry="9" fill="#333"/>
+              <rect id="bm-back" x="50" y="45" width="40" height="40" rx="7" fill="#333"/>
+              <rect id="bm-arms-l-b" x="34" y="53" width="11" height="50" rx="5" fill="#333"/>
+              <rect id="bm-arms-r-b" x="95" y="53" width="11" height="50" rx="5" fill="#333"/>
+              <rect id="bm-glutes" x="50" y="85" width="40" height="26" rx="10" fill="#333"/>
+              <rect x="54" y="111" width="14" height="58" rx="6" fill="#3a3a3a"/>
+              <rect x="72" y="111" width="14" height="58" rx="6" fill="#3a3a3a"/>
+            </g>
+          </svg>`;
+      }
+
+      if (rankedAreas.length) {
         html += '<p style="font-size:0.85em; color:#fbbf24; margin-bottom:6px;">💪 איפה הכי התמקדת:</p>';
         html += rankedAreas.slice(0, 6).map(([area, count]) => `
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
@@ -815,6 +891,12 @@
             <span style="font-size:0.75em; color:#999; width:20px; text-align:left;">${count}</span>
           </div>
         `).join('');
+
+        if (workoutLog.length >= 3) {
+          const allAreaKeys = ['glutes', 'back', 'core', 'chest', 'shoulders', 'arms'];
+          const leastTrained = [...allAreaKeys].sort((a, b) => (areaCounts[a] || 0) - (areaCounts[b] || 0))[0];
+          html += `<p style="font-size:0.8em; color:#93c5fd; margin-top:10px;">💡 האזור שהכי פחות עסקת בו: <strong>${AREAS[leastTrained]}</strong> — אולי שווה להוסיף ממנו תרגיל בפעם הבאה</p>`;
+        }
       }
 
       if (dynamicCount || staticCount) {
@@ -835,11 +917,21 @@
       }).join('');
 
       content.innerHTML = html;
+      if (rankedAreas.length) colorBodyMap(areaCounts, maxCount);
     }
 
     // ===== State =====
     let previewingWorkoutId = null;
     let bulkSelected = new Set();
+    let insertAtIndex = null;
+
+    function setInsertPoint(idx) {
+      insertAtIndex = (insertAtIndex === idx) ? null : idx;
+      renderBuild();
+      if (insertAtIndex !== null) {
+        document.getElementById('exercisesGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
     let editingWorkoutId = null;
     let state = {
       screen: 'home',
@@ -928,6 +1020,7 @@
       state.workoutName = '';
       editingWorkoutId = null;
       bulkSelected.clear();
+      insertAtIndex = null;
       showScreen('build');
       renderBuild();
       preloadGridThumbnails();
@@ -940,6 +1033,7 @@
       state.workoutName = w.name;
       editingWorkoutId = id;
       bulkSelected.clear();
+      insertAtIndex = null;
       showScreen('build');
       renderBuild();
       preloadGridThumbnails();
@@ -1003,7 +1097,12 @@
       if (ex.stretchType === 'dynamic') { work = 40; rest = 5; }
       else if (ex.stretchType === 'static') { work = 60; rest = 10; }
       const entry = { id: Date.now() + Math.random(), originalId: ex.id, name: ex.name, search: ex.search, equipment: ex.equipment, work, rest, gifUrl: null, loading: true };
-      state.workout.push(entry);
+      if (insertAtIndex !== null) {
+        state.workout.splice(insertAtIndex, 0, entry);
+        insertAtIndex++;
+      } else {
+        state.workout.push(entry);
+      }
       renderBuild();
       const el = document.getElementById('workout-item-' + entry.id);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1235,6 +1334,22 @@
       e.preventDefault();
       document.querySelectorAll('.workout-item.drag-over').forEach(el => el.classList.remove('drag-over'));
       if (draggedId === null || draggedId === targetId) return;
+      insertAtIndex = null;
+
+      if (bulkSelected.has(draggedId) && bulkSelected.size > 1) {
+        // Move the whole selected group together, preserving their relative order
+        const selectedItems = state.workout.filter(x => bulkSelected.has(x.id));
+        const remaining = state.workout.filter(x => !bulkSelected.has(x.id));
+        let insertPos = remaining.findIndex(x => x.id === targetId);
+        if (insertPos === -1) insertPos = remaining.length;
+        remaining.splice(insertPos, 0, ...selectedItems);
+        state.workout = remaining;
+        renderBuild();
+        const el = document.getElementById('workout-item-' + draggedId);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
       const fromIdx = state.workout.findIndex(x => x.id === draggedId);
       const toIdx = state.workout.findIndex(x => x.id === targetId);
       if (fromIdx === -1 || toIdx === -1) return;
@@ -1250,6 +1365,18 @@
       }
     }
 
+    // Auto-scrolls the page while dragging near the top/bottom edge of the screen,
+    // since native HTML5 drag-and-drop does not do this on its own.
+    document.addEventListener('dragover', function (e) {
+      if (draggedId === null) return;
+      const threshold = 90;
+      if (e.clientY < threshold) {
+        window.scrollBy(0, -14);
+      } else if (e.clientY > window.innerHeight - threshold) {
+        window.scrollBy(0, 14);
+      }
+    });
+
     function onDragEnd(e) {
       document.querySelectorAll('.workout-item.dragging, .workout-item.drag-over').forEach(el => el.classList.remove('dragging', 'drag-over'));
       draggedId = null;
@@ -1260,6 +1387,7 @@
       const newIdx = idx + direction;
       if (idx === -1 || newIdx < 0 || newIdx >= state.workout.length) return;
       [state.workout[idx], state.workout[newIdx]] = [state.workout[newIdx], state.workout[idx]];
+      insertAtIndex = null;
       renderBuild();
       const el = document.getElementById('workout-item-' + id);
       if (el) {
@@ -1272,6 +1400,7 @@
     function removeExercise(id) {
       state.workout = state.workout.filter(e => e.id !== id);
       bulkSelected.delete(id);
+      insertAtIndex = null;
       renderBuild();
     }
 
@@ -1287,6 +1416,7 @@
 
     function moveSelectedBlock(direction) {
       if (bulkSelected.size === 0) return;
+      insertAtIndex = null;
       const arr = state.workout;
       if (direction === -1) {
         for (let i = 1; i < arr.length; i++) {
@@ -1691,6 +1821,7 @@
         selected.innerHTML = '<p style="text-align: center; color: #999;">בחירת תרגילים למעלה</p>';
       } else {
         selected.innerHTML = state.workout.map((ex, idx) => `
+          <button class="insert-divider ${insertAtIndex === idx ? 'active' : ''}" onclick="setInsertPoint(${idx})">${insertAtIndex === idx ? '📍 הוספה תיכנס כאן ⬆' : '➕ הוסף תרגיל כאן'}</button>
           <div class="workout-item ${bulkSelected.has(ex.id) ? 'bulk-selected' : ''}" id="workout-item-${ex.id}" ondragover="onDragOver(event)" ondrop="onDrop(event, ${ex.id})">
             <div class="workout-item-header">
               <input type="checkbox" onchange="toggleBulkSelect(${ex.id})" ${bulkSelected.has(ex.id) ? 'checked' : ''} style="width:20px; height:20px; margin:0; flex-shrink:0;">
@@ -1722,7 +1853,7 @@
               </div>
             </div>
           </div>
-        `).join('');
+        `).join('') + `<button class="insert-divider ${insertAtIndex === state.workout.length ? 'active' : ''}" onclick="setInsertPoint(${state.workout.length})">${insertAtIndex === state.workout.length ? '📍 הוספה תיכנס כאן ⬆' : '➕ הוסף תרגיל בסוף'}</button>`;
       }
 
       const nameInput = document.getElementById('workoutNameInput');

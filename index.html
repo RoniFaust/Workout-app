@@ -149,6 +149,19 @@
     .workout-card h3 { margin-bottom: 8px; }
 
     .filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+    .routine-organizer { margin-bottom: 15px; }
+    .routine-organizer.hidden { display: none; }
+    .routine-organizer select {
+      width: 100%;
+      padding: 10px 8px;
+      border-radius: 5px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: white;
+      font-size: 0.85em;
+      margin-bottom: 8px;
+    }
+    .routine-meta { font-size: 0.75em; color: #ccc; margin-top: 2px; }
     .chip {
       padding: 8px 14px;
       border-radius: 20px;
@@ -257,6 +270,30 @@
     .full-list-item.current { background: #7c3aed; font-weight: bold; }
     .full-list-item.done { opacity: 0.4; text-decoration: line-through; }
 
+    .rest-dim-overlay {
+      position: absolute; inset: 0; z-index: 6;
+      background: rgba(10, 10, 20, 0.55);
+      pointer-events: none;
+    }
+    .rest-banner {
+      position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+      background: linear-gradient(to bottom, rgba(10,10,30,0.95), rgba(10,10,30,0.3));
+      padding: 18px 12px 26px 12px;
+      text-align: center;
+    }
+    .rest-label {
+      font-size: 1.7em;
+      font-weight: 900;
+      color: #93c5fd;
+      animation: pulseRest 1.4s ease-in-out infinite;
+    }
+    @keyframes pulseRest {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.55; }
+    }
+    .next-label { font-size: 0.95em; color: #fbbf24; margin-top: 8px; font-weight: bold; }
+    .next-name { font-size: 1.55em; font-weight: 900; color: white; margin-top: 4px; }
+
     .rest-screen {
       text-align: center;
       color: #93c5fd;
@@ -271,6 +308,28 @@
       padding: 6px 14px;
       font-size: 0.85em;
     }
+    .goal-hit-banner {
+      background: linear-gradient(135deg, #f59e0b, #ef4444, #f59e0b);
+      background-size: 200% 200%;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 20px;
+      font-size: 1.15em;
+      font-weight: 900;
+      color: white;
+      animation: goalPop 0.5s ease, goalShine 2s ease-in-out infinite;
+    }
+    .goal-hit-banner.hidden { display: none; }
+    @keyframes goalPop {
+      0% { transform: scale(0.5); opacity: 0; }
+      60% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes goalShine {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
     .achievement-card {
       background: linear-gradient(135deg, #f59e0b, #d97706);
       border-radius: 10px;
@@ -386,6 +445,16 @@
       <div class="container">
         <h1>💪 Workout Pro</h1>
         <div class="stats-bar" id="homeStatsBar"></div>
+        <div id="routineOrganizer" class="routine-organizer hidden">
+          <select id="routineSortSelect" onchange="onRoutineSortChange()">
+            <option value="default">מיון: ברירת מחדל</option>
+            <option value="time_asc">⏱️ זמן: קצר לארוך</option>
+            <option value="time_desc">⏱️ זמן: ארוך לקצר</option>
+            <option value="name">שם (א-ב)</option>
+          </select>
+          <div class="filter-row" id="routineStretchChips"></div>
+          <div class="filter-row" id="routinePositionChips"></div>
+        </div>
         <div id="workoutsList" class="workouts-grid"></div>
         <button class="success" onclick="goToBuild()" style="width: 100%; font-size: 1.15em; padding: 15px;">➕ רוטינה חדשה</button>
       </div>
@@ -498,6 +567,8 @@
           <div class="stat-pill">💪 סה"כ: <span id="completeTotal"></span> אימונים</div>
         </div>
 
+        <div id="goalHitBanner" class="goal-hit-banner hidden"></div>
+
         <div id="newAchievements"></div>
 
         <button class="success" onclick="goHome()" style="width:100%; font-size:1.15em; padding:15px; margin-top:20px;">חזרה הביתה</button>
@@ -558,9 +629,7 @@
       sitting: 'ישיבה',
       couch: 'עם ספה/מיטה',
       lying_back: 'שכיבה על הגב',
-      lying_side: 'שכיבה על הצד',
       hands_knees: 'עמידת שש',
-      half_kneeling: 'חצי כריעה',
       lying_front: 'שכיבה על הבטן'
     };
     // Stretch type - only set for stretches, undefined for regular exercises
@@ -578,22 +647,22 @@
       { id: 19, name: 'Bulgarian Split Squats', search: 'split squat', equipment: 'dumbbell', youtubeId: 'PLS-pVprj2A', areas: ['glutes', 'quads'], positions: ['standing_support'] },
       { id: 54, name: 'Chest Fly', search: 'chest fly dumbbell', equipment: 'dumbbell', youtubeId: 'Nhvz9EzdJ4U', areas: ['upper_body', 'chest'], positions: ['lying_back'] },
       { id: 21, name: 'Chest Press', search: 'dumbbell bench press', youtubeId: 'X3YrlBmjWrY', start: 12, end: 46, areas: ['upper_body', 'chest'], positions: ['lying_back'] },
-      { id: 55, name: 'Chest Rotation', search: 'thoracic rotation stretch', youtubeId: '-nRh_cALxaY', areas: ['back'], positions: ['lying_side'] },
-      { id: 56, name: 'Clamshell', search: 'clamshell exercise', youtubeId: 'lp-VUWbFrYg', start: 34, end: 48, areas: ['glutes'], positions: ['lying_side'] },
+      { id: 55, name: 'Chest Rotation', search: 'thoracic rotation stretch', youtubeId: '-nRh_cALxaY', areas: ['back'], positions: ['lying_back'] },
+      { id: 56, name: 'Clamshell', search: 'clamshell exercise', youtubeId: 'lp-VUWbFrYg', start: 34, end: 48, areas: ['glutes'], positions: ['lying_back'] },
       { id: 50, name: 'Curtsy Lunges', search: 'curtsy lunge', youtubeId: 'RvDcKx9KsD8', start: 18, end: 31, areas: ['glutes', 'quads'], positions: ['standing'] },
       { id: 9, name: 'Deadbug', search: 'dead bug', youtubeId: 'KfhoH2Q7mpk', areas: ['core'], positions: ['lying_back'], instructions: 'שוכבים על הגב, ידיים ישרות למעלה וברכיים כפופות בזווית 90 מעלות מעל האגן. מורידים בו-זמנית יד אחת אחורה מעל הראש ורגל נגדית ישרה כלפי הרצפה, תוך שהגב צמוד לרצפה לכל האורך. חוזרים למרכז ומחליפים צד.' },
       { id: 30, name: 'Donkey Kicks', search: 'donkey kick', youtubeId: 'AMUBBkuqcL8', areas: ['glutes'], positions: ['hands_knees'], instructions: 'עמדה על ארבע. מרימים רגל אחת כפופה בזווית 90 מעלות כלפי מעלה, כאילו בועטים בתקרה, תוך שמירה על האגן יציב וללא סיבוב. מורידים בשליטה וחוזרים.' },
       { id: 32, name: 'Dumbbell Halo', search: 'dumbbell halo', youtubeId: '5kiYkUth-Tw', areas: ['upper_body', 'shoulders'], positions: ['standing', 'sitting'], instructions: 'עומדים זקוף, אוחזים משקולת אחת בשתי ידיים מול החזה. מסובבים אותה לאט מסביב לראש כמו הילה, תוך שמירה על הליבה מתוחה וגב זקוף. מחליפים כיוון סיבוב מדי סט.' },
       { id: 25, name: 'Dumbbell Pullover', search: 'dumbbell pullover', youtubeId: 'CSkSflHdC3A', areas: ['back'], positions: ['lying_back'] },
       { id: 11, name: 'Dumbbell RDL', search: 'romanian deadlift', equipment: 'dumbbell', youtubeId: '5WxMW-Fu5KU', start: 10, areas: ['glutes'], positions: ['standing'] },
-      { id: 60, name: 'Dynamic Half Kneeling Stretch', search: 'half kneeling stretch', youtubeId: 'NvL0Q7FqhoY', areas: ['glutes'], positions: ['half_kneeling'], stretchType: 'dynamic' },
+      { id: 60, name: 'Dynamic Half Kneeling Stretch', search: 'half kneeling stretch', youtubeId: 'NvL0Q7FqhoY', areas: ['glutes'], positions: ['standing'], stretchType: 'dynamic' },
       { id: 39, name: 'Fire Hydrant', search: 'fire hydrant', youtubeId: 'dfD3qyKvJso', start: 7, areas: ['glutes'], positions: ['hands_knees'] },
       { id: 36, name: 'Frog Pumps', search: 'frog pump', youtubeId: 'y-yo8NBhs0k', areas: ['glutes'], positions: ['lying_back'], instructions: 'שוכבים על הגב, כפות הרגליים מחוברות זו לזו וברכיים פתוחות הצידה. מרימים את האגן כלפי מעלה תוך לחיצת הישבן, עוצרים למעלה רגע ומורידים בשליטה.' },
       { id: 24, name: 'Glute Bridge', search: 'glute bridge', youtubeId: 'PSMW7iSi2BU', areas: ['glutes'], positions: ['lying_back'] },
       { id: 34, name: 'Glute Bridge Marches', search: 'glute bridge march', youtubeId: 'TZgb0Jd_BfI', areas: ['glutes'], positions: ['lying_back'], instructions: 'שוכבים על הגב במנח גשר אגן, כפות רגליים על הרצפה. תוך שמירה על האגן יציב וגבוה, מרימים רגל אחת עם ברך כפופה כמו צעד הליכה, מורידים וחוזרים עם הרגל השנייה לסירוגין.' },
       { id: 33, name: 'Goal Post Opener', search: 'goal post opener', youtubeId: 'leyRgWSpmAI', areas: ['back'], positions: ['standing', 'sitting', 'standing_support'], instructions: 'עומדים זקוף, מרימים את הידיים לגובה הכתפיים עם מרפקים כפופים בזווית 90 מעלות. מסובבים את הזרועות אחורה כך שהאמות עוברות מכיוון קדימה לאחורה תוך פתיחת החזה, ומחזירים.' },
       { id: 51, name: 'Hex Press', search: 'hex press dumbbell', equipment: 'dumbbell', youtubeId: '6isV3VjZhjY', start: 5, areas: ['upper_body', 'chest'], positions: ['lying_back'] },
-      { id: 61, name: 'Hip Flexor', search: 'hip flexor stretch', youtubeId: 'DXuStgWuJV8', start: 2, end: 30, areas: ['quads'], positions: ['half_kneeling'], stretchType: 'static' },
+      { id: 61, name: 'Hip Flexor', search: 'hip flexor stretch', youtubeId: 'DXuStgWuJV8', start: 2, end: 30, areas: ['quads'], positions: ['standing'], stretchType: 'static' },
       { id: 40, name: 'Hip Thrust', search: 'hip thrust', youtubeId: 'Zp3mZV6Plyg', end: 23, areas: ['glutes'], positions: ['couch'] },
       { id: 29, name: 'Hollow Body Hold', search: 'hollow body hold', youtubeId: 'c6QTMYmou8A', areas: ['core'], positions: ['lying_back'], instructions: 'שוכבים על הגב, מרימים בו-זמנית את הרגליים הישרות והכתפיים מהרצפה, כשהגב התחתון צמוד לרצפה לאורך כל התרגיל. הידיים מתוחות מעל הראש או לצד הגוף. מחזיקים את המנח תוך נשימה רגילה.' },
       { id: 52, name: 'Lateral Raises', search: 'lateral raise', equipment: 'dumbbell', youtubeId: 'XPPfnSEATJA', areas: ['upper_body', 'shoulders'], positions: ['standing'] },
@@ -602,6 +671,7 @@
       { id: 22, name: 'Overhead Extension', search: 'tricep extension', equipment: 'dumbbell', youtubeId: '7h3lG2WnLXg', end: 8, areas: ['upper_body', 'arms'], positions: ['standing', 'sitting'] },
       { id: 5, name: 'Plank', search: 'plank', youtubeId: 'GQE8ASRA7t0', start: 7, end: 30, areas: ['core'], positions: ['lying_front'] },
       { id: 26, name: 'Prone Cobra', search: 'cobra', youtubeId: 'keErJXdp2lE', areas: ['back'], positions: ['lying_front'] },
+      { id: 67, name: 'Reverse Crunch', search: 'reverse crunch', youtubeId: '8E4nGnNKLgI', areas: ['core'], positions: ['lying_back'] },
       { id: 12, name: 'Reverse Flies', search: 'reverse fly', equipment: 'dumbbell', youtubeId: 'M3udJ4o7ndU', areas: ['back'], positions: ['standing_support'], instructions: 'רכונים קדימה מהמותניים, אוחזים משקולת בכל יד עם ידיים משתלשלות כלפי מטה. מרימים את הידיים הצידה עד לגובה הכתפיים, סוחטים את השכמות זו לזו, ומורידים בשליטה.' },
       { id: 38, name: 'Rows', search: 'row', equipment: 'dumbbell', youtubeId: 'ZRSGpBUVcNw', areas: ['back'], positions: ['standing_support'] },
       { id: 15, name: 'Russian Twist', search: 'russian twist', youtubeId: '99T1EfpMwPA', areas: ['core'], positions: ['sitting'] },
@@ -754,12 +824,16 @@
         stats.weekCount = 0;
       }
 
+      let hitGoalNow = false;
       if (stats.lastCompletedDate !== todayStr) {
         stats.totalCompleted++;
         stats.totalExercisesDone += state.workout.length;
         stats.weekCount++;
         stats.lastCompletedDate = todayStr;
-        if (stats.weekCount === stats.weeklyGoal) stats.weeksHitGoal = (stats.weeksHitGoal || 0) + 1;
+        if (stats.weekCount === stats.weeklyGoal) {
+          stats.weeksHitGoal = (stats.weeksHitGoal || 0) + 1;
+          hitGoalNow = true;
+        }
       }
 
       const exerciseDetails = state.workout.map(ex => {
@@ -778,14 +852,23 @@
         }
       }
       saveStats();
-      return newly;
+      return { newly, hitGoalNow };
     }
 
-    function showCompleteScreen(newAchievements) {
+    function showCompleteScreen(newAchievements, hitGoalNow) {
       showScreen('complete');
       document.getElementById('completeSummary').textContent = `סיימת ${state.workout.length} תרגילים 💥`;
       document.getElementById('completeStreak').textContent = `${stats.weekCount}/${stats.weeklyGoal}`;
       document.getElementById('completeTotal').textContent = stats.totalCompleted;
+
+      const goalBanner = document.getElementById('goalHitBanner');
+      if (hitGoalNow) {
+        goalBanner.classList.remove('hidden');
+        goalBanner.innerHTML = `🎉🏆 עמדת ביעד השבועי שלך! (${stats.weeklyGoal}/${stats.weeklyGoal}) 🏆🎉`;
+      } else {
+        goalBanner.classList.add('hidden');
+      }
+
       const box = document.getElementById('newAchievements');
       box.innerHTML = newAchievements.map(a => `
         <div class="achievement-card"><span class="emoji">${a.emoji}</span>${a.label}</div>
@@ -1428,6 +1511,21 @@
       renderBuild();
     }
 
+    function duplicateExercise(id) {
+      const idx = state.workout.findIndex(e => e.id === id);
+      if (idx === -1) return;
+      const copy = JSON.parse(JSON.stringify(state.workout[idx]));
+      copy.id = Date.now() + Math.random();
+      state.workout.splice(idx + 1, 0, copy);
+      renderBuild();
+      const el = document.getElementById('workout-item-' + copy.id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.classList.add('just-moved');
+        setTimeout(() => el.classList.remove('just-moved'), 800);
+      }
+    }
+
     function toggleBulkSelect(id) {
       if (bulkSelected.has(id)) bulkSelected.delete(id); else bulkSelected.add(id);
       renderBuild();
@@ -1631,18 +1729,20 @@
         if (next && next.youtubeId) {
           wrap.innerHTML = `
             <div id="ytPlayerHost" style="position:absolute;inset:0;"></div>
-            <div style="position:absolute; top:0; left:0; right:0; z-index:5; text-align:center; padding:16px; background:linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);">
-              <p style="font-size:1.05em; margin-bottom:4px;">😌 מנוחה</p>
-              <p style="font-size:0.85em; color:#fbbf24;">👉 מתכוננים ל: ${next.name}</p>
+            <div class="rest-dim-overlay"></div>
+            <div class="rest-banner">
+              <div class="rest-label">😌 מנוחה</div>
+              <p class="next-label">👉 התרגיל הבא:</p>
+              <p class="next-name">${next.name}</p>
             </div>`;
           playYoutubeLoop('ytPlayerHost', next.youtubeId, next.ytStart, next.ytEnd);
         } else if (next) {
           wrap.innerHTML = `
             <div class="rest-screen">
-              <p style="font-size:1.1em; margin-bottom:8px;">😌 מנוחה</p>
-              <p style="font-size:0.85em; color:#fbbf24; margin-bottom:8px;">👉 מתכוננים לתרגיל הבא:</p>
-              ${next.gifUrl ? `<img src="${next.gifUrl}" alt="${next.name}" style="max-width:65%; max-height:45vh; border-radius:14px; border:2px solid #fbbf24;">` : ''}
-              <p style="font-size:1.3em; font-weight:bold; margin-top:10px;">${next.name}</p>
+              <div class="rest-label" style="margin-bottom:14px;">😌 מנוחה</div>
+              <p class="next-label">👉 התרגיל הבא:</p>
+              <p class="next-name" style="margin-bottom:10px;">${next.name}</p>
+              ${next.gifUrl ? `<img src="${next.gifUrl}" alt="${next.name}" style="max-width:60%; max-height:38vh; border-radius:14px; border:2px solid #fbbf24; opacity:0.75;">` : ''}
             </div>`;
         } else {
           wrap.innerHTML = `<div class="rest-screen"><div class="big-emoji">🎉</div><p>כמעט סיימת!</p></div>`;
@@ -1703,8 +1803,8 @@
             state.isRunning = false;
             clearInterval(state.timer);
             playBeep(1200, 300);
-            const newAchievements = recordCompletion();
-            showCompleteScreen(newAchievements);
+            const result = recordCompletion();
+            showCompleteScreen(result.newly, result.hitGoalNow);
             return;
           }
         }
@@ -1781,8 +1881,8 @@
         } else {
           state.isRunning = false;
           clearInterval(state.timer);
-          const newAchievements = recordCompletion();
-          showCompleteScreen(newAchievements);
+          const result = recordCompletion();
+          showCompleteScreen(result.newly, result.hitGoalNow);
           return;
         }
       }
@@ -1800,24 +1900,96 @@
       renderWorkout();
     }
 
+    let routineSortMode = 'default';
+    let routineStretchFilter = ''; // '', 'with', 'without'
+    let selectedRoutinePositions = new Set();
+    let routineFiltersPopulated = false;
+
+    function getRoutineMeta(w) {
+      const totalSeconds = w.exercises.reduce((s, ex) => s + (ex.work || 0) + (ex.rest || 0), 0);
+      const hasStretch = w.exercises.some(ex => {
+        const base = ex.originalId ? EXERCISES.find(e => e.id === ex.originalId) : null;
+        return base && base.stretchType;
+      });
+      const positions = new Set();
+      w.exercises.forEach(ex => {
+        const base = ex.originalId ? EXERCISES.find(e => e.id === ex.originalId) : null;
+        if (base && base.positions) base.positions.forEach(p => positions.add(p));
+      });
+      return { totalSeconds, hasStretch, positions };
+    }
+
+    function populateRoutineFilters() {
+      if (routineFiltersPopulated) return;
+      routineFiltersPopulated = true;
+      document.getElementById('routineStretchChips').innerHTML = `
+        <button type="button" class="chip" id="rchip-with" onclick="toggleRoutineStretchFilter('with')">כולל מתיחות</button>
+        <button type="button" class="chip" id="rchip-without" onclick="toggleRoutineStretchFilter('without')">בלי מתיחות</button>
+      `;
+      document.getElementById('routinePositionChips').innerHTML = Object.keys(POSITIONS).map(key =>
+        `<button type="button" class="chip" id="rchip-pos-${key}" onclick="toggleRoutinePositionFilter('${key}')">${POSITIONS[key]}</button>`
+      ).join('');
+    }
+
+    function toggleRoutineStretchFilter(val) {
+      routineStretchFilter = (routineStretchFilter === val) ? '' : val;
+      document.getElementById('rchip-with').classList.toggle('active', routineStretchFilter === 'with');
+      document.getElementById('rchip-without').classList.toggle('active', routineStretchFilter === 'without');
+      renderHome();
+    }
+
+    function toggleRoutinePositionFilter(key) {
+      if (selectedRoutinePositions.has(key)) selectedRoutinePositions.delete(key); else selectedRoutinePositions.add(key);
+      document.getElementById('rchip-pos-' + key).classList.toggle('active');
+      renderHome();
+    }
+
+    function onRoutineSortChange() {
+      routineSortMode = document.getElementById('routineSortSelect').value;
+      renderHome();
+    }
+
     function renderHome() {
       renderHomeStats();
+      const organizer = document.getElementById('routineOrganizer');
       const list = document.getElementById('workoutsList');
       if (state.savedWorkouts.length === 0) {
+        organizer.classList.add('hidden');
         list.innerHTML = '<p style="text-align: center; padding: 30px; color:#999;">עדיין אין רוטינות</p>';
-      } else {
-        list.innerHTML = state.savedWorkouts.map(w => `
-          <div class="workout-card">
-            <h3>${w.name}</h3>
-            <p>${w.exercises.length} תרגילים</p>
-            <div class="button-group">
-              <button onclick="previewWorkout(${w.id})" style="background:#374151;">👁️ תצוגה</button>
-              <button class="success" onclick="loadWorkout(${w.id})" style="flex: 1;">▶️ התחל</button>
-              <button class="danger" onclick="deleteWorkout(${w.id})">🗑️</button>
-            </div>
-          </div>
-        `).join('');
+        return;
       }
+      organizer.classList.remove('hidden');
+      populateRoutineFilters();
+
+      let items = state.savedWorkouts.map(w => ({ w, meta: getRoutineMeta(w) }));
+
+      if (routineStretchFilter === 'with') items = items.filter(x => x.meta.hasStretch);
+      else if (routineStretchFilter === 'without') items = items.filter(x => !x.meta.hasStretch);
+      if (selectedRoutinePositions.size > 0) {
+        items = items.filter(x => [...x.meta.positions].some(p => selectedRoutinePositions.has(p)));
+      }
+
+      if (routineSortMode === 'time_asc') items.sort((a, b) => a.meta.totalSeconds - b.meta.totalSeconds);
+      else if (routineSortMode === 'time_desc') items.sort((a, b) => b.meta.totalSeconds - a.meta.totalSeconds);
+      else if (routineSortMode === 'name') items.sort((a, b) => a.w.name.localeCompare(b.w.name));
+
+      if (items.length === 0) {
+        list.innerHTML = '<p style="text-align: center; padding: 20px; color:#999;">אין רוטינות שמתאימות לסינון</p>';
+        return;
+      }
+
+      list.innerHTML = items.map(({ w, meta }) => `
+        <div class="workout-card">
+          <h3>${w.name}</h3>
+          <p>${w.exercises.length} תרגילים${meta.hasStretch ? ' · כולל מתיחות' : ''}</p>
+          <p class="routine-meta">⏱️ ${formatTime(meta.totalSeconds)} דקות</p>
+          <div class="button-group">
+            <button onclick="previewWorkout(${w.id})" style="background:#374151;">👁️ תצוגה</button>
+            <button class="success" onclick="loadWorkout(${w.id})" style="flex: 1;">▶️ התחל</button>
+            <button class="danger" onclick="deleteWorkout(${w.id})">🗑️</button>
+          </div>
+        </div>
+      `).join('');
     }
 
     let selectedAreas = new Set();
@@ -1905,6 +2077,7 @@
                 <button onclick="moveExercise(${ex.id}, -1)" ${idx === 0 ? 'disabled style="margin:0;opacity:0.3;"' : 'style="margin:0;background:#374151;padding:4px 10px;"'}>▲</button>
                 <button onclick="moveExercise(${ex.id}, 1)" ${idx === state.workout.length - 1 ? 'disabled style="margin:0;opacity:0.3;"' : 'style="margin:0;background:#374151;padding:4px 10px;"'}>▼</button>
               </div>
+              <button onclick="duplicateExercise(${ex.id})" style="margin:0; background:#374151; padding:8px;">📋</button>
               <button onclick="toggleManualSearch(${ex.id})" style="margin:0; background:#374151; padding:8px;">🔍</button>
               <button class="danger" onclick="removeExercise(${ex.id})" style="margin: 0;">🗑️</button>
             </div>

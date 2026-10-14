@@ -457,6 +457,28 @@
         </div>
         <div id="workoutsList" class="workouts-grid"></div>
         <button class="success" onclick="goToBuild()" style="width: 100%; font-size: 1.15em; padding: 15px;">➕ רוטינה חדשה</button>
+        <button onclick="goToCardio()" style="width: 100%; font-size: 1.05em; padding: 13px; margin-top: 10px; background:#0e7490;">🏃 תעד אימון חופשי (הליכון, אליפטיקל...)</button>
+      </div>
+    </div>
+
+    <!-- Free Workout / Cardio Screen -->
+    <div id="cardioScreen" class="screen">
+      <div class="container">
+        <button onclick="goHome()">🏠 חזרה</button>
+        <h1>🏃 אימון חופשי</h1>
+        <p style="color:#999; font-size:0.9em; margin-bottom:10px;">תיעוד קרדיו ומכשירים. נכנס ליומן, לנתונים וליעד השבועי.</p>
+        <div class="filter-row" id="cardioTypeChips"></div>
+        <label style="display:block; margin:12px 0 4px; color:#ccc;">⏱️ כמה זמן (דקות)</label>
+        <input type="number" id="cardioMinutes" inputmode="numeric" min="1" max="600" placeholder="למשל 30" style="width:100%;">
+        <div id="cardioInclineWrap">
+          <label style="display:block; margin:12px 0 4px; color:#ccc;">📐 שיפוע (%) - לא חובה</label>
+          <input type="number" id="cardioIncline" inputmode="decimal" min="0" max="40" step="0.5" placeholder="למשל 8" style="width:100%;">
+        </div>
+        <label style="display:block; margin:12px 0 4px; color:#ccc;">⚡ מהירות (קמ"ש) - לא חובה</label>
+        <input type="number" id="cardioSpeed" inputmode="decimal" min="0" max="40" step="0.1" placeholder="למשל 5.5" style="width:100%;">
+        <label style="display:block; margin:12px 0 4px; color:#ccc;">📅 תאריך</label>
+        <input type="date" id="cardioDate" style="width:100%;">
+        <button class="success" onclick="saveCardio()" style="width:100%; font-size:1.15em; padding:15px; margin-top:20px;">💾 שמור ביומן</button>
       </div>
     </div>
 
@@ -855,9 +877,134 @@
       return { newly, hitGoalNow };
     }
 
-    function showCompleteScreen(newAchievements, hitGoalNow) {
+    // ===== Free workouts (cardio / machines) =====
+    const CARDIO_TYPES = [
+      { id: 'treadmill', emoji: '🏃', label: 'הליכון' },
+      { id: 'treadmill_incline', emoji: '⛰️', label: 'הליכון בשיפוע' },
+      { id: 'elliptical', emoji: '🌀', label: 'אליפטיקל' },
+      { id: 'bike', emoji: '🚴', label: 'אופני כושר' },
+      { id: 'stairs', emoji: '🪜', label: 'מדרגות' },
+      { id: 'rowing', emoji: '🚣', label: 'חתירה' },
+      { id: 'walk_out', emoji: '🚶', label: 'הליכה בחוץ' },
+      { id: 'run_out', emoji: '👟', label: 'ריצה בחוץ' },
+      { id: 'swim', emoji: '🏊', label: 'שחייה' },
+      { id: 'other', emoji: '🔥', label: 'אחר' }
+    ];
+    // Body areas each cardio type counts toward (one count per session)
+    const CARDIO_AREAS = {
+      treadmill: ['quads'],
+      treadmill_incline: ['glutes', 'quads'],
+      elliptical: ['quads', 'glutes'],
+      bike: ['quads', 'glutes'],
+      stairs: ['glutes', 'quads'],
+      rowing: ['back', 'quads', 'arms'],
+      walk_out: ['quads'],
+      run_out: ['quads'],
+      swim: [],
+      other: []
+    };
+    let cardioSelectedType = 'treadmill_incline';
+
+    function todayLocalStr() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    function renderCardioChips() {
+      document.getElementById('cardioTypeChips').innerHTML = CARDIO_TYPES.map(t =>
+        `<button class="chip ${t.id === cardioSelectedType ? 'active' : ''}" onclick="selectCardioType('${t.id}')">${t.emoji} ${t.label}</button>`
+      ).join('');
+      document.getElementById('cardioInclineWrap').style.display = cardioSelectedType === 'treadmill_incline' ? 'block' : 'none';
+    }
+
+    function selectCardioType(id) {
+      cardioSelectedType = id;
+      renderCardioChips();
+    }
+
+    function goToCardio() {
+      try {
+        const last = JSON.parse(localStorage.getItem('cardioLast') || 'null');
+        if (last && CARDIO_TYPES.some(t => t.id === last.type)) cardioSelectedType = last.type;
+        document.getElementById('cardioMinutes').value = last && last.minutes ? last.minutes : '';
+        document.getElementById('cardioIncline').value = last && last.incline ? last.incline : '';
+        document.getElementById('cardioSpeed').value = last && last.speed ? last.speed : '';
+      } catch (e) {}
+      document.getElementById('cardioDate').value = todayLocalStr();
+      renderCardioChips();
+      showScreen('cardio');
+    }
+
+    function saveCardio() {
+      const minutes = parseFloat(document.getElementById('cardioMinutes').value);
+      if (!minutes || minutes <= 0) { alert('נא להזין כמה דקות עשית'); return; }
+      const type = CARDIO_TYPES.find(t => t.id === cardioSelectedType) || CARDIO_TYPES[0];
+      const incline = cardioSelectedType === 'treadmill_incline' ? parseFloat(document.getElementById('cardioIncline').value) : NaN;
+      const speed = parseFloat(document.getElementById('cardioSpeed').value);
+      const date = document.getElementById('cardioDate').value || todayLocalStr();
+      if (date > todayLocalStr()) { alert('אי אפשר לתעד אימון בתאריך עתידי'); return; }
+
+      try { localStorage.setItem('cardioLast', JSON.stringify({ type: type.id, minutes, incline: isNaN(incline) ? '' : incline, speed: isNaN(speed) ? '' : speed })); } catch (e) {}
+
+      // Weekly-goal logic matches regular workouts: one counted session per day, current week only
+      const dayAlreadyCounted = workoutLog.some(e => e.date === date);
+      const dateObj = new Date(date + 'T00:00:00');
+      const thisWeekStart = getWeekStart(new Date());
+      let hitGoalNow = false;
+      stats.totalCompleted++;
+      if (getWeekStart(dateObj) === thisWeekStart) {
+        if (stats.weekStart !== thisWeekStart) { stats.weekStart = thisWeekStart; stats.weekCount = 0; }
+        if (!dayAlreadyCounted) {
+          stats.weekCount++;
+          if (stats.weekCount === stats.weeklyGoal) {
+            stats.weeksHitGoal = (stats.weeksHitGoal || 0) + 1;
+            hitGoalNow = true;
+          }
+        }
+        if (date === todayLocalStr()) stats.lastCompletedDate = date;
+      }
+
+      const entry = {
+        date, name: `${type.emoji} ${type.label}`, kind: 'cardio', cardioType: type.id,
+        exerciseCount: 0, totalSeconds: Math.round(minutes * 60), exercises: []
+      };
+      if (!isNaN(incline) && incline > 0) entry.incline = incline;
+      if (!isNaN(speed) && speed > 0) entry.speed = speed;
+      workoutLog.unshift(entry);
+      workoutLog.sort((a, b) => b.date.localeCompare(a.date));
+      if (workoutLog.length > 200) workoutLog = workoutLog.slice(0, 200);
+      saveLog();
+
+      const newly = [];
+      for (const a of ACHIEVEMENTS) {
+        if (!stats.unlocked.includes(a.id)) {
+          const val = a.type === 'workouts' ? stats.totalCompleted : stats.weeksHitGoal;
+          if (val >= a.threshold) { stats.unlocked.push(a.id); newly.push(a); }
+        }
+      }
+      saveStats();
+      showCompleteScreen(newly, hitGoalNow, `${type.label} · ${formatDuration(Math.round(minutes * 60))} 💥`);
+    }
+
+    function deleteCardioEntry(idx) {
+      const entry = workoutLog[idx];
+      if (!entry || entry.kind !== 'cardio') return;
+      if (!confirm('למחוק את האימון הזה מהיומן?')) return;
+      workoutLog.splice(idx, 1);
+      stats.totalCompleted = Math.max(0, stats.totalCompleted - 1);
+      const thisWeekStart = getWeekStart(new Date());
+      if (getWeekStart(new Date(entry.date + 'T00:00:00')) === thisWeekStart && stats.weekStart === thisWeekStart && !workoutLog.some(e => e.date === entry.date)) {
+        stats.weekCount = Math.max(0, stats.weekCount - 1);
+      }
+      saveLog();
+      saveStats();
+      showLog();
+      renderHomeStats();
+    }
+
+    function showCompleteScreen(newAchievements, hitGoalNow, summaryText) {
       showScreen('complete');
-      document.getElementById('completeSummary').textContent = `סיימת ${state.workout.length} תרגילים 💥`;
+      document.getElementById('completeSummary').textContent = summaryText || `סיימת ${state.workout.length} תרגילים 💥`;
       document.getElementById('completeStreak').textContent = `${stats.weekCount}/${stats.weeklyGoal}`;
       document.getElementById('completeTotal').textContent = stats.totalCompleted;
 
@@ -903,6 +1050,7 @@
         shoulders: ['bm-shoulders-l', 'bm-shoulders-r', 'bm-shoulders-l2', 'bm-shoulders-r2'],
         arms: ['bm-arms-l-f', 'bm-arms-r-f', 'bm-arms-l-b', 'bm-arms-r-b'],
         core: ['bm-core'],
+        quads: ['bm-quads-l', 'bm-quads-r'],
         back: ['bm-back'],
         glutes: ['bm-glutes']
       };
@@ -928,6 +1076,9 @@
       let dynamicCount = 0, staticCount = 0, totalSeconds = 0;
       workoutLog.forEach(entry => {
         totalSeconds += entry.totalSeconds || 0;
+        if (entry.kind === 'cardio') {
+          (CARDIO_AREAS[entry.cardioType] || []).forEach(a => { areaCounts[a] = (areaCounts[a] || 0) + 1; });
+        }
         (entry.exercises || []).forEach(ex => {
           if (ex.stretchType === 'dynamic') dynamicCount++;
           else if (ex.stretchType === 'static') staticCount++;
@@ -949,6 +1100,17 @@
 
       let html = '<div style="background:#161616; border-radius:10px; padding:14px; margin-bottom:16px;">';
       html += `<p style="font-size:0.9em; color:#93c5fd; margin-bottom:10px;">📊 סה"כ ${workoutLog.length} אימונים · ${formatDuration(totalSeconds)} אימון מצטבר</p>`;
+      const cardioEntries = workoutLog.filter(e => e.kind === 'cardio');
+      if (cardioEntries.length) {
+        const cardioSec = cardioEntries.reduce((s, e) => s + (e.totalSeconds || 0), 0);
+        const strengthCount = workoutLog.length - cardioEntries.length;
+        const firstCardio = cardioEntries.reduce((m, e) => e.date < m ? e.date : m, cardioEntries[0].date);
+        const weeksSpan = Math.max(1, Math.ceil((Date.now() - new Date(firstCardio + 'T00:00:00').getTime()) / (7 * 86400000)));
+        const thisWeekCardioStart = getWeekStart(new Date());
+        const cardioThisWeekSec = cardioEntries.filter(e => e.date >= thisWeekCardioStart).reduce((s, e) => s + (e.totalSeconds || 0), 0);
+        html += `<p style="font-size:0.85em; color:#67e8f9; margin-bottom:6px;">🏃 קרדיו ומכשירים: ${cardioEntries.length} אימונים · ${formatDuration(cardioSec)}</p>`;
+        html += `<p style="font-size:0.8em; color:#999; margin-bottom:10px;">השבוע: ${formatDuration(cardioThisWeekSec)} קרדיו · ממוצע שבועי: ${formatDuration(Math.round(cardioSec / weeksSpan))} · כוח ${strengthCount} מול קרדיו ${cardioEntries.length}</p>`;
+      }
 
       if (lastWeekSec > 0 || thisWeekSec > 0) {
         const arrow = weekDiff > 0 ? '📈' : weekDiff < 0 ? '📉' : '➡️';
@@ -967,8 +1129,8 @@
             <rect id="bm-arms-l-f" x="34" y="53" width="11" height="50" rx="5" fill="#333"/>
             <rect id="bm-arms-r-f" x="95" y="53" width="11" height="50" rx="5" fill="#333"/>
             <rect id="bm-core" x="54" y="71" width="32" height="36" rx="5" fill="#333"/>
-            <rect x="54" y="107" width="14" height="62" rx="6" fill="#3a3a3a"/>
-            <rect x="72" y="107" width="14" height="62" rx="6" fill="#3a3a3a"/>
+            <rect id="bm-quads-l" x="54" y="107" width="14" height="62" rx="6" fill="#333"/>
+            <rect id="bm-quads-r" x="72" y="107" width="14" height="62" rx="6" fill="#333"/>
 
             <g transform="translate(200,0)">
               <text x="70" y="14" fill="#888" font-size="11" text-anchor="middle">אחורי</text>
@@ -998,7 +1160,7 @@
         `).join('');
 
         if (workoutLog.length >= 3) {
-          const allAreaKeys = ['glutes', 'back', 'core', 'chest', 'shoulders', 'arms'];
+          const allAreaKeys = ['glutes', 'quads', 'back', 'core', 'chest', 'shoulders', 'arms'];
           const leastTrained = [...allAreaKeys].sort((a, b) => (areaCounts[a] || 0) - (areaCounts[b] || 0))[0];
           html += `<p style="font-size:0.8em; color:#93c5fd; margin-top:10px;">💡 האזור שהכי פחות עסקת בו: <strong>${AREAS[leastTrained]}</strong> — אולי שווה להוסיף ממנו תרגיל בפעם הבאה</p>`;
         }
@@ -1010,9 +1172,23 @@
       html += '</div>';
 
       // ===== Individual sessions =====
-      html += workoutLog.map(entry => {
-        const uniqueAreas = [...new Set((entry.exercises || []).flatMap(ex => (ex.areas || []).filter(a => a !== 'upper_body')))];
-        const tagsLine = uniqueAreas.length ? uniqueAreas.map(a => AREAS[a] || a).join(' • ') : '';
+      html += workoutLog.map((entry, idx) => {
+        if (entry.kind === 'cardio') {
+          const extras = [];
+          if (entry.incline) extras.push(`שיפוע ${entry.incline}%`);
+          if (entry.speed) extras.push(`${entry.speed} קמ"ש`);
+          const cAreas = (CARDIO_AREAS[entry.cardioType] || []).map(a => AREAS[a] || a).join(' • ');
+          return `
+        <div class="workout-item" style="border-right:3px solid #0e7490;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>${entry.name}</strong>
+            <button onclick="deleteCardioEntry(${idx})" style="margin:0; padding:2px 8px; background:#374151; font-size:0.85em;">🗑️</button>
+          </div>
+          <p style="font-size:0.85em; color:#999; margin-top:4px;">${entry.date} · ${formatDuration(entry.totalSeconds)}${extras.length ? ' · ' + extras.join(' · ') : ''}</p>
+          ${cAreas ? `<p style="font-size:0.75em; color:#7c3aed; margin-top:4px;">${cAreas}</p>` : ''}
+        </div>`;
+        }
+        const uniqueAreas = [...new Set((entry.exercises || []).flatMap(ex => (ex.areas || []).filter(a => a !== 'upper_body')))];        const tagsLine = uniqueAreas.length ? uniqueAreas.map(a => AREAS[a] || a).join(' • ') : '';
         return `
         <div class="workout-item">
           <strong>${entry.name}</strong>

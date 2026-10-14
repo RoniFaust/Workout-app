@@ -277,16 +277,28 @@
     }
     .rest-banner {
       position: absolute; top: 0; left: 0; right: 0; z-index: 10;
-      background: linear-gradient(to bottom, rgba(10,10,30,0.95), rgba(10,10,30,0.3));
-      padding: 18px 12px 26px 12px;
+      background: linear-gradient(to bottom, #0284c7 0%, #0284c7 78%, rgba(2,132,199,0.0) 100%);
+      padding: 64px 12px 30px 12px;
       text-align: center;
     }
     .rest-label {
-      font-size: 1.7em;
+      font-size: 2.6em;
       font-weight: 900;
-      color: #93c5fd;
+      color: #ffffff;
+      letter-spacing: 1px;
       animation: pulseRest 1.4s ease-in-out infinite;
     }
+    /* Whole-screen "rest mode": a calm blue frame + blue panels, readable from a distance */
+    .workout-screen.resting::after {
+      content: ''; position: absolute; inset: 0; z-index: 30;
+      border: 14px solid #0ea5e9; pointer-events: none;
+    }
+    .workout-screen.resting .media-wrap { background: #0c4a6e; }
+    .workout-screen.resting .timer-box { background: #0369a1; border-color: #bae6fd; }
+    .workout-screen.resting .timer-box .timer-display { color: #ffffff; }
+    .workout-screen.resting .workout-info,
+    .workout-screen.resting .controls { background: #0c4a6e; }
+    .workout-screen.resting .progress-fill { background: #38bdf8; }
     @keyframes pulseRest {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.55; }
@@ -445,6 +457,10 @@
       <div class="container">
         <h1>💪 Workout Pro</h1>
         <div class="stats-bar" id="homeStatsBar"></div>
+        <div style="display:flex; gap:10px; margin-bottom:16px;">
+          <button class="success" onclick="goToBuild()" style="flex:1; margin:0; font-size:1.05em; padding:14px 8px;">➕ רוטינה חדשה</button>
+          <button onclick="goToCardio()" style="flex:1; margin:0; font-size:1.05em; padding:14px 8px; background:#0e7490;">🏃 אימון חופשי</button>
+        </div>
         <div id="routineOrganizer" class="routine-organizer hidden">
           <select id="routineSortSelect" onchange="onRoutineSortChange()">
             <option value="default">מיון: ברירת מחדל</option>
@@ -456,8 +472,6 @@
           <div class="filter-row" id="routinePositionChips"></div>
         </div>
         <div id="workoutsList" class="workouts-grid"></div>
-        <button class="success" onclick="goToBuild()" style="width: 100%; font-size: 1.15em; padding: 15px;">➕ רוטינה חדשה</button>
-        <button onclick="goToCardio()" style="width: 100%; font-size: 1.05em; padding: 13px; margin-top: 10px; background:#0e7490;">🏃 תעד אימון חופשי (הליכון, אליפטיקל...)</button>
       </div>
     </div>
 
@@ -1905,7 +1919,6 @@
         if (next && next.youtubeId) {
           wrap.innerHTML = `
             <div id="ytPlayerHost" style="position:absolute;inset:0;"></div>
-            <div class="rest-dim-overlay"></div>
             <div class="rest-banner">
               <div class="rest-label">😌 מנוחה</div>
               <p class="next-label">👉 התרגיל הבא:</p>
@@ -2304,7 +2317,9 @@
       document.getElementById('timerDisplay').textContent =
         String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
 
-      document.getElementById('workingEmoji').textContent = state.isWorking ? '🔥' : '😤';
+      document.getElementById('workingEmoji').textContent = state.isWorking ? '🔥' : '😌';
+      const wsEl = document.querySelector('.workout-screen');
+      if (wsEl) wsEl.classList.toggle('resting', !state.isWorking && !state.isCountdown);
 
       const progress = ((state.currentIdx + 1) / state.workout.length) * 100;
       document.getElementById('progressFill').style.width = progress + '%';

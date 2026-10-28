@@ -297,20 +297,20 @@
     .rest-banner {
       position: absolute; top: 0; left: 0; right: 0; z-index: 10;
       background: linear-gradient(to bottom, var(--rest) 0%, var(--rest) 78%, transparent 100%);
-      padding: 64px 12px 30px 12px;
+      padding: 72px 12px 20px 12px;
       text-align: center;
     }
     .rest-label {
-      font-size: 2.6em;
-      font-weight: 900;
-      color: #ffffff;
-      letter-spacing: 1px;
-      animation: pulseRest 1.4s ease-in-out infinite;
+      font-size: 0.95em;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 0.5px;
+      animation: pulseRest 1.8s ease-in-out infinite;
     }
     /* Whole-screen "rest mode": a calm blue frame + blue panels, readable from a distance */
     .workout-screen.resting::after {
       content: ''; position: absolute; inset: 0; z-index: 30;
-      border: 14px solid var(--rest); pointer-events: none;
+      border: 6px solid var(--rest); pointer-events: none;
     }
     .workout-screen.resting .media-wrap { background: var(--rest-deep); }
     .workout-screen.resting .timer-box { background: var(--rest); border-color: var(--rest-bright); }
@@ -322,8 +322,8 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.55; }
     }
-    .next-label { font-size: 0.95em; color: #fbbf24; margin-top: 8px; font-weight: bold; }
-    .next-name { font-size: 1.55em; font-weight: 900; color: white; margin-top: 4px; }
+    .next-label { font-size: 0.85em; color: rgba(255,255,255,0.7); margin-top: 2px; font-weight: 600; }
+    .next-name { font-size: 1.3em; font-weight: 800; color: white; margin-top: 2px; line-height: 1.2; }
 
     .rest-screen {
       text-align: center;
@@ -537,6 +537,53 @@
     .theme-opt .sw { width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid rgba(0,0,0,.08); }
     .theme-opt .sw i { width:20px; height:20px; border-radius:50%; display:block; }
     .theme-opt small { display:block; color: var(--muted); font-weight:400; font-size:.8em; margin-top:2px; }
+.ic { display:inline-block; width:1.2em; height:1.2em; vertical-align:-0.2em; background-color: currentColor; -webkit-mask: var(--m) center/contain no-repeat; mask: var(--m) center/contain no-repeat; flex-shrink:0; }
+.ic + * , * + .ic { }
+.ic-plus { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M12 5v14M5 12h14%22/%3E%3C/svg%3E"); }
+.ic-play { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23000%22 stroke=%22%23000%22 stroke-width=%221.5%22 stroke-linejoin=%22round%22 d=%22M8 5v14l11-7z%22/%3E%3C/svg%3E"); }
+.ic-pause { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23000%22 stroke=%22%23000%22 stroke-width=%221.5%22 stroke-linejoin=%22round%22 d=%22M7 5h3v14H7zM14 5h3v14h-3z%22/%3E%3C/svg%3E"); }
+.ic-eye { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%223%22/%3E%3C/g%3E%3C/svg%3E"); }
+.ic-trash { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3%22/%3E%3C/g%3E%3C/svg%3E"); }
+.ic-pencil { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M4 20h4L19 9l-4-4L4 16zM13 7l4 4%22/%3E%3C/svg%3E"); }
+.ic-book { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M4 5.5C6.5 4.4 9.5 4.6 12 6.2c2.5-1.6 5.5-1.8 8-.7V19c-2.5-1.1-5.5-.9-8 .7-2.5-1.6-5.5-1.8-8-.7zM12 6.2v13.5%22/%3E%3C/svg%3E"); }
+.ic-home { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M4 11l8-7 8 7M6 9.5V20h12V9.5%22/%3E%3C/svg%3E"); }
+.ic-dumbbell { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M7 7.5v9M17 7.5v9M4 10v4M20 10v4M7 12h10%22/%3E%3C/svg%3E"); }
+.ic-palette { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 3a9 9 0 100 18c1.3 0 2-.8 2-1.8 0-.6-.3-1-.6-1.4-.3-.4-.4-.7-.4-1.1 0-.9.7-1.7 1.7-1.7H17a4 4 0 004-4c0-4.4-4-8-9-8z%22/%3E%3C/g%3E%3Ccircle cx=%227.5%22 cy=%2211.5%22 r=%221.2%22 fill=%22%23000%22/%3E%3Ccircle cx=%2210.5%22 cy=%227.5%22 r=%221.2%22 fill=%22%23000%22/%3E%3Ccircle cx=%2215%22 cy=%227.5%22 r=%221.2%22 fill=%22%23000%22/%3E%3C/svg%3E"); }
+.ic-clock { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%229%22/%3E%3Cpath d=%22M12 7v5l3 2%22/%3E%3C/g%3E%3C/svg%3E"); }
+.ic-list { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M9 4h6v3H9zM7 5.5H6V20h12V5.5h-1M9 12h6M9 16h6%22/%3E%3C/svg%3E"); }
+.ic-prev { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23000%22 stroke=%22%23000%22 stroke-width=%221.5%22 stroke-linejoin=%22round%22 d=%22M5 5l10 7-10 7z%22 transform=%22translate%280%2C0%29%22/%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M19 5v14%22/%3E%3C/svg%3E"); }
+.ic-next { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22%23000%22 stroke=%22%23000%22 stroke-width=%221.5%22 stroke-linejoin=%22round%22 d=%22M19 5L9 12l10 7z%22/%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M5 5v14%22/%3E%3C/svg%3E"); }
+.ic-restart { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M3 12a9 9 0 109-9 9 9 0 00-6.4 2.6L3 8M3 3v5h5%22/%3E%3C/svg%3E"); }
+.ic-repeat { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M17 2l4 4-4 4M3 11V9a3 3 0 013-3h15M7 22l-4-4 4-4M21 13v2a3 3 0 01-3 3H3%22/%3E%3C/svg%3E"); }
+.ic-chart { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M4 20V10M10 20V4M16 20v-7M22 20H2%22/%3E%3C/svg%3E"); }
+.ic-download { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M12 4v11M7 11l5 5 5-5M5 20h14%22/%3E%3C/svg%3E"); }
+.ic-upload { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M12 16V5M7 9l5-5 5 5M5 20h14%22/%3E%3C/svg%3E"); }
+.ic-trophy { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M8 4h8v5a4 4 0 01-8 0zM8 6H4v2a3 3 0 003 3M16 6h4v2a3 3 0 01-3 3M12 13v4M8 20h8M10 17h4%22/%3E%3C/svg%3E"); }
+.ic-flame { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M12 3c1 4 5 5.5 5 10a5 5 0 01-10 0c0-2 1-3 2-4 .3 1.5 1 2 2 2-.5-3-.2-6 1-8z%22/%3E%3C/svg%3E"); }
+.ic-check { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M5 12.5l4.5 4.5L19 7.5%22/%3E%3C/svg%3E"); }
+.ic-alert { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M12 4l9 16H3zM12 10v4M12 17v.2%22/%3E%3C/svg%3E"); }
+.ic-target { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%229%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%224.5%22/%3E%3C/g%3E%3C/svg%3E"); }
+.ic-calendar { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M5 6h14v14H5zM5 10h14M9 3v4M15 3v4%22/%3E%3C/svg%3E"); }
+.ic-layers { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M12 3l9 5-9 5-9-5zM3 13l9 5 9-5%22/%3E%3C/svg%3E"); }
+.ic-sparkle { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M12 4l1.8 5.2L19 11l-5.2 1.8L12 18l-1.8-5.2L5 11l5.2-1.8z%22/%3E%3C/svg%3E"); }
+.ic-copy { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%228%22 y=%228%22 width=%2212%22 height=%2212%22 rx=%222%22/%3E%3Cpath d=%22M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2%22/%3E%3C/g%3E%3C/svg%3E"); }
+.ic-close { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cpath fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22 d=%22M6 6l12 12M18 6L6 18%22/%3E%3C/svg%3E"); }
+.ic-run { --m: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Cg fill=%22none%22 stroke=%22%23000%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2215.5%22 cy=%224.3%22 r=%222%22/%3E%3Cpath d=%22M13.7 3.4c-2.2-.9-3.9.2-4.2 2.6 .1 1.7 1.2 2.5 2.4 2.4%22/%3E%3Cpath d=%22M15 8.2l-1.6 4.3 3 2.2.9 5.3M13.4 12.5L9.6 14l-2.6 3.4M14.7 9.4l3.8 1.6 1.7-2.2M13.4 12.5l-1.3-2.6-2.4-.3%22/%3E%3C/g%3E%3C/svg%3E"); }
+
+.ic.sm { width:1em; height:1em; vertical-align:-0.15em; }
+.ic.lg { width:1.5em; height:1.5em; }
+button .ic { margin-inline-end: 6px; }
+button.icon-only .ic { margin: 0; }
+h2 .ic, p .ic, label .ic { margin-inline-end: 6px; }
+.head-ic { color: var(--accent); font-weight: 600; display:flex; align-items:center; }
+button.danger { background: color-mix(in srgb, var(--bad) 10%, transparent); color: color-mix(in srgb, var(--bad) 78%, var(--text)); border: 1px solid color-mix(in srgb, var(--bad) 28%, transparent); font-weight: 600; }
+.workout-screen button.danger { background: rgba(255,255,255,0.08); color: #f0b4ae; border: 1px solid rgba(240,180,174,0.3); }
+.workout-screen .controls button:not(.success) { font-weight: 600; }
+.workout-screen .controls button { display:flex; align-items:center; justify-content:center; gap:2px; }
+.phase-label { font-size: 0.8em; letter-spacing: 0.5px; opacity: 0.85; margin-top: 2px; }
+.card-actions button { margin: 0; }
+.legend-bar { display:flex; align-items:center; justify-content:center; gap:8px; font-size:0.72em; color:var(--muted); margin:2px 0 12px; }
+.legend-bar span.grad { width:90px; height:6px; border-radius:3px; background: linear-gradient(to left, var(--bm-empty), var(--accent)); }
 </style>
   <script>
     (function () {
@@ -557,19 +604,19 @@
             <h1 class="brand">Workout Pro</h1>
             <p class="brand-sub" id="homeSub"></p>
           </div>
-          <button class="theme-btn" onclick="openThemePicker()">🎨 עיצוב</button>
+          <button class="theme-btn" onclick="openThemePicker()"><i class="ic ic-palette"></i>עיצוב</button>
         </div>
         <div id="homeHero"></div>
         <div class="stats-bar" id="homeStatsBar"></div>
         <div style="display:flex; gap:10px; margin-bottom:16px;">
-          <button class="success" onclick="goToBuild()" style="flex:1; margin:0; font-size:1.05em; padding:14px 8px;">➕ רוטינה חדשה</button>
-          <button class="btn-outline" onclick="goToCardio()" style="flex:1; margin:0; font-size:1.05em; padding:14px 8px;">🏃 אימון חופשי</button>
+          <button class="success" onclick="goToBuild()" style="flex:1; margin:0; font-size:1.05em; padding:14px 8px;"><i class="ic ic-plus"></i>רוטינה חדשה</button>
+          <button class="btn-outline" onclick="goToCardio()" style="flex:1; margin:0; font-size:1.05em; padding:14px 8px;"><i class="ic ic-run"></i>אימון חופשי</button>
         </div>
         <div id="routineOrganizer" class="routine-organizer hidden">
           <select id="routineSortSelect" onchange="onRoutineSortChange()">
             <option value="default">מיון: ברירת מחדל</option>
-            <option value="time_asc">⏱️ זמן: קצר לארוך</option>
-            <option value="time_desc">⏱️ זמן: ארוך לקצר</option>
+            <option value="time_asc">זמן: קצר לארוך</option>
+            <option value="time_desc">זמן: ארוך לקצר</option>
             <option value="name">שם (א-ב)</option>
           </select>
           <div class="filter-row" id="routineStretchChips"></div>
@@ -582,37 +629,37 @@
     <!-- Free Workout / Cardio Screen -->
     <div id="cardioScreen" class="screen">
       <div class="container">
-        <button onclick="goHome()">🏠 חזרה</button>
-        <h1>🏃 אימון חופשי</h1>
+        <button onclick="goHome()"><i class="ic ic-home"></i>חזרה</button>
+        <h1>אימון חופשי</h1>
         <p style="color:var(--muted); font-size:0.9em; margin-bottom:10px;">תיעוד קרדיו ומכשירים. נכנס ליומן, לנתונים וליעד השבועי.</p>
         <div class="filter-row" id="cardioTypeChips"></div>
-        <label style="display:block; margin:12px 0 4px; color:var(--text2);">⏱️ כמה זמן (דקות)</label>
+        <label style="display:block; margin:12px 0 4px; color:var(--text2);">כמה זמן (דקות)</label>
         <input type="number" id="cardioMinutes" inputmode="numeric" min="1" max="600" placeholder="למשל 30" style="width:100%;">
         <div id="cardioInclineWrap">
-          <label style="display:block; margin:12px 0 4px; color:var(--text2);">📐 שיפוע (%) - לא חובה</label>
+          <label style="display:block; margin:12px 0 4px; color:var(--text2);">שיפוע (%) - לא חובה</label>
           <input type="number" id="cardioIncline" inputmode="decimal" min="0" max="40" step="0.5" placeholder="למשל 8" style="width:100%;">
         </div>
-        <label style="display:block; margin:12px 0 4px; color:var(--text2);">⚡ מהירות (קמ"ש) - לא חובה</label>
+        <label style="display:block; margin:12px 0 4px; color:var(--text2);">מהירות (קמ"ש) - לא חובה</label>
         <input type="number" id="cardioSpeed" inputmode="decimal" min="0" max="40" step="0.1" placeholder="למשל 5.5" style="width:100%;">
-        <label style="display:block; margin:12px 0 4px; color:var(--text2);">📅 תאריך</label>
+        <label style="display:block; margin:12px 0 4px; color:var(--text2);">תאריך</label>
         <input type="date" id="cardioDate" style="width:100%;">
-        <button class="success" onclick="saveCardio()" style="width:100%; font-size:1.15em; padding:15px; margin-top:20px;">💾 שמור ביומן</button>
+        <button class="success" onclick="saveCardio()" style="width:100%; font-size:1.15em; padding:15px; margin-top:20px;"><i class="ic ic-check"></i>שמור ביומן</button>
       </div>
     </div>
 
     <!-- Build Screen -->
     <div id="buildScreen" class="screen">
       <div class="container">
-        <button onclick="goHome()">🏠 חזרה</button>
-        <button onclick="clearMediaCache()" style="background:var(--neutral); color:var(--onneutral);">🧹 נקה מטמון תמונות</button>
+        <button onclick="goHome()"><i class="ic ic-home"></i>חזרה</button>
+        <button onclick="clearMediaCache()" style="background:var(--neutral); color:var(--onneutral);">נקה מטמון תמונות</button>
         <h1 id="buildTitle">בניית רוטינה</h1>
         <input type="text" id="workoutNameInput" placeholder="שם הרוטינה" oninput="state.workoutName = this.value">
-        <button onclick="addWarmupAndCooldown()" class="success" style="width:100%; margin:4px 0 12px 0;">🔥🧘 הוסף חימום ומתיחות שחרור אוטומטית</button>
+        <button onclick="addWarmupAndCooldown()" class="success" style="width:100%; margin:4px 0 12px 0;">הוסף חימום ומתיחות שחרור אוטומטית</button>
         <h2 id="pickerTop">בחירת תרגילים:</h2>
         <div class="filter-row" id="areaChips"></div>
         <div class="filter-row" id="positionChips"></div>
         <div class="filter-row" id="stretchChips"></div>
-        <button onclick="clearFilters()" style="background:var(--neutral); color:var(--onneutral); font-size:0.8em; padding:6px 12px;">🔄 נקה סינון</button>
+        <button onclick="clearFilters()" style="background:var(--neutral); color:var(--onneutral); font-size:0.8em; padding:6px 12px;"><i class="ic ic-restart"></i>נקה סינון</button>
         <div class="exercise-grid" id="exercisesGrid"></div>
         <h2>בחרת:</h2>
         <div id="totalTimeBuild" style="color:var(--info); font-size:0.9em; margin-bottom:8px;"></div>
@@ -636,8 +683,8 @@
         <p style="font-size:0.75em; color:var(--muted); margin:-8px 0 10px 0;">סמני ☑ תרגילים ספציפיים כדי להחיל רק עליהם — אחרת זה יחול על כולם</p>
         <div id="selectedExercises" style="min-height: 50px;"></div>
         <div class="button-group">
-          <button class="success" onclick="saveWorkout()" style="flex: 1;">💾 שמור</button>
-          <button class="danger" onclick="clearWorkout()" style="flex: 1;">🔄 נקה</button>
+          <button class="success" onclick="saveWorkout()" style="flex: 1;"><i class="ic ic-check"></i>שמור</button>
+          <button class="danger" onclick="clearWorkout()" style="flex: 1;"><i class="ic ic-restart"></i>נקה</button>
         </div>
       </div>
     </div>
@@ -648,12 +695,12 @@
         <div class="media-wrap" id="mediaWrap"></div>
         <div id="nextUpBox" class="next-up hidden"></div>
         <div class="top-bar">
-          <button onclick="goHome()">🏠</button>
+          <button onclick="goHome()" class="icon-only"><i class="ic ic-home"></i></button>
           <div class="title">
             <h1 id="exerciseName"></h1>
             <p id="exerciseNumber"></p>
           </div>
-          <button onclick="toggleFullList()">📋</button>
+          <button onclick="toggleFullList()" class="icon-only"><i class="ic ic-list"></i></button>
         </div>
         <div id="fullListOverlay" class="full-list-overlay hidden">
           <div class="full-list-panel">
@@ -666,18 +713,18 @@
         </div>
         <div class="timer-box">
           <div class="timer-display" id="timerDisplay">00:00</div>
-          <div class="emoji" id="workingEmoji">🔥</div>
+          <div class="phase-label" id="workingEmoji"></div>
         </div>
         <div class="workout-info">
           <p id="totalTimeLeft" style="text-align:center; font-size:0.8em; color:var(--info); margin-bottom:4px;"></p>
           <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         </div>
         <div class="controls" style="flex-wrap: wrap;">
-          <button class="success" onclick="toggleWorkout()" id="startBtn" style="flex: 1 1 100%;">▶️ התחל</button>
-          <button onclick="prevPhase()" style="flex: 1; background:var(--neutral); color:var(--onneutral); font-size:0.85em;">⏮️ הקודם</button>
-          <button onclick="restartCurrentExercise()" style="flex: 1; background:var(--neutral); color:var(--onneutral); font-size:0.85em;">🔁 מחדש</button>
-          <button onclick="skipPhase()" style="flex: 1; background:#0891b2; font-size:0.85em;">⏭️ דלג</button>
-          <button class="danger" onclick="resetWorkout()" style="flex: 1; font-size:0.85em;">🔄 אפס הכל</button>
+          <button class="success" onclick="toggleWorkout()" id="startBtn" style="flex: 1 1 100%;"><i class="ic ic-play"></i>התחל</button>
+          <button onclick="prevPhase()" style="flex: 1; background:var(--neutral); color:var(--onneutral); font-size:0.85em;"><i class="ic ic-prev"sm></i>הקודם</button>
+          <button onclick="restartCurrentExercise()" style="flex: 1; background:var(--neutral); color:var(--onneutral); font-size:0.85em;"><i class="ic ic-repeat"sm></i>מחדש</button>
+          <button onclick="skipPhase()" style="flex: 1; background:var(--neutral); color:var(--onneutral); font-size:0.85em;">הבא<i style="margin-inline-end:0;margin-inline-start:6px" class="ic ic-next"sm></i></button>
+          <button class="danger" onclick="resetWorkout()" style="flex: 1; font-size:0.85em;"><i class="ic ic-restart"sm></i>אפס</button>
         </div>
       </div>
     </div>
@@ -685,13 +732,13 @@
     <!-- Preview Screen -->
     <div id="previewScreen" class="screen">
       <div class="container">
-        <button onclick="goHome()">🏠 חזרה</button>
+        <button onclick="goHome()"><i class="ic ic-home"></i>חזרה</button>
         <h1 id="previewTitle"></h1>
         <p id="previewMeta" style="color:var(--info); margin-bottom:15px;"></p>
         <div id="previewList"></div>
         <div class="button-group" style="margin-top:20px;">
-          <button onclick="editWorkout(previewingWorkoutId)" style="flex:1; background:var(--neutral); color:var(--onneutral);">✏️ ערוך רוטינה</button>
-          <button class="success" onclick="loadWorkout(previewingWorkoutId)" style="flex:1;">▶️ התחל אימון זה</button>
+          <button onclick="editWorkout(previewingWorkoutId)" style="flex:1; background:var(--neutral); color:var(--onneutral);"><i class="ic ic-pencil"></i>ערוך רוטינה</button>
+          <button class="success" onclick="loadWorkout(previewingWorkoutId)" style="flex:1;"><i class="ic ic-play"></i>התחל אימון זה</button>
         </div>
       </div>
     </div>
@@ -704,8 +751,8 @@
         <p id="completeSummary" style="color:var(--muted); margin-bottom: 25px;"></p>
 
         <div class="stats-bar" style="justify-content:center; margin-bottom: 25px;">
-          <div class="stat-pill">📅 השבוע: <span id="completeStreak"></span></div>
-          <div class="stat-pill">💪 סה"כ: <span id="completeTotal"></span> אימונים</div>
+          <div class="stat-pill"><i class="ic ic-calendar"></i>השבוע: <span id="completeStreak"></span></div>
+          <div class="stat-pill"><i class="ic ic-dumbbell"></i>סה"כ: <span id="completeTotal"></span> אימונים</div>
         </div>
 
         <div id="goalHitBanner" class="goal-hit-banner hidden"></div>
@@ -719,7 +766,7 @@
     <!-- Workout Log Screen -->
     <div id="logScreen" class="screen">
       <div class="container">
-        <button onclick="goHome()">🏠 חזרה</button>
+        <button onclick="goHome()"><i class="ic ic-home"></i>חזרה</button>
         <h1>יומן אימונים</h1>
         <div id="logContent"></div>
       </div>
@@ -729,7 +776,7 @@
   <div id="themeSheet" class="sheet-overlay hidden" onclick="if (event.target === this) closeThemePicker()">
     <div class="sheet-panel">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h2 style="margin:0;">🎨 עיצוב</h2>
+        <h2 style="margin:0;">עיצוב</h2>
         <button onclick="closeThemePicker()" style="margin:0; background:var(--neutral); color:var(--onneutral);">✕ סגור</button>
       </div>
       <div id="themeOptions"></div>
@@ -763,6 +810,9 @@
 
     // ===== EXERCISE LIBRARY - search terms sent to WorkoutX's fuzzy name search =====
     // Body-area categories
+    const I = (n, c) => `<i class="ic ic-${n}${c ? " " + c : ""}"></i>`;
+    const cleanName = n => String(n || "").replace(/^[^\p{L}\p{N}]+/u, "");
+
     const AREAS = {
       glutes: 'ישבן וירך אחורית',
       quads: 'ירך קדמית',
@@ -785,8 +835,8 @@
     };
     // Stretch type - only set for stretches, undefined for regular exercises
     const STRETCH_TYPES = {
-      dynamic: '🔥 חימום דינמי',
-      static: '🧘 מתיחות שחרור'
+      dynamic: 'חימום דינמי',
+      static: 'מתיחות שחרור'
     };
 
     const EXERCISES = [
@@ -1043,7 +1093,7 @@
 
     function renderCardioChips() {
       document.getElementById('cardioTypeChips').innerHTML = CARDIO_TYPES.map(t =>
-        `<button class="chip ${t.id === cardioSelectedType ? 'active' : ''}" onclick="selectCardioType('${t.id}')">${t.emoji} ${t.label}</button>`
+        `<button class="chip ${t.id === cardioSelectedType ? 'active' : ''}" onclick="selectCardioType('${t.id}')">${t.label}</button>`
       ).join('');
       document.getElementById('cardioInclineWrap').style.display = cardioSelectedType === 'treadmill_incline' ? 'block' : 'none';
     }
@@ -1096,7 +1146,7 @@
       }
 
       const entry = {
-        date, name: `${type.emoji} ${type.label}`, kind: 'cardio', cardioType: type.id,
+        date, name: type.label, kind: 'cardio', cardioType: type.id,
         exerciseCount: 0, totalSeconds: Math.round(minutes * 60), exercises: []
       };
       if (!isNaN(incline) && incline > 0) entry.incline = incline;
@@ -1116,7 +1166,7 @@
         }
       }
       saveStats();
-      showCompleteScreen(newly, hitGoalNow, `${type.label} · ${formatDuration(Math.round(minutes * 60))} 💥`);
+      showCompleteScreen(newly, hitGoalNow, `${type.label} · ${formatDuration(Math.round(minutes * 60))}`);
     }
 
     function deleteCardioEntry(idx) {
@@ -1137,7 +1187,7 @@
 
     function showCompleteScreen(newAchievements, hitGoalNow, summaryText) {
       showScreen('complete');
-      document.getElementById('completeSummary').textContent = summaryText || `סיימת ${state.workout.length} תרגילים 💥`;
+      document.getElementById('completeSummary').textContent = summaryText || `סיימת ${state.workout.length} תרגילים`;
       document.getElementById('completeStreak').textContent = `${stats.weekCount}/${stats.weeklyGoal}`;
       document.getElementById('completeTotal').textContent = stats.totalCompleted;
 
@@ -1183,12 +1233,12 @@
           <div style="flex:1;">
             <b>היעד השבועי</b>
             <span class="s">${msg}</span><br>
-            <button class="edit" onclick="editWeeklyGoal()">✏️ שינוי יעד</button>
+            <button class="edit" onclick="editWeeklyGoal()"><i class="ic ic-pencil"sm></i>שינוי יעד</button>
           </div>
         </div>`;
       bar.innerHTML = `
-        <button class="stat-pill" onclick="showLog()">📖 יומן אימונים</button>
-        <div class="stat-pill">💪 סה"כ: ${stats.totalCompleted} אימונים</div>
+        <button class="stat-pill" onclick="showLog()"><i class="ic ic-book"></i>יומן אימונים</button>
+        <div class="stat-pill"><i class="ic ic-dumbbell"></i>סה"כ: ${stats.totalCompleted} אימונים</div>
       `;
     }
 
@@ -1200,13 +1250,13 @@
 
     function colorBodyMap(areaCounts, maxCount) {
       const regionMap = {
-        chest: ['bm-chest'],
+        chest: ['bm-chest', 'bm-chest2'],
         shoulders: ['bm-shoulders-l', 'bm-shoulders-r', 'bm-shoulders-l2', 'bm-shoulders-r2'],
         arms: ['bm-arms-l-f', 'bm-arms-r-f', 'bm-arms-l-b', 'bm-arms-r-b'],
         core: ['bm-core'],
         quads: ['bm-quads-l', 'bm-quads-r'],
         back: ['bm-back'],
-        glutes: ['bm-glutes']
+        glutes: ['bm-glutes', 'bm-glutes2', 'bm-ham-l', 'bm-ham-r']
       };
       Object.entries(regionMap).forEach(([area, ids]) => {
         const color = intensityColor(areaCounts[area] || 0, maxCount);
@@ -1348,7 +1398,7 @@
 
       const chip = (active, label, fn) => `<button class="chip ${active ? 'active' : ''}" onclick="${fn}" style="margin:0;">${label}</button>`;
       let html = '<div style="background:var(--card); border-radius:10px; padding:14px; margin-bottom:16px;">';
-      html += '<p style="font-size:0.95em; color:var(--gold); margin-bottom:8px;">📈 מגמות והיסטוריה</p>';
+      html += '<p style="font-size:0.95em; color:var(--accent); font-weight:600; margin-bottom:8px;"><i class="ic ic-chart"></i>מגמות והיסטוריה</p>';
       html += '<div class="filter-row" style="margin:0 0 8px 0;">' + LOG_RANGES.map(([w, l]) => chip(logRange === w, l, `setLogRange(${w})`)).join('') + '</div>';
       html += '<div class="filter-row" style="margin:0 0 10px 0;">' + chip(isCount, 'מספר אימונים', "setLogMetric('count')") + chip(!isCount, 'דקות', "setLogMetric('minutes')") + '</div>';
 
@@ -1362,7 +1412,7 @@
         const prevMin = prev.reduce((s, e) => s + (e.totalSeconds || 0), 0) / 60;
         if (prev.length || log.length) {
           const dc = log.length - prev.length, dm = Math.round(totalMin - prevMin);
-          const arrow = dc > 0 ? '📈' : dc < 0 ? '📉' : '➡️';
+          const arrow = dc > 0 ? '▲' : dc < 0 ? '▼' : '●';
           html += `<p style="font-size:0.8em; color:var(--muted); margin-bottom:8px;">${arrow} לעומת התקופה הקודמת (${prev.length} אימונים): ${dc >= 0 ? '+' : ''}${dc} אימונים · ${dm >= 0 ? '+' : ''}${dm} דקות</p>`;
         }
       }
@@ -1374,14 +1424,14 @@
       // Breakdown by type
       const types = {};
       log.forEach(e => {
-        const k = e.kind === 'cardio' ? e.name : '💪 רוטינות כוח';
+        const k = e.kind === 'cardio' ? cleanName(e.name) : 'רוטינות כוח';
         const t = types[k] || (types[k] = { count: 0, min: 0, cardio: e.kind === 'cardio' });
         t.count++; t.min += (e.totalSeconds || 0) / 60;
       });
       const typeRows = Object.entries(types).sort((a, b) => b[1].min - a[1].min);
       if (typeRows.length) {
         const maxMin = typeRows[0][1].min || 1;
-        html += '<p style="font-size:0.85em; color:var(--gold); margin:12px 0 6px 0;">🗂️ לפי סוג אימון:</p>';
+        html += '<p style="font-size:0.85em; color:var(--accent); font-weight:600; margin:12px 0 6px 0;"><i class="ic ic-layers"></i>לפי סוג אימון</p>';
         html += typeRows.map(([name, t]) => `
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
             <span style="font-size:0.75em; width:110px; flex-shrink:0;">${name}</span>
@@ -1393,17 +1443,17 @@
       // Insights
       const notes = [];
       const streak = weeklyStreak(fullLog);
-      if (streak >= 1) notes.push(`🔥 ${streak} שבועות ברצף שעמדת ביעד השבועי`);
+      if (streak >= 1) notes.push(`${streak} שבועות ברצף שעמדת ביעד השבועי`);
       if (log.length >= 4) {
         const byDay = [0, 0, 0, 0, 0, 0, 0];
         log.forEach(e => { byDay[new Date(e.date + 'T00:00:00').getDay()]++; });
         const best = byDay.indexOf(Math.max(...byDay));
-        notes.push(`📅 היום שהכי הרבה התאמנת בו: יום ${HEB_DAYS[best]} (${byDay[best]} אימונים)`);
+        notes.push(`היום שהכי הרבה התאמנת בו: יום ${HEB_DAYS[best]} (${byDay[best]} אימונים)`);
       }
       const activeBuckets = buckets.filter(b => b.sC + b.cC > 0);
       if (!info.daily && activeBuckets.length) {
         const bestW = activeBuckets.reduce((m, b) => (b.sM + b.cM) > (m.sM + m.cM) ? b : m);
-        notes.push(`🏅 השבוע החזק ביותר בטווח: ${bestW.long.replace('שבוע מ-', '')} (${Math.round(bestW.sM + bestW.cM)} דקות)`);
+        notes.push(`השבוע החזק ביותר בטווח: ${bestW.long.replace('שבוע מ-', '')} (${Math.round(bestW.sM + bestW.cM)} דקות)`);
       }
       if (notes.length) html += '<div style="margin-top:12px; font-size:0.8em; color:var(--info); line-height:1.7;">' + notes.map(t => `<div>${t}</div>`).join('') + '</div>';
       html += '</div>';
@@ -1492,14 +1542,14 @@
       const thisWk = localWeekStart(fmtLocal(new Date()));
       const cur = fullLog.filter(e => localWeekStart(e.date) === thisWk);
       const curMin = cur.reduce((s, e) => s + (e.totalSeconds || 0), 0) / 60;
-      const row = (emoji, label, value, sub) => `<div style="display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; border-bottom:1px solid var(--line);"><span style="font-size:0.85em;">${emoji} ${label}</span><span style="text-align:left;"><strong>${value}</strong><span style="display:block; font-size:0.7em; color:var(--muted);">${sub}</span></span></div>`;
+      const row = (emoji, label, value, sub) => `<div style="display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; border-bottom:1px solid var(--line);"><span style="font-size:0.85em; display:flex; align-items:center;"><span style="color:var(--accent); display:inline-flex;">${I(emoji)}</span>${label}</span><span style="text-align:left;"><strong>${value}</strong><span style="display:block; font-size:0.7em; color:var(--muted);">${sub}</span></span></div>`;
       let html = '<div style="background:var(--card); border-radius:10px; padding:14px; margin-bottom:16px;">';
-      html += '<p style="font-size:0.95em; color:var(--gold); margin-bottom:6px;">🏆 שיאים אישיים</p>';
-      html += row('⏱️', 'האימון הארוך ביותר', formatDuration(Math.round(r.sessionMin * 60)), `${r.sessionName} · ${fmtDateShort(r.sessionDate)}`);
-      if (r.cardioMin > 0) html += row('🏃', 'הקרדיו הארוך ביותר', formatDuration(Math.round(r.cardioMin * 60)), `${r.cardioName} · ${fmtDateShort(r.cardioDate)}`);
-      html += row('🔥', 'השבוע הכי עמוס', `${r.weekCount} אימונים`, `שבוע מ-${fmtDateShort(r.weekCountStart)} · השבוע: ${cur.length}`);
-      html += row('📊', 'הכי הרבה דקות בשבוע', formatDuration(Math.round(r.weekMin * 60)), `שבוע מ-${fmtDateShort(r.weekMinStart)} · השבוע: ${formatDuration(Math.round(curMin * 60))}`);
-      html += `<div style="font-size:0.8em; color:var(--info); padding-top:8px;">🔥 הרצף הארוך ביותר שלך: ${longestStreak(fullLog)} שבועות ברצף ביעד</div>`;
+      html += '<p style="font-size:0.95em; color:var(--accent); font-weight:600; margin-bottom:6px;"><i class="ic ic-trophy"></i>שיאים אישיים</p>';
+      html += row('clock', 'האימון הארוך ביותר', formatDuration(Math.round(r.sessionMin * 60)), `${r.sessionName} · ${fmtDateShort(r.sessionDate)}`);
+      if (r.cardioMin > 0) html += row('run', 'הקרדיו הארוך ביותר', formatDuration(Math.round(r.cardioMin * 60)), `${r.cardioName} · ${fmtDateShort(r.cardioDate)}`);
+      html += row('flame', 'השבוע הכי עמוס', `${r.weekCount} אימונים`, `שבוע מ-${fmtDateShort(r.weekCountStart)} · השבוע: ${cur.length}`);
+      html += row('chart', 'הכי הרבה דקות בשבוע', formatDuration(Math.round(r.weekMin * 60)), `שבוע מ-${fmtDateShort(r.weekMinStart)} · השבוע: ${formatDuration(Math.round(curMin * 60))}`);
+      html += `<div style="font-size:0.8em; color:var(--info); padding-top:8px;">הרצף הארוך ביותר שלך: ${longestStreak(fullLog)} שבועות ברצף ביעד</div>`;
       html += '</div>';
       return html;
     }
@@ -1545,7 +1595,7 @@
       const lastTxt = a => !last[a] ? 'עוד לא' : daysAgo(last[a]) === 0 ? 'היום' : daysAgo(last[a]) === 1 ? 'אתמול' : `לפני ${daysAgo(last[a])} ימים`;
       const every = n <= 8 ? 1 : 2;
       let html = '<div style="background:var(--card); border-radius:10px; padding:14px; margin-bottom:16px;">';
-      html += '<p style="font-size:0.95em; color:var(--gold); margin-bottom:4px;">⚖️ איזון בין אזורים, שבוע אחרי שבוע</p>';
+      html += '<p style="font-size:0.95em; color:var(--accent); font-weight:600; margin-bottom:4px;"><i class="ic ic-layers"></i>איזון בין אזורים, שבוע אחרי שבוע</p>';
       html += '<p style="font-size:0.75em; color:var(--muted); margin-bottom:10px;">כל משבצת = כמה תרגילים באזור באותו שבוע. אפשר לראות אם אזור נעדר לאחרונה, גם אם בסך הכל יש בו הרבה.</p>';
       const cols = `grid-template-columns: 78px repeat(${n}, 1fr) 62px;`;
       html += `<div style="display:grid; ${cols} gap:3px; direction:ltr; align-items:center;">`;
@@ -1562,8 +1612,8 @@
       html += '</div>';
       const recent = Math.min(3, n);
       const missing = areaKeys.filter(a => grid[a].slice(-recent).every(v => v === 0));
-      if (missing.length) html += `<p style="font-size:0.8em; color:var(--gold); margin-top:10px;">⚠️ בלי אימון ב-${recent} השבועות האחרונים: ${missing.map(a => AREAS[a] || a).join(', ')}</p>`;
-      else html += `<p style="font-size:0.8em; color:var(--good); margin-top:10px;">✅ כל האזורים אומנו ב-${recent} השבועות האחרונים</p>`;
+      if (missing.length) html += `<p style="font-size:0.8em; color:var(--gold); margin-top:10px;">בלי אימון ב-${recent} השבועות האחרונים: ${missing.map(a => AREAS[a] || a).join(', ')}</p>`;
+      else html += `<p style="font-size:0.8em; color:var(--good); margin-top:10px;">כל האזורים אומנו ב-${recent} השבועות האחרונים</p>`;
       html += '</div>';
       return html;
     }
@@ -1609,11 +1659,11 @@
       try { last = localStorage.getItem('lastBackup'); } catch (e) {}
       const status = last ? `גיבוי אחרון: ${fmtDateShort(last)}` : 'עוד לא גיבית. הנתונים נשמרים רק בטלפון הזה.';
       return `<div style="background:var(--card); border-radius:10px; padding:14px; margin:16px 0;">
-        <p style="font-size:0.95em; color:var(--gold); margin-bottom:4px;">💾 גיבוי נתונים</p>
+        <p style="font-size:0.95em; color:var(--accent); font-weight:600; margin-bottom:4px;"><i class="ic ic-download"></i>גיבוי נתונים</p>
         <p style="font-size:0.78em; color:var(--muted); margin-bottom:10px;">${status}</p>
         <div style="display:flex; gap:8px;">
-          <button onclick="exportBackup()" class="success" style="flex:1; margin:0;">💾 שמור גיבוי</button>
-          <label style="flex:1; margin:0; background:var(--neutral); color:var(--onneutral); color:white; border-radius:5px; padding:10px; text-align:center; cursor:pointer; font-size:0.95em;">📂 שחזור מגיבוי<input type="file" accept=".json,application/json" onchange="importBackup(this)" style="display:none;"></label>
+          <button onclick="exportBackup()" class="success" style="flex:1; margin:0;"><i class="ic ic-download"></i>שמור גיבוי</button>
+          <label style="flex:1; margin:0; background:var(--neutral); color:var(--onneutral); color:white; border-radius:5px; padding:10px; text-align:center; cursor:pointer; font-size:0.95em;"><i class="ic ic-upload"></i>שחזור מגיבוי<input type="file" accept=".json,application/json" onchange="importBackup(this)" style="display:none;"></label>
         </div>
       </div>`;
     }
@@ -1667,7 +1717,7 @@
       let html = buildLogChartsHtml(rangeInfo, fullLog, log);
       html += areaBalanceHtml(fullLog) + recordsCardHtml(fullLog);
       html += '<div style="background:var(--card); border-radius:10px; padding:14px; margin-bottom:16px;">';
-      html += `<p style="font-size:0.9em; color:var(--info); margin-bottom:10px;">📊 סה"כ ${log.length} אימונים · ${formatDuration(totalSeconds)} אימון מצטבר</p>`;
+      html += `<p style="font-size:0.9em; color:var(--info); margin-bottom:10px;">סה"כ ${log.length} אימונים · ${formatDuration(totalSeconds)} אימון מצטבר</p>`;
       const cardioEntries = log.filter(e => e.kind === 'cardio');
       if (cardioEntries.length) {
         const cardioSec = cardioEntries.reduce((s, e) => s + (e.totalSeconds || 0), 0);
@@ -1676,47 +1726,30 @@
         const weeksSpan = Math.max(1, Math.ceil((Date.now() - new Date(firstCardio + 'T00:00:00').getTime()) / (7 * 86400000)));
         const thisWeekCardioStart = getWeekStart(new Date());
         const cardioThisWeekSec = cardioEntries.filter(e => e.date >= thisWeekCardioStart).reduce((s, e) => s + (e.totalSeconds || 0), 0);
-        html += `<p style="font-size:0.85em; color:var(--cardio-text); margin-bottom:6px;">🏃 קרדיו ומכשירים: ${cardioEntries.length} אימונים · ${formatDuration(cardioSec)}</p>`;
+        html += `<p style="font-size:0.85em; color:var(--cardio-text); margin-bottom:6px;">קרדיו ומכשירים: ${cardioEntries.length} אימונים · ${formatDuration(cardioSec)}</p>`;
         html += `<p style="font-size:0.8em; color:var(--muted); margin-bottom:10px;">השבוע: ${formatDuration(cardioThisWeekSec)} קרדיו · ממוצע שבועי: ${formatDuration(Math.round(cardioSec / weeksSpan))} · כוח ${strengthCount} מול קרדיו ${cardioEntries.length}</p>`;
       }
 
       if (lastWeekSec > 0 || thisWeekSec > 0) {
-        const arrow = weekDiff > 0 ? '📈' : weekDiff < 0 ? '📉' : '➡️';
+        const arrow = weekDiff > 0 ? '▲' : weekDiff < 0 ? '▼' : '●';
         html += `<p style="font-size:0.85em; color:var(--text2); margin-bottom:10px;">${arrow} השבוע: ${formatDuration(thisWeekSec)} (שבוע שעבר: ${formatDuration(lastWeekSec)})</p>`;
       }
 
       if (rankedAreas.length) {
-        html += '<p style="font-size:0.85em; color:var(--gold); margin-bottom:8px;">🗺️ מפת אזורים (בוהק = יותר אומן):</p>';
+        html += `<p style="font-size:0.85em; color:var(--accent); font-weight:600; margin-bottom:6px;">${I('target')}מפת אזורים</p>`;
         html += `
-          <svg viewBox="0 0 400 220" style="width:100%; max-width:340px; display:block; margin:0 auto 10px auto;">
-            <text x="70" y="14" style="fill:var(--muted);" font-size="11" text-anchor="middle">קדמי</text>
-            <circle cx="70" cy="28" r="14" style="fill:var(--bm-head);"/>
-            <ellipse id="bm-shoulders-l" cx="50" cy="49" rx="12" ry="9" style="fill:var(--bm-empty);"/>
-            <ellipse id="bm-shoulders-r" cx="90" cy="49" rx="12" ry="9" style="fill:var(--bm-empty);"/>
-            <rect id="bm-chest" x="52" y="45" width="36" height="26" rx="7" style="fill:var(--bm-empty);"/>
-            <rect id="bm-arms-l-f" x="34" y="53" width="11" height="50" rx="5" style="fill:var(--bm-empty);"/>
-            <rect id="bm-arms-r-f" x="95" y="53" width="11" height="50" rx="5" style="fill:var(--bm-empty);"/>
-            <rect id="bm-core" x="54" y="71" width="32" height="36" rx="5" style="fill:var(--bm-empty);"/>
-            <rect id="bm-quads-l" x="54" y="107" width="14" height="62" rx="6" style="fill:var(--bm-empty);"/>
-            <rect id="bm-quads-r" x="72" y="107" width="14" height="62" rx="6" style="fill:var(--bm-empty);"/>
-
-            <g transform="translate(200,0)">
-              <text x="70" y="14" style="fill:var(--muted);" font-size="11" text-anchor="middle">אחורי</text>
-              <circle cx="70" cy="28" r="14" style="fill:var(--bm-head);"/>
-              <ellipse id="bm-shoulders-l2" cx="50" cy="49" rx="12" ry="9" style="fill:var(--bm-empty);"/>
-              <ellipse id="bm-shoulders-r2" cx="90" cy="49" rx="12" ry="9" style="fill:var(--bm-empty);"/>
-              <rect id="bm-back" x="50" y="45" width="40" height="40" rx="7" style="fill:var(--bm-empty);"/>
-              <rect id="bm-arms-l-b" x="34" y="53" width="11" height="50" rx="5" style="fill:var(--bm-empty);"/>
-              <rect id="bm-arms-r-b" x="95" y="53" width="11" height="50" rx="5" style="fill:var(--bm-empty);"/>
-              <rect id="bm-glutes" x="50" y="85" width="40" height="26" rx="10" style="fill:var(--bm-empty);"/>
-              <rect x="54" y="111" width="14" height="58" rx="6" style="fill:var(--bm-leg);"/>
-              <rect x="72" y="111" width="14" height="58" rx="6" style="fill:var(--bm-leg);"/>
-            </g>
-          </svg>`;
+          <svg viewBox="0 0 300 252" style="width:100%; max-width:320px; display:block; margin:0 auto 4px auto;" role="img" aria-label="מפת אזורי אימון">
+            <style>.bm-s{stroke:var(--card);stroke-width:1.4;stroke-linejoin:round;transition:fill .3s;}</style>
+            <g transform="translate(5,0)"><ellipse cx="70" cy="21" rx="11" ry="13" class="bm-s" style="fill:var(--bm-head);"/><path d="M64 32 L76 32 L77 44 L63 44Z" class="bm-s" style="fill:var(--bm-head);"/><path id="bm-shoulders-l" d="M57 44 C47 43 37 47 34 57 C33 63 37 67 42 65 L54 57 C56 52 57 48 57 44Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-shoulders-r" d="M 83 44 C 93 43 103 47 106 57 C 107 63 103 67 98 65 L 86 57 C 84 52 83 48 83 44 Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-chest" d="M58 47 L69 47 C70 56 69 64 66 69 C62 71 58 68 57 62 C56 56 57 51 58 47Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-chest2" d="M 82 47 L 71 47 C 70 56 71 64 74 69 C 78 71 82 68 83 62 C 84 56 83 51 82 47 Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-arms-l-f" d="M34 64 C30 74 28 88 27 102 C26 110 27 116 31 119 L37 119 C39 108 41 97 43 87 C44 79 44 71 42 65Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-arms-r-f" d="M 106 64 C 110 74 112 88 113 102 C 114 110 113 116 109 119 L 103 119 C 101 108 99 97 97 87 C 96 79 96 71 98 65 Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-core" d="M59 73 C63 75 77 75 81 73 C82 85 80 97 78 107 C74 111 66 111 62 107 C60 97 58 85 59 73Z" class="bm-s" style="fill:var(--bm-empty);"/><path d="M61 108 C65 112 75 112 79 108 L84 118 L56 118Z" class="bm-s" style="fill:var(--bm-leg);"/><path id="bm-quads-l" d="M55 118 C51 136 52 157 57 173 L67 173 C69 157 69 136 67 118Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-quads-r" d="M 85 118 C 89 136 88 157 83 173 L 73 173 C 71 157 71 136 73 118 Z" class="bm-s" style="fill:var(--bm-empty);"/><path d="M57 177 C55 193 56 209 58 224 L65 224 C67 209 67 193 67 177Z" class="bm-s" style="fill:var(--bm-leg);"/><path d="M 83 177 C 85 193 84 209 82 224 L 75 224 C 73 209 73 193 73 177 Z" class="bm-s" style="fill:var(--bm-leg);"/></g>
+            <g transform="translate(155,0)"><ellipse cx="70" cy="21" rx="11" ry="13" class="bm-s" style="fill:var(--bm-head);"/><path d="M64 32 L76 32 L77 44 L63 44Z" class="bm-s" style="fill:var(--bm-head);"/><path id="bm-shoulders-l2" d="M57 44 C47 43 37 47 34 57 C33 63 37 67 42 65 L54 57 C56 52 57 48 57 44Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-shoulders-r2" d="M 83 44 C 93 43 103 47 106 57 C 107 63 103 67 98 65 L 86 57 C 84 52 83 48 83 44 Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-back" d="M58 46 L82 46 C86 58 84 78 80 92 C76 99 64 99 60 92 C56 78 54 58 58 46Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-arms-l-b" d="M34 64 C30 74 28 88 27 102 C26 110 27 116 31 119 L37 119 C39 108 41 97 43 87 C44 79 44 71 42 65Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-arms-r-b" d="M 106 64 C 110 74 112 88 113 102 C 114 110 113 116 109 119 L 103 119 C 101 108 99 97 97 87 C 96 79 96 71 98 65 Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-glutes" d="M55 101 C51 111 52 125 60 129 C66 130 69 125 69 115 L69 101Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-glutes2" d="M 85 101 C 89 111 88 125 80 129 C 74 130 71 125 71 115 L 71 101 Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-ham-l" d="M55 133 C52 148 53 161 57 173 L67 173 C69 161 69 148 68 133Z" class="bm-s" style="fill:var(--bm-empty);"/><path id="bm-ham-r" d="M 85 133 C 88 148 87 161 83 173 L 73 173 C 71 161 71 148 72 133 Z" class="bm-s" style="fill:var(--bm-empty);"/><path d="M57 177 C55 193 56 209 58 224 L65 224 C67 209 67 193 67 177Z" class="bm-s" style="fill:var(--bm-leg);"/><path d="M 83 177 C 85 193 84 209 82 224 L 75 224 C 73 209 73 193 73 177 Z" class="bm-s" style="fill:var(--bm-leg);"/></g>
+            <text x="75" y="246" style="fill:var(--muted);" font-size="11" text-anchor="middle" letter-spacing="1">קדמי</text>
+            <text x="225" y="246" style="fill:var(--muted);" font-size="11" text-anchor="middle" letter-spacing="1">אחורי</text>
+          </svg>
+          <div class="legend-bar">פחות<span class="grad"></span>יותר</div>`;
       }
 
       if (rankedAreas.length) {
-        html += '<p style="font-size:0.85em; color:var(--gold); margin-bottom:6px;">💪 איפה הכי התמקדת:</p>';
+        html += '<p style="font-size:0.85em; color:var(--accent); font-weight:600; margin-bottom:6px;"><i class="ic ic-dumbbell"></i>איפה הכי התמקדת</p>';
         html += barAreas.map(([area, count]) => `
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
             <span style="font-size:0.75em; width:110px; flex-shrink:0;">${AREAS[area] || area}</span>
@@ -1730,12 +1763,12 @@
         if (log.length >= 3) {
           const allAreaKeys = ['glutes', 'quads', 'back', 'core', 'chest', 'shoulders', 'arms'];
           const leastTrained = [...allAreaKeys].sort((a, b) => (areaCounts[a] || 0) - (areaCounts[b] || 0))[0];
-          html += `<p style="font-size:0.8em; color:var(--info); margin-top:10px;">💡 האזור שהכי פחות עסקת בו: <strong>${AREAS[leastTrained]}</strong> (${areaCounts[leastTrained] || 0}) — אולי שווה להוסיף ממנו תרגיל בפעם הבאה</p>`;
+          html += `<p style="font-size:0.8em; color:var(--info); margin-top:10px;">האזור שהכי פחות עסקת בו: <strong>${AREAS[leastTrained]}</strong> (${areaCounts[leastTrained] || 0}) — אולי שווה להוסיף ממנו תרגיל בפעם הבאה</p>`;
         }
       }
 
       if (dynamicCount || staticCount) {
-        html += `<p style="font-size:0.8em; color:var(--muted); margin-top:10px;">🔥 ${dynamicCount} חימומים דינמיים · 🧘 ${staticCount} מתיחות שחרור</p>`;
+        html += `<p style="font-size:0.8em; color:var(--muted); margin-top:10px;">${dynamicCount} חימומים דינמיים · ${staticCount} מתיחות שחרור</p>`;
       }
       html += '</div>';
 
@@ -1750,8 +1783,8 @@
           return `
         <div class="workout-item" style="border-right:3px solid var(--cardio);">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>${entry.name}</strong>
-            <button onclick="deleteCardioEntry(${idx})" style="margin:0; padding:2px 8px; background:var(--neutral); color:var(--onneutral); font-size:0.85em;">🗑️</button>
+            <strong>${cleanName(entry.name)}</strong>
+            <button onclick="deleteCardioEntry(${idx})" style="margin:0; padding:2px 8px; background:var(--neutral); color:var(--onneutral); font-size:0.85em;" class="icon-only" aria-label="מחק"><i class="ic ic-trash"sm></i></button>
           </div>
           <p style="font-size:0.85em; color:var(--muted); margin-top:4px;">${entry.date} · ${formatDuration(entry.totalSeconds)}${extras.length ? ' · ' + extras.join(' · ') : ''}</p>
           ${cAreas ? `<p style="font-size:0.75em; color:var(--accent); margin-top:4px;">${cAreas}</p>` : ''}
@@ -1760,7 +1793,7 @@
         const uniqueAreas = [...new Set((entry.exercises || []).flatMap(ex => (ex.areas || []).filter(a => a !== 'upper_body')))];        const tagsLine = uniqueAreas.length ? uniqueAreas.map(a => AREAS[a] || a).join(' • ') : '';
         return `
         <div class="workout-item">
-          <strong>${entry.name}</strong>
+          <strong>${cleanName(entry.name)}</strong>
           <p style="font-size:0.85em; color:var(--muted); margin-top:4px;">${entry.date} · ${entry.exerciseCount} תרגילים · ${formatTime(entry.totalSeconds)} דקות</p>
           ${tagsLine ? `<p style="font-size:0.75em; color:var(--accent); margin-top:4px;">${tagsLine}</p>` : ''}
         </div>`;
@@ -2474,16 +2507,15 @@
           wrap.innerHTML = `
             <div id="ytPlayerHost" style="position:absolute;inset:0;"></div>
             <div class="rest-banner">
-              <div class="rest-label">😌 מנוחה</div>
-              <p class="next-label">👉 התרגיל הבא:</p>
+              <div class="rest-label">מנוחה · התרגיל הבא</div>
               <p class="next-name">${next.name}</p>
             </div>`;
           playYoutubeLoop('ytPlayerHost', next.youtubeId, next.ytStart, next.ytEnd);
         } else if (next) {
           wrap.innerHTML = `
             <div class="rest-screen">
-              <div class="rest-label" style="margin-bottom:14px;">😌 מנוחה</div>
-              <p class="next-label">👉 התרגיל הבא:</p>
+              <div class="rest-label" style="margin-bottom:10px;">מנוחה</div>
+              <p class="next-label">התרגיל הבא</p>
               <p class="next-name" style="margin-bottom:10px;">${next.name}</p>
               ${next.gifUrl ? `<img src="${next.gifUrl}" alt="${next.name}" style="max-width:60%; max-height:38vh; border-radius:14px; border:2px solid var(--gold); opacity:0.75;">` : ''}
             </div>`;
@@ -2500,9 +2532,9 @@
       } else {
         const base = current.originalId ? EXERCISES.find(e => e.id === current.originalId) : null;
         if (base && base.instructions) {
-          wrap.innerHTML = `<div class="media-fallback" style="text-align:right; max-width:85%; line-height:1.6;">📋 <strong>${current.name}</strong><br><br>${base.instructions}</div>`;
+          wrap.innerHTML = `<div class="media-fallback" style="text-align:right; max-width:85%; line-height:1.6;">${I('list')} <strong>${current.name}</strong><br><br>${base.instructions}</div>`;
         } else {
-          wrap.innerHTML = '<div class="media-fallback">😕 אין סרטון או הוראות לתרגיל הזה<br>(פתחי את 🐞 לפרטים)</div>';
+          wrap.innerHTML = '<div class="media-fallback">אין סרטון או הוראות לתרגיל הזה<br>(פתחי את 🐞 לפרטים)</div>';
         }
       }
     }
@@ -2736,11 +2768,11 @@
         <div class="workout-card">
           <h3>${w.name}</h3>
           <p>${w.exercises.length} תרגילים${meta.hasStretch ? ' · כולל מתיחות' : ''}</p>
-          <p class="routine-meta">⏱️ ${formatTime(meta.totalSeconds)} דקות</p>
+          <p class="routine-meta"><i class="ic ic-clock"sm></i>${formatTime(meta.totalSeconds)} דקות</p>
           <div class="button-group">
-            <button onclick="previewWorkout(${w.id})" style="background:var(--neutral); color:var(--onneutral);">👁️ תצוגה</button>
-            <button class="success" onclick="loadWorkout(${w.id})" style="flex: 1;">▶️ התחל</button>
-            <button class="danger" onclick="deleteWorkout(${w.id})">🗑️</button>
+            <button onclick="previewWorkout(${w.id})" style="background:var(--neutral); color:var(--onneutral);"><i class="ic ic-eye"></i>תצוגה</button>
+            <button class="success" onclick="loadWorkout(${w.id})" style="flex: 1;"><i class="ic ic-play"></i>התחל</button>
+            <button class="danger icon-only" onclick="deleteWorkout(${w.id})" aria-label="מחק"><i class="ic ic-trash"></i></button>
           </div>
         </div>
       `).join('');
@@ -2836,9 +2868,9 @@
                 <button onclick="moveExercise(${ex.id}, -1)" ${idx === 0 ? 'disabled style="margin:0;opacity:0.3;"' : 'style="margin:0;background:var(--neutral); color:var(--onneutral);padding:4px 10px;"'}>▲</button>
                 <button onclick="moveExercise(${ex.id}, 1)" ${idx === state.workout.length - 1 ? 'disabled style="margin:0;opacity:0.3;"' : 'style="margin:0;background:var(--neutral); color:var(--onneutral);padding:4px 10px;"'}>▼</button>
               </div>
-              <button onclick="duplicateExercise(${ex.id})" style="margin:0; background:var(--neutral); color:var(--onneutral); padding:8px;">📋</button>
+              <button onclick="duplicateExercise(${ex.id})" style="margin:0; background:var(--neutral); color:var(--onneutral); padding:8px;" class="icon-only" aria-label="שכפל"><i class="ic ic-copy"></i></button>
               <button onclick="toggleManualSearch(${ex.id})" style="margin:0; background:var(--neutral); color:var(--onneutral); padding:8px;">🔍</button>
-              <button class="danger" onclick="removeExercise(${ex.id})" style="margin: 0;">🗑️</button>
+              <button class="danger icon-only" onclick="removeExercise(${ex.id})" style="margin: 0;" aria-label="מחק"><i class="ic ic-trash"></i></button>
             </div>
             <div id="manualSearch-${ex.id}" class="manual-search hidden">
               <input type="text" id="manualSearchInput-${ex.id}" placeholder="נסי מילה אחרת, למשל: overhead carry">
@@ -2865,6 +2897,15 @@
       updateTotalTimeBuild();
     }
 
+    function positionTimerBox() {
+      const tb = document.querySelector('.workout-screen .timer-box');
+      const info = document.querySelector('.workout-screen .workout-info');
+      const ctl = document.querySelector('.workout-screen .controls');
+      if (!tb || !info || !ctl) return;
+      tb.style.bottom = (info.offsetHeight + ctl.offsetHeight + 12) + 'px';
+    }
+    window.addEventListener('resize', () => { try { positionTimerBox(); } catch (e) {} });
+
     function renderWorkout() {
       const current = state.workout[state.currentIdx];
 
@@ -2872,9 +2913,9 @@
         document.getElementById('exerciseName').textContent = 'מתכוננים...';
         document.getElementById('exerciseNumber').textContent = `האימון מתחיל עוד ${state.countdownLeft}`;
         document.getElementById('timerDisplay').textContent = '00:' + String(state.countdownLeft).padStart(2, '0');
-        document.getElementById('workingEmoji').textContent = '🏃';
+        document.getElementById('workingEmoji').textContent = 'מתכוננים';
         document.getElementById('progressFill').style.width = '0%';
-        document.getElementById('startBtn').textContent = state.isRunning ? '⏸️ עצור' : '▶️ התחל';
+        document.getElementById('startBtn').innerHTML = state.isRunning ? I('pause') + 'עצור' : I('play') + 'התחל';
         document.getElementById('totalTimeLeft').textContent = '';
         renderMedia();
         return;
@@ -2888,14 +2929,15 @@
       document.getElementById('timerDisplay').textContent =
         String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
 
-      document.getElementById('workingEmoji').textContent = state.isWorking ? '🔥' : '😌';
+      document.getElementById('workingEmoji').textContent = state.isWorking ? 'עבודה' : 'מנוחה';
       const wsEl = document.querySelector('.workout-screen');
       if (wsEl) wsEl.classList.toggle('resting', !state.isWorking && !state.isCountdown);
+      positionTimerBox();
 
       const progress = ((state.currentIdx + 1) / state.workout.length) * 100;
       document.getElementById('progressFill').style.width = progress + '%';
 
-      document.getElementById('startBtn').textContent = state.isRunning ? '⏸️ עצור' : '▶️ התחל';
+      document.getElementById('startBtn').innerHTML = state.isRunning ? I('pause') + 'עצור' : I('play') + 'התחל';
 
       let totalLeft = state.timeLeft;
       if (state.isWorking) totalLeft += current.rest;

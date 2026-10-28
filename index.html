@@ -18,22 +18,26 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #000;
-      color: #fff;
+      background: var(--bg);
+      background-image: var(--bg-img);
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: var(--text);
       min-height: 100vh;
     }
 
     .container { max-width: 800px; margin: 0 auto; padding: 20px; }
 
-    h1 { text-align: center; margin: 30px 0; font-size: 2.2em; }
+    h1 { text-align: start; margin: 16px 0 10px; font-size: 1.7em; font-weight: 700; }
+    #completeScreen h1 { text-align: center; }
     h2 { font-size: 1.4em; margin: 20px 0 12px 0; }
 
     button {
-      background: #5b21b6;
-      color: white;
+      background: var(--accent);
+      color: var(--onaccent);
       border: none;
       padding: 12px 20px;
-      border-radius: 8px;
+      border-radius: 12px;
       cursor: pointer;
       font-size: 1em;
       font-weight: bold;
@@ -41,69 +45,70 @@
       transition: all 0.2s;
     }
     button:active { transform: scale(0.97); }
-    button.danger { background: #dc2626; }
-    button.success { background: #16a34a; }
+    button.danger { background: var(--bad); color: #fff; }
+    button.success { background: var(--accent); }
 
     input {
       padding: 10px;
       border-radius: 5px;
-      border: 1px solid #333;
-      background: #1a1a1a;
-      color: white;
+      border: 1px solid var(--line);
+      background: var(--input);
+      color: var(--text);
       font-size: 1em;
       width: 100%;
       margin: 10px 0;
     }
 
     .workout-item {
-      background: #1a1a1a;
+      background: var(--card);
       padding: 15px;
-      border-radius: 8px;
+      border-radius: 14px;
       margin: 10px 0;
-      border-right: 3px solid #7c3aed;
+      border: 1px solid var(--line);
+      border-right: 3px solid var(--accent);
     }
     .workout-item.just-moved {
       animation: moveFlash 0.8s ease;
     }
     @keyframes moveFlash {
-      0% { background: #7c3aed; border-right-color: #fbbf24; }
-      100% { background: #1a1a1a; border-right-color: #7c3aed; }
+      0% { background: var(--accent-soft); border-right-color: var(--gold); }
+      100% { background: var(--card); border-right-color: var(--accent); }
     }
     .insert-divider {
       display: block;
       width: 100%;
       background: transparent;
-      border: 1px dashed #444;
-      color: #777;
+      border: 1px dashed var(--line);
+      color: var(--muted);
       font-size: 0.72em;
       padding: 4px;
       margin: 2px 0;
       border-radius: 6px;
     }
     .insert-divider.active {
-      background: #7c3aed;
-      border: 1px solid #fbbf24;
-      color: white;
+      background: var(--accent);
+      border: 1px solid var(--gold);
+      color: var(--onaccent);
       font-weight: bold;
       padding: 8px;
     }
 
     .drag-handle {
       font-size: 1.4em;
-      color: #777;
+      color: var(--muted);
       cursor: grab;
       padding: 4px 6px;
       flex-shrink: 0;
       touch-action: none;
     }
     .workout-item.dragging { opacity: 0.4; }
-    .workout-item.drag-over { border-top: 3px solid #fbbf24; }
+    .workout-item.drag-over { border-top: 3px solid var(--gold); }
 
     .workout-item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .workout-item-header img { width: 56px; height: 56px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: #333; }
+    .workout-item-header img { width: 56px; height: 56px; border-radius: 6px; object-fit: cover; flex-shrink: 0; background: var(--track); }
     .workout-item-header .thumb-placeholder {
       width: 56px; height: 56px; border-radius: 6px; flex-shrink: 0;
-      background: #333; display: flex; align-items: center; justify-content: center; font-size: 0.65em; color: #888; text-align: center;
+      background: var(--track); display: flex; align-items: center; justify-content: center; font-size: 0.65em; color: var(--muted); text-align: center;
     }
     .workout-item-header .name { flex: 1; }
 
@@ -113,30 +118,30 @@
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
-      background: #2d1b4e;
-      border: 1px solid #7c3aed;
-      border-radius: 8px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
       padding: 8px 10px;
       margin-bottom: 10px;
       font-size: 0.85em;
     }
     .bulk-selection-bar.hidden { display: none; }
-    .workout-item.bulk-selected { outline: 2px solid #7c3aed; }
+    .workout-item.bulk-selected { outline: 2px solid var(--accent); }
 
     .bulk-time-row {
       display: flex;
       gap: 10px;
       align-items: flex-end;
-      background: #161616;
-      border: 1px dashed #444;
-      border-radius: 8px;
+      background: var(--card);
+      border: 1px dashed var(--line);
+      border-radius: 12px;
       padding: 10px;
       margin-bottom: 15px;
     }
     .bulk-time-row .time-input input { margin: 0; }
     .bulk-time-row button { flex-shrink: 0; padding: 10px 14px; font-size: 0.85em; }
     .time-input { flex: 1; }
-    .time-input label { font-size: 0.8em; color: #999; display: block; margin-bottom: 4px; }
+    .time-input label { font-size: 0.8em; color: var(--muted); display: block; margin-bottom: 4px; }
     .time-input input { width: 100%; margin: 0; text-align: center; }
 
     .button-group { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
@@ -145,8 +150,12 @@
     .screen.active { display: block; }
 
     .workouts-grid { display: grid; gap: 15px; }
-    .workout-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; }
-    .workout-card h3 { margin-bottom: 8px; }
+    .workout-card { background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); padding: 18px; border-radius: 18px; }
+    .workout-card h3 { margin-bottom: 6px; font-size: 1.1em; }
+    .workout-card p { color: var(--muted); font-size: 0.85em; }
+    .workout-card .button-group button { margin: 0; }
+    .workout-screen .top-bar button { background: rgba(255,255,255,0.18); color: #fff; backdrop-filter: blur(6px); }
+    .workout-screen .controls button { padding: 10px 6px; margin: 0; }
 
     .filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
     .routine-organizer { margin-bottom: 15px; }
@@ -154,31 +163,32 @@
     .routine-organizer select {
       width: 100%;
       padding: 10px 8px;
-      border-radius: 5px;
-      border: 1px solid #333;
-      background: #1a1a1a;
-      color: white;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--input);
+      color: var(--text);
       font-size: 0.85em;
       margin-bottom: 8px;
     }
-    .routine-meta { font-size: 0.75em; color: #ccc; margin-top: 2px; }
+    .routine-meta { font-size: 0.75em; color: var(--muted); margin-top: 2px; }
     .chip {
       padding: 8px 14px;
       border-radius: 20px;
-      border: 1px solid #444;
-      background: #1a1a1a;
-      color: #ccc;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text2);
       font-size: 0.8em;
+      font-weight: 600;
       margin: 0;
     }
-    .chip.active { background: #7c3aed; border-color: #7c3aed; color: white; font-weight: bold; }
+    .chip.active { background: var(--accent); border-color: var(--accent); color: var(--onaccent); font-weight: bold; }
     .filter-row select {
       flex: 1;
       padding: 10px 8px;
-      border-radius: 5px;
-      border: 1px solid #333;
-      background: #1a1a1a;
-      color: white;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: var(--input);
+      color: var(--text);
       font-size: 0.85em;
     }
 
@@ -197,14 +207,23 @@
       font-size: 0.72em;
       line-height: 1.25;
       text-align: center;
+      background: var(--card);
+      color: var(--text);
+      border: 1px solid var(--line);
+      font-weight: 600;
     }
-    .exercise-btn img { width: 100%; aspect-ratio: 1; border-radius: 6px; object-fit: cover; background: #333; }
+    .exercise-btn img { width: 100%; aspect-ratio: 1; border-radius: 6px; object-fit: cover; background: var(--track); }
     .exercise-btn .thumb-empty {
-      width: 100%; aspect-ratio: 1; border-radius: 6px; background: #2a2a2a;
+      width: 100%; aspect-ratio: 1; border-radius: 6px; background: var(--track);
       display: flex; align-items: center; justify-content: center; font-size: 1.3em;
     }
 
     .workout-screen {
+      /* the exercise screen stays dark in every theme so videos look right */
+      --bg: #000; --text: #fff; --text2: #ddd; --muted: #aaa; --card: #1a1a1a; --line: #333; --track: #333;
+      --info: #93c5fd; --gold: #fbbf24; --neutral: #374151; --onneutral: #fff; --input: #1a1a1a;
+      --accent: var(--accent-bright); --onaccent: #0b0f14; --accent-soft: #2a2140;
+      color: #fff;
       position: fixed;
       inset: 0;
       background: #000;
@@ -277,7 +296,7 @@
     }
     .rest-banner {
       position: absolute; top: 0; left: 0; right: 0; z-index: 10;
-      background: linear-gradient(to bottom, #0284c7 0%, #0284c7 78%, rgba(2,132,199,0.0) 100%);
+      background: linear-gradient(to bottom, var(--rest) 0%, var(--rest) 78%, transparent 100%);
       padding: 64px 12px 30px 12px;
       text-align: center;
     }
@@ -291,14 +310,14 @@
     /* Whole-screen "rest mode": a calm blue frame + blue panels, readable from a distance */
     .workout-screen.resting::after {
       content: ''; position: absolute; inset: 0; z-index: 30;
-      border: 14px solid #0ea5e9; pointer-events: none;
+      border: 14px solid var(--rest); pointer-events: none;
     }
-    .workout-screen.resting .media-wrap { background: #0c4a6e; }
-    .workout-screen.resting .timer-box { background: #0369a1; border-color: #bae6fd; }
+    .workout-screen.resting .media-wrap { background: var(--rest-deep); }
+    .workout-screen.resting .timer-box { background: var(--rest); border-color: var(--rest-bright); }
     .workout-screen.resting .timer-box .timer-display { color: #ffffff; }
     .workout-screen.resting .workout-info,
-    .workout-screen.resting .controls { background: #0c4a6e; }
-    .workout-screen.resting .progress-fill { background: #38bdf8; }
+    .workout-screen.resting .controls { background: var(--rest-deep); }
+    .workout-screen.resting .progress-fill { background: var(--rest-bright); }
     @keyframes pulseRest {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.55; }
@@ -308,18 +327,20 @@
 
     .rest-screen {
       text-align: center;
-      color: #93c5fd;
+      color: var(--rest-bright);
     }
     .rest-screen .big-emoji { font-size: 4em; }
 
     .stats-bar { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 20px 0; }
     .stat-pill {
-      background: #1a1a1a;
-      border: 1px solid #333;
+      background: var(--card);
+      border: 1px solid var(--line);
+      color: var(--text2);
       border-radius: 20px;
       padding: 6px 14px;
       font-size: 0.85em;
     }
+    button.stat-pill { margin: 0; font-weight: 500; }
     .goal-hit-banner {
       background: linear-gradient(135deg, #f59e0b, #ef4444, #f59e0b);
       background-size: 200% 200%;
@@ -343,6 +364,7 @@
     }
 
     .achievement-card {
+      color: #2a1a00;
       background: linear-gradient(135deg, #f59e0b, #d97706);
       border-radius: 10px;
       padding: 14px;
@@ -354,9 +376,9 @@
     @keyframes pop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
     .manual-search {
-      background: #111;
-      border: 1px dashed #555;
-      border-radius: 8px;
+      background: var(--card);
+      border: 1px dashed var(--line);
+      border-radius: 10px;
       padding: 10px;
       margin: 8px 0;
     }
@@ -366,13 +388,13 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      background: #222;
+      background: var(--track);
       border-radius: 8px;
       padding: 6px;
       margin: 6px 0;
       cursor: pointer;
     }
-    .search-result:active { background: #333; }
+    .search-result:active { background: var(--line); }
     .search-result img { width: 50px; height: 50px; border-radius: 6px; object-fit: cover; flex-shrink: 0; }
     .search-result span { font-size: 0.8em; }
 
@@ -424,6 +446,7 @@
       overflow-y: auto;
       background: #000;
       border-top: 2px solid #7c3aed;
+      color: #ddd;
       font-family: monospace;
       font-size: 0.7em;
       padding: 8px 8px 8px 50px;
@@ -439,8 +462,8 @@
       position: fixed;
       bottom: 10px; left: 10px;
       z-index: 5001;
-      background: #7c3aed;
-      color: white;
+      background: var(--accent);
+      color: var(--onaccent);
       border-radius: 50%;
       width: 40px; height: 40px;
       display: flex; align-items: center; justify-content: center;
@@ -448,18 +471,99 @@
       border: none;
       box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
-  </style>
+  
+    /* ===== Themes ===== */
+    :root, html[data-theme="forest"] {
+      --bg:#F6F3EC; --bg-img:none; --text:#1E2A25; --text2:#4A554F; --muted:#7B847E;
+      --card:#FFFFFF; --line:#E7E1D4; --track:#ECE7DB; --input:#FFFFFF; --shadow:0 1px 2px rgba(30,42,37,.05);
+      --accent:#2F5D50; --accent-bright:#5FB08F; --onaccent:#FFFFFF; --accent-soft:#E3EDE8;
+      --neutral:#ECE7DB; --onneutral:#3B4A43; --info:#2F5D50; --gold:#9A6B12; --good:#2F7D5B; --bad:#B3402F;
+      --cardio:#4C7FA3; --cardio-text:#3B6F92; --c-strength:#2F5D50; --c-cardio:#4C7FA3;
+      --bm-empty:#E4DED2; --bm-head:#CFC8B8; --bm-leg:#E9E4D8;
+      --rest:#2093B5; --rest-deep:#12394A; --rest-bright:#8BCDE0;
+    }
+    html[data-theme="plum"] {
+      --bg:#F8F3F1; --text:#33232B; --text2:#5A4750; --muted:#877880;
+      --card:#FFFFFF; --line:#EBE2DF; --track:#F0E8E4; --input:#FFFFFF; --shadow:0 1px 2px rgba(51,35,43,.05);
+      --accent:#7E3F5C; --accent-bright:#D98BAE; --onaccent:#FFFFFF; --accent-soft:#F1E6EB;
+      --neutral:#F0E8E4; --onneutral:#5E3047; --info:#7E3F5C; --gold:#9A6B12; --good:#2F7D5B; --bad:#B3402F;
+      --cardio:#3E7C8C; --cardio-text:#2F6572; --c-strength:#7E3F5C; --c-cardio:#3E7C8C;
+      --bm-empty:#E9DFDB; --bm-head:#D3C6C1; --bm-leg:#EDE4E0;
+      --rest:#2B8FA8; --rest-deep:#14363F; --rest-bright:#8CCAD8;
+    }
+    html[data-theme="denim"] {
+      --bg:#F4F5F4; --text:#1E2A33; --text2:#46535C; --muted:#77838C;
+      --card:#FFFFFF; --line:#E1E5E5; --track:#E8ECEC; --input:#FFFFFF; --shadow:0 1px 2px rgba(30,42,51,.05);
+      --accent:#1F5A8A; --accent-bright:#6FA3D8; --onaccent:#FFFFFF; --accent-soft:#E3ECF4;
+      --neutral:#E8ECEC; --onneutral:#2F4F6E; --info:#1F5A8A; --gold:#9A6B12; --good:#2F7D5B; --bad:#B3402F;
+      --cardio:#2F8F83; --cardio-text:#23766B; --c-strength:#1F5A8A; --c-cardio:#2F8F83;
+      --bm-empty:#E2E7E7; --bm-head:#C8D0D0; --bm-leg:#E6EBEB;
+      --rest:#1FA08C; --rest-deep:#0F3B36; --rest-bright:#7FD1C4;
+    }
+    html[data-theme="amethyst"] {
+      --bg:#F6F4F1; --text:#262233; --text2:#4C4A59; --muted:#7F7A8C;
+      --card:#FFFFFF; --line:#E8E3DF; --track:#EEEAE6; --input:#FFFFFF; --shadow:0 1px 2px rgba(38,34,51,.05);
+      --accent:#6A5A9C; --accent-bright:#B3A2EC; --onaccent:#FFFFFF; --accent-soft:#EEEAF4;
+      --neutral:#EEEAF4; --onneutral:#4C4466; --info:#6A5A9C; --gold:#9A6B12; --good:#2F7D5B; --bad:#B3402F;
+      --cardio:#3E8E8A; --cardio-text:#2F7470; --c-strength:#6A5A9C; --c-cardio:#3E8E8A;
+      --bm-empty:#E6E1E8; --bm-head:#D0C9D6; --bm-leg:#EBE6EE;
+      --rest:#2E97B3; --rest-deep:#143A44; --rest-bright:#8CD0DD;
+    }
+    html[data-theme="night"] {
+      --bg:#0F1620; --bg-img:radial-gradient(120% 45% at 50% 0%, #16304A 0%, #0F1620 70%); --text:#EAF0F7; --text2:#BFD0E2; --muted:#8FA0B3;
+      --card:#172230; --line:#22324A; --track:#1F2D40; --input:#121C2A; --shadow:none;
+      --accent:#7DB0E3; --accent-bright:#7DB0E3; --onaccent:#0B1A2B; --accent-soft:#1B2E47;
+      --neutral:#223148; --onneutral:#D5E2F0; --info:#8EC0F0; --gold:#E3B857; --good:#6FCF9A; --bad:#E2655A;
+      --cardio:#5FC3B0; --cardio-text:#7FD6C5; --c-strength:#7DB0E3; --c-cardio:#5FC3B0;
+      --bm-empty:#1F2D40; --bm-head:#2F4259; --bm-leg:#1C2A3C;
+      --rest:#14A08F; --rest-deep:#0E3B38; --rest-bright:#8FE3D6;
+    }
+
+    /* ===== Home, hero, theme picker ===== */
+    .home-head { display:flex; justify-content:space-between; align-items:flex-start; margin: 6px 0 14px 0; }
+    .brand { text-align: right; margin: 0; font-size: 1.8em; font-weight: 700; letter-spacing: .2px; }
+    .brand-sub { color: var(--muted); font-size: 0.85em; margin-top: 2px; }
+    button.theme-btn { margin: 0; background: var(--card); color: var(--text2); border: 1px solid var(--line); font-size: 0.8em; font-weight: 600; padding: 8px 12px; border-radius: 20px; }
+    .hero { display:flex; align-items:center; gap:16px; padding:16px; border-radius:18px; background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow); margin-bottom:14px; }
+    .hero b { display:block; font-size:1.05em; }
+    .hero span.s { font-size:0.85em; color:var(--muted); }
+    .hero .edit { margin: 0 0 0 0; padding: 4px 10px; font-size: .75em; background: var(--neutral); color: var(--onneutral); border-radius: 14px; margin-top: 6px; }
+    button.btn-outline { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+    .sheet-overlay { position: fixed; inset: 0; z-index: 4000; background: rgba(0,0,0,.45); display:flex; align-items:flex-end; }
+    .sheet-overlay.hidden { display:none; }
+    .sheet-panel { background: var(--bg); color: var(--text); width:100%; border-radius: 22px 22px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom,0px)); max-height: 85vh; overflow-y:auto; }
+    .theme-opt { display:flex; align-items:center; gap:14px; width:100%; margin:0 0 10px 0; padding:12px 14px; background: var(--card); color: var(--text); border:1.5px solid var(--line); border-radius:16px; text-align:right; font-weight:600; }
+    .theme-opt.active { border-color: var(--accent); }
+    .theme-opt .sw { width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid rgba(0,0,0,.08); }
+    .theme-opt .sw i { width:20px; height:20px; border-radius:50%; display:block; }
+    .theme-opt small { display:block; color: var(--muted); font-weight:400; font-size:.8em; margin-top:2px; }
+</style>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme') || 'forest';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { document.documentElement.setAttribute('data-theme', 'forest'); }
+    })();
+  </script>
 </head>
 <body>
   <div id="app">
     <!-- Home Screen -->
     <div id="homeScreen" class="screen active">
       <div class="container">
-        <h1>💪 Workout Pro</h1>
+        <div class="home-head">
+          <div>
+            <h1 class="brand">Workout Pro</h1>
+            <p class="brand-sub" id="homeSub"></p>
+          </div>
+          <button class="theme-btn" onclick="openThemePicker()">🎨 עיצוב</button>
+        </div>
+        <div id="homeHero"></div>
         <div class="stats-bar" id="homeStatsBar"></div>
         <div style="display:flex; gap:10px; margin-bottom:16px;">
           <button class="success" onclick="goToBuild()" style="flex:1; margin:0; font-size:1.05em; padding:14px 8px;">➕ רוטינה חדשה</button>
-          <button onclick="goToCardio()" style="flex:1; margin:0; font-size:1.05em; padding:14px 8px; background:#0e7490;">🏃 אימון חופשי</button>
+          <button class="btn-outline" onclick="goToCardio()" style="flex:1; margin:0; font-size:1.05em; padding:14px 8px;">🏃 אימון חופשי</button>
         </div>
         <div id="routineOrganizer" class="routine-organizer hidden">
           <select id="routineSortSelect" onchange="onRoutineSortChange()">
@@ -480,17 +584,17 @@
       <div class="container">
         <button onclick="goHome()">🏠 חזרה</button>
         <h1>🏃 אימון חופשי</h1>
-        <p style="color:#999; font-size:0.9em; margin-bottom:10px;">תיעוד קרדיו ומכשירים. נכנס ליומן, לנתונים וליעד השבועי.</p>
+        <p style="color:var(--muted); font-size:0.9em; margin-bottom:10px;">תיעוד קרדיו ומכשירים. נכנס ליומן, לנתונים וליעד השבועי.</p>
         <div class="filter-row" id="cardioTypeChips"></div>
-        <label style="display:block; margin:12px 0 4px; color:#ccc;">⏱️ כמה זמן (דקות)</label>
+        <label style="display:block; margin:12px 0 4px; color:var(--text2);">⏱️ כמה זמן (דקות)</label>
         <input type="number" id="cardioMinutes" inputmode="numeric" min="1" max="600" placeholder="למשל 30" style="width:100%;">
         <div id="cardioInclineWrap">
-          <label style="display:block; margin:12px 0 4px; color:#ccc;">📐 שיפוע (%) - לא חובה</label>
+          <label style="display:block; margin:12px 0 4px; color:var(--text2);">📐 שיפוע (%) - לא חובה</label>
           <input type="number" id="cardioIncline" inputmode="decimal" min="0" max="40" step="0.5" placeholder="למשל 8" style="width:100%;">
         </div>
-        <label style="display:block; margin:12px 0 4px; color:#ccc;">⚡ מהירות (קמ"ש) - לא חובה</label>
+        <label style="display:block; margin:12px 0 4px; color:var(--text2);">⚡ מהירות (קמ"ש) - לא חובה</label>
         <input type="number" id="cardioSpeed" inputmode="decimal" min="0" max="40" step="0.1" placeholder="למשל 5.5" style="width:100%;">
-        <label style="display:block; margin:12px 0 4px; color:#ccc;">📅 תאריך</label>
+        <label style="display:block; margin:12px 0 4px; color:var(--text2);">📅 תאריך</label>
         <input type="date" id="cardioDate" style="width:100%;">
         <button class="success" onclick="saveCardio()" style="width:100%; font-size:1.15em; padding:15px; margin-top:20px;">💾 שמור ביומן</button>
       </div>
@@ -500,23 +604,23 @@
     <div id="buildScreen" class="screen">
       <div class="container">
         <button onclick="goHome()">🏠 חזרה</button>
-        <button onclick="clearMediaCache()" style="background:#555;">🧹 נקה מטמון תמונות</button>
+        <button onclick="clearMediaCache()" style="background:var(--neutral); color:var(--onneutral);">🧹 נקה מטמון תמונות</button>
         <h1 id="buildTitle">בניית רוטינה</h1>
         <input type="text" id="workoutNameInput" placeholder="שם הרוטינה" oninput="state.workoutName = this.value">
         <button onclick="addWarmupAndCooldown()" class="success" style="width:100%; margin:4px 0 12px 0;">🔥🧘 הוסף חימום ומתיחות שחרור אוטומטית</button>
-        <h2>בחירת תרגילים:</h2>
+        <h2 id="pickerTop">בחירת תרגילים:</h2>
         <div class="filter-row" id="areaChips"></div>
         <div class="filter-row" id="positionChips"></div>
         <div class="filter-row" id="stretchChips"></div>
-        <button onclick="clearFilters()" style="background:#374151; font-size:0.8em; padding:6px 12px;">🔄 נקה סינון</button>
+        <button onclick="clearFilters()" style="background:var(--neutral); color:var(--onneutral); font-size:0.8em; padding:6px 12px;">🔄 נקה סינון</button>
         <div class="exercise-grid" id="exercisesGrid"></div>
         <h2>בחרת:</h2>
-        <div id="totalTimeBuild" style="color:#93c5fd; font-size:0.9em; margin-bottom:8px;"></div>
+        <div id="totalTimeBuild" style="color:var(--info); font-size:0.9em; margin-bottom:8px;"></div>
         <div id="bulkSelectionBar" class="bulk-selection-bar hidden">
           <span id="bulkSelectionCount"></span>
-          <button onclick="moveSelectedBlock(-1)" style="margin:0; background:#374151; padding:6px 10px;">▲ הזז</button>
-          <button onclick="moveSelectedBlock(1)" style="margin:0; background:#374151; padding:6px 10px;">▼ הזז</button>
-          <button onclick="clearBulkSelect()" style="margin:0; background:#374151; padding:6px 10px;">✕ נקה בחירה</button>
+          <button onclick="moveSelectedBlock(-1)" style="margin:0; background:var(--neutral); color:var(--onneutral); padding:6px 10px;">▲ הזז</button>
+          <button onclick="moveSelectedBlock(1)" style="margin:0; background:var(--neutral); color:var(--onneutral); padding:6px 10px;">▼ הזז</button>
+          <button onclick="clearBulkSelect()" style="margin:0; background:var(--neutral); color:var(--onneutral); padding:6px 10px;">✕ נקה בחירה</button>
         </div>
         <div class="bulk-time-row">
           <div class="time-input">
@@ -529,7 +633,7 @@
           </div>
           <button class="success" id="bulkApplyBtn" onclick="applyBulkTimes()" style="margin:0;">החל על הכל</button>
         </div>
-        <p style="font-size:0.75em; color:#888; margin:-8px 0 10px 0;">סמני ☑ תרגילים ספציפיים כדי להחיל רק עליהם — אחרת זה יחול על כולם</p>
+        <p style="font-size:0.75em; color:var(--muted); margin:-8px 0 10px 0;">סמני ☑ תרגילים ספציפיים כדי להחיל רק עליהם — אחרת זה יחול על כולם</p>
         <div id="selectedExercises" style="min-height: 50px;"></div>
         <div class="button-group">
           <button class="success" onclick="saveWorkout()" style="flex: 1;">💾 שמור</button>
@@ -555,7 +659,7 @@
           <div class="full-list-panel">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
               <h2 style="margin:0;">כל התרגילים</h2>
-              <button onclick="toggleFullList()" style="margin:0; background:#374151;">✕ סגור</button>
+              <button onclick="toggleFullList()" style="margin:0; background:var(--neutral); color:var(--onneutral);">✕ סגור</button>
             </div>
             <div id="fullListContent"></div>
           </div>
@@ -565,12 +669,13 @@
           <div class="emoji" id="workingEmoji">🔥</div>
         </div>
         <div class="workout-info">
-          <p id="totalTimeLeft" style="text-align:center; font-size:0.8em; color:#93c5fd; margin-bottom:4px;"></p>
+          <p id="totalTimeLeft" style="text-align:center; font-size:0.8em; color:var(--info); margin-bottom:4px;"></p>
           <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         </div>
         <div class="controls" style="flex-wrap: wrap;">
           <button class="success" onclick="toggleWorkout()" id="startBtn" style="flex: 1 1 100%;">▶️ התחל</button>
-          <button onclick="restartCurrentExercise()" style="flex: 1; background:#374151; font-size:0.85em;">🔁 מחדש</button>
+          <button onclick="prevPhase()" style="flex: 1; background:var(--neutral); color:var(--onneutral); font-size:0.85em;">⏮️ הקודם</button>
+          <button onclick="restartCurrentExercise()" style="flex: 1; background:var(--neutral); color:var(--onneutral); font-size:0.85em;">🔁 מחדש</button>
           <button onclick="skipPhase()" style="flex: 1; background:#0891b2; font-size:0.85em;">⏭️ דלג</button>
           <button class="danger" onclick="resetWorkout()" style="flex: 1; font-size:0.85em;">🔄 אפס הכל</button>
         </div>
@@ -582,10 +687,10 @@
       <div class="container">
         <button onclick="goHome()">🏠 חזרה</button>
         <h1 id="previewTitle"></h1>
-        <p id="previewMeta" style="color:#93c5fd; margin-bottom:15px;"></p>
+        <p id="previewMeta" style="color:var(--info); margin-bottom:15px;"></p>
         <div id="previewList"></div>
         <div class="button-group" style="margin-top:20px;">
-          <button onclick="editWorkout(previewingWorkoutId)" style="flex:1; background:#374151;">✏️ ערוך רוטינה</button>
+          <button onclick="editWorkout(previewingWorkoutId)" style="flex:1; background:var(--neutral); color:var(--onneutral);">✏️ ערוך רוטינה</button>
           <button class="success" onclick="loadWorkout(previewingWorkoutId)" style="flex:1;">▶️ התחל אימון זה</button>
         </div>
       </div>
@@ -596,7 +701,7 @@
       <div class="container" style="text-align:center; padding-top: 60px;">
         <div style="font-size: 4em;">🎉</div>
         <h1>כל הכבוד!</h1>
-        <p id="completeSummary" style="color:#aaa; margin-bottom: 25px;"></p>
+        <p id="completeSummary" style="color:var(--muted); margin-bottom: 25px;"></p>
 
         <div class="stats-bar" style="justify-content:center; margin-bottom: 25px;">
           <div class="stat-pill">📅 השבוע: <span id="completeStreak"></span></div>
@@ -618,6 +723,16 @@
         <h1>יומן אימונים</h1>
         <div id="logContent"></div>
       </div>
+    </div>
+  </div>
+
+  <div id="themeSheet" class="sheet-overlay hidden" onclick="if (event.target === this) closeThemePicker()">
+    <div class="sheet-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 style="margin:0;">🎨 עיצוב</h2>
+        <button onclick="closeThemePicker()" style="margin:0; background:var(--neutral); color:var(--onneutral);">✕ סגור</button>
+      </div>
+      <div id="themeOptions"></div>
     </div>
   </div>
 
@@ -876,9 +991,11 @@
         const base = ex.originalId ? EXERCISES.find(e => e.id === ex.originalId) : null;
         return { name: ex.name, areas: (base && base.areas) || [], stretchType: base ? base.stretchType : undefined };
       });
+      const recBefore = computeRecords(workoutLog);
       workoutLog.unshift({ date: todayStr, name: state.workoutName || (editingWorkoutId ? state.savedWorkouts.find(w => w.id === editingWorkoutId)?.name : '') || 'אימון', exerciseCount: state.workout.length, totalSeconds: state.workout.reduce((s, ex) => s + (ex.work || 0) + (ex.rest || 0), 0), exercises: exerciseDetails });
-      if (workoutLog.length > 200) workoutLog = workoutLog.slice(0, 200);
+      if (workoutLog.length > 1000) workoutLog = workoutLog.slice(0, 1000);
       saveLog();
+      pendingRecords = diffRecords(recBefore, computeRecords(workoutLog));
 
       const newly = [];
       for (const a of ACHIEVEMENTS) {
@@ -984,10 +1101,12 @@
       };
       if (!isNaN(incline) && incline > 0) entry.incline = incline;
       if (!isNaN(speed) && speed > 0) entry.speed = speed;
+      const recBefore = computeRecords(workoutLog);
       workoutLog.unshift(entry);
       workoutLog.sort((a, b) => b.date.localeCompare(a.date));
-      if (workoutLog.length > 200) workoutLog = workoutLog.slice(0, 200);
+      if (workoutLog.length > 1000) workoutLog = workoutLog.slice(0, 1000);
       saveLog();
+      pendingRecords = diffRecords(recBefore, computeRecords(workoutLog));
 
       const newly = [];
       for (const a of ACHIEVEMENTS) {
@@ -1012,7 +1131,7 @@
       }
       saveLog();
       saveStats();
-      showLog();
+      renderLog();
       renderHomeStats();
     }
 
@@ -1031,31 +1150,52 @@
       }
 
       const box = document.getElementById('newAchievements');
-      box.innerHTML = newAchievements.map(a => `
+      box.innerHTML = pendingRecords.map(t => `
+        <div class="achievement-card"><span class="emoji">🏆</span>שיא חדש! ${t}</div>
+      `).join('') + newAchievements.map(a => `
         <div class="achievement-card"><span class="emoji">${a.emoji}</span>${a.label}</div>
       `).join('');
+      pendingRecords = [];
     }
 
     function renderHomeStats() {
       const bar = document.getElementById('homeStatsBar');
       if (!bar) return;
-      if (stats.totalCompleted === 0) { bar.innerHTML = ''; return; }
+      const days = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+      const sub = document.getElementById('homeSub');
+      if (sub) sub.textContent = 'יום ' + days[new Date().getDay()];
+
       const thisWeekStart = getWeekStart(new Date());
       const weekCount = stats.weekStart === thisWeekStart ? stats.weekCount : 0;
+      const goal = Math.max(1, stats.weeklyGoal || 1);
+      const frac = Math.min(1, weekCount / goal);
+      const C = 2 * Math.PI * 25;
+      const left = goal - weekCount;
+      const msg = left <= 0 ? 'עמדת ביעד השבועי 🎉' : left === 1 ? 'עוד אימון אחד ואת שם' : `עוד ${left} אימונים ואת שם`;
+      const hero = document.getElementById('homeHero');
+      if (hero) hero.innerHTML = `
+        <div class="hero">
+          <svg width="62" height="62" viewBox="0 0 62 62" style="flex-shrink:0;">
+            <circle cx="31" cy="31" r="25" fill="none" style="stroke:var(--line);" stroke-width="5"/>
+            <circle cx="31" cy="31" r="25" fill="none" style="stroke:var(--accent);" stroke-width="5" stroke-linecap="round" stroke-dasharray="${(C * frac).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 31 31)"/>
+            <text x="31" y="36" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--text);">${weekCount}/${goal}</text>
+          </svg>
+          <div style="flex:1;">
+            <b>היעד השבועי</b>
+            <span class="s">${msg}</span><br>
+            <button class="edit" onclick="editWeeklyGoal()">✏️ שינוי יעד</button>
+          </div>
+        </div>`;
       bar.innerHTML = `
-        <div class="stat-pill">📅 השבוע: ${weekCount}/${stats.weeklyGoal} <button onclick="editWeeklyGoal()" style="margin:0 0 0 4px; padding:2px 8px; font-size:0.85em; background:#374151;">✏️</button></div>
+        <button class="stat-pill" onclick="showLog()">📖 יומן אימונים</button>
         <div class="stat-pill">💪 סה"כ: ${stats.totalCompleted} אימונים</div>
-        <div class="stat-pill">📖 <button onclick="showLog()" style="margin:0; padding:0; background:none; color:inherit; font-size:1em;">יומן אימונים</button></div>
       `;
     }
 
     function intensityColor(count, maxCount) {
-      if (!count || !maxCount) return '#333';
-      const t = Math.min(1, count / maxCount);
-      const r = Math.round(60 + t * 195);
-      const g = Math.round(60 - t * 30);
-      const b = Math.round(90 - t * 60);
-      return `rgb(${r}, ${Math.max(20, g)}, ${Math.max(20, b)})`;
+      if (!count || !maxCount) return 'var(--bm-empty)';
+      const t = Math.max(0.2, Math.min(1, count / maxCount));
+      return `color-mix(in srgb, var(--accent) ${Math.round(t * 100)}%, var(--bm-empty))`;
     }
 
     function colorBodyMap(areaCounts, maxCount) {
@@ -1072,23 +1212,432 @@
         const color = intensityColor(areaCounts[area] || 0, maxCount);
         ids.forEach(id => {
           const el = document.getElementById(id);
-          if (el) el.setAttribute('fill', color);
+          if (el) el.style.fill = color;
         });
       });
     }
 
+    // ===== Log charts & trends =====
+    let logRange = 4;          // in weeks; 0 = everything
+    let logMetric = 'count';   // 'count' | 'minutes'
+    let lastBuckets = [];
+    const LOG_RANGES = [[1, 'שבוע'], [2, 'שבועיים'], [3, '3 שב\''], [4, '4 שב\''], [8, '8 שב\''], [12, '12 שב\''], [0, 'הכל']];
+    const HEB_DAYS = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+    const COL_STRENGTH = 'var(--c-strength)', COL_CARDIO = 'var(--c-cardio)';
+
+    function fmtLocal(d) {
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    function localWeekStart(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      d.setDate(d.getDate() - d.getDay());
+      return fmtLocal(d);
+    }
+    function addDaysStr(dateStr, n) {
+      const d = new Date(dateStr + 'T00:00:00');
+      d.setDate(d.getDate() + n);
+      return fmtLocal(d);
+    }
+    function setLogRange(w) { logRange = w; renderLog(); }
+    function setLogMetric(m) { logMetric = m; renderLog(); }
+
+    // Builds the empty time buckets (days for up to 4 weeks, weeks for longer) and the start date of the range
+    function getLogRangeInfo() {
+      const today = fmtLocal(new Date());
+      const buckets = [];
+      let daily = false, cutoff = '';
+      if (logRange >= 1 && logRange <= 4) {
+        daily = true;
+        const n = logRange * 7;
+        cutoff = addDaysStr(today, -(n - 1));
+        for (let i = 0; i < n; i++) {
+          const key = addDaysStr(cutoff, i);
+          const d = new Date(key + 'T00:00:00');
+          buckets.push({ key, label: String(d.getDate()), long: 'יום ' + HEB_DAYS[d.getDay()] + ' ' + d.getDate() + '/' + (d.getMonth() + 1), sC: 0, sM: 0, cC: 0, cM: 0 });
+        }
+      } else {
+        const thisWk = localWeekStart(today);
+        let weeks = logRange;
+        if (!weeks) {
+          const first = workoutLog.reduce((m, e) => e.date < m ? e.date : m, today);
+          const diffDays = Math.round((new Date(thisWk + 'T00:00:00') - new Date(localWeekStart(first) + 'T00:00:00')) / 86400000);
+          weeks = Math.min(52, Math.max(1, diffDays / 7 + 1));
+        }
+        const startWk = addDaysStr(thisWk, -7 * (weeks - 1));
+        cutoff = logRange ? startWk : (weeks >= 52 ? startWk : '');
+        for (let i = 0; i < weeks; i++) {
+          const key = addDaysStr(startWk, 7 * i);
+          const d = new Date(key + 'T00:00:00');
+          buckets.push({ key, label: d.getDate() + '/' + (d.getMonth() + 1), long: 'שבוע מ-' + d.getDate() + '/' + (d.getMonth() + 1), sC: 0, sM: 0, cC: 0, cM: 0 });
+        }
+      }
+      return { daily, cutoff, buckets };
+    }
+
+    function weeklyStreak(fullLog) {
+      // consecutive weeks (ending at the latest finished/ongoing week that met the goal) with >= weekly-goal sessions
+      const perWeek = {};
+      fullLog.forEach(e => { const k = localWeekStart(e.date); perWeek[k] = (perWeek[k] || 0) + 1; });
+      let wk = localWeekStart(fmtLocal(new Date()));
+      let streak = 0;
+      if ((perWeek[wk] || 0) >= stats.weeklyGoal) streak++;
+      wk = addDaysStr(wk, -7);
+      while ((perWeek[wk] || 0) >= stats.weeklyGoal) { streak++; wk = addDaysStr(wk, -7); }
+      return streak;
+    }
+
+    function showBucketInfo(i) {
+      const b = lastBuckets[i];
+      const box = document.getElementById('bucketInfo');
+      if (!b || !box) return;
+      const parts = [];
+      if (b.sC) parts.push(`<span style="color:${COL_STRENGTH};">●</span> כוח: ${b.sC} (${Math.round(b.sM)} דק')`);
+      if (b.cC) parts.push(`<span style="color:${COL_CARDIO};">●</span> קרדיו: ${b.cC} (${Math.round(b.cM)} דק')`);
+      box.innerHTML = `<strong>${b.long}</strong> · ` + (parts.length ? parts.join(' · ') : 'ללא אימונים');
+    }
+
+    function buildLogChartsHtml(info, fullLog, log) {
+      const buckets = info.buckets.map(b => ({ ...b }));
+      const idxByKey = {};
+      buckets.forEach((b, i) => { idxByKey[b.key] = i; });
+      log.forEach(e => {
+        const key = info.daily ? e.date : localWeekStart(e.date);
+        const b = buckets[idxByKey[key]];
+        if (!b) return;
+        const mins = (e.totalSeconds || 0) / 60;
+        if (e.kind === 'cardio') { b.cC++; b.cM += mins; } else { b.sC++; b.sM += mins; }
+      });
+      lastBuckets = buckets;
+
+      const isCount = logMetric === 'count';
+      const val = b => ({ s: isCount ? b.sC : b.sM, c: isCount ? b.cC : b.cM });
+      let maxV = Math.max(...buckets.map(b => val(b).s + val(b).c), 0);
+      const goalLine = isCount && !info.daily ? stats.weeklyGoal : 0;
+      maxV = Math.max(maxV, goalLine, isCount ? 3 : 30);
+      const step = isCount ? (maxV > 12 ? 5 : maxV > 6 ? 2 : 1) : (maxV > 300 ? 100 : maxV > 150 ? 50 : 30);
+      const top = Math.ceil(maxV / step) * step;
+
+      const W = 340, H = 180, padL = 26, padR = 6, padT = 10, padB = 24;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+      const n = buckets.length;
+      const slot = plotW / n;
+      const barW = Math.max(3, Math.min(28, slot - 3));
+      const y = v => padT + plotH - (v / top) * plotH;
+
+      let svg = `<svg viewBox="0 0 ${W} ${H}" style="width:100%; display:block; direction:ltr;" role="img" aria-label="גרף אימונים לפי ${info.daily ? 'יום' : 'שבוע'}">`;
+      for (let g = 0; g <= top; g += step) {
+        svg += `<line x1="${padL}" x2="${W - padR}" y1="${y(g)}" y2="${y(g)}" style="stroke:var(--line);" stroke-width="1"/>`;
+        svg += `<text x="${padL - 4}" y="${y(g) + 3}" style="fill:var(--muted);" font-size="9" text-anchor="end">${g}</text>`;
+      }
+      if (goalLine) {
+        svg += `<line x1="${padL}" x2="${W - padR}" y1="${y(goalLine)}" y2="${y(goalLine)}" style="stroke:var(--gold);" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+        svg += `<text x="${W - padR}" y="${y(goalLine) - 3}" style="fill:var(--gold);" font-size="9" text-anchor="end">יעד ${goalLine}</text>`;
+      }
+      const labelEvery = n <= 8 ? 1 : n <= 14 ? 2 : n <= 28 ? 4 : 6;
+      buckets.forEach((b, i) => {
+        const cx = padL + slot * i + slot / 2;
+        const v = val(b);
+        const hS = (v.s / top) * plotH, hC = (v.c / top) * plotH;
+        const x = cx - barW / 2;
+        if (v.s > 0) svg += `<rect x="${x}" y="${padT + plotH - hS}" width="${barW}" height="${Math.max(hS, 1)}" rx="2" style="fill:${COL_STRENGTH};"/>`;
+        if (v.c > 0) svg += `<rect x="${x}" y="${padT + plotH - hS - hC - (v.s > 0 ? 2 : 0)}" width="${barW}" height="${Math.max(hC, 1)}" rx="2" style="fill:${COL_CARDIO};"/>`;
+        if (i % labelEvery === 0 || i === n - 1 && labelEvery === 1) svg += `<text x="${cx}" y="${H - 8}" style="fill:var(--muted);" font-size="9" text-anchor="middle">${b.label}</text>`;
+        svg += `<rect x="${padL + slot * i}" y="${padT}" width="${slot}" height="${plotH}" fill="transparent" onclick="showBucketInfo(${i})" style="cursor:pointer;"/>`;
+      });
+      svg += '</svg>';
+
+      const chip = (active, label, fn) => `<button class="chip ${active ? 'active' : ''}" onclick="${fn}" style="margin:0;">${label}</button>`;
+      let html = '<div style="background:var(--card); border-radius:10px; padding:14px; margin-bottom:16px;">';
+      html += '<p style="font-size:0.95em; color:var(--gold); margin-bottom:8px;">📈 מגמות והיסטוריה</p>';
+      html += '<div class="filter-row" style="margin:0 0 8px 0;">' + LOG_RANGES.map(([w, l]) => chip(logRange === w, l, `setLogRange(${w})`)).join('') + '</div>';
+      html += '<div class="filter-row" style="margin:0 0 10px 0;">' + chip(isCount, 'מספר אימונים', "setLogMetric('count')") + chip(!isCount, 'דקות', "setLogMetric('minutes')") + '</div>';
+
+      // Headline numbers for the range
+      const totalMin = log.reduce((s, e) => s + (e.totalSeconds || 0), 0) / 60;
+      const weeksInRange = logRange ? logRange : Math.max(1, buckets.length);
+      html += `<p style="font-size:0.85em; color:var(--text2); margin-bottom:4px;">${log.length} אימונים · ${formatDuration(Math.round(totalMin * 60))} · ממוצע ${(log.length / weeksInRange).toFixed(1)} אימונים בשבוע</p>`;
+      if (logRange) {
+        const prevStart = addDaysStr(info.cutoff, -7 * logRange);
+        const prev = fullLog.filter(e => e.date >= prevStart && e.date < info.cutoff);
+        const prevMin = prev.reduce((s, e) => s + (e.totalSeconds || 0), 0) / 60;
+        if (prev.length || log.length) {
+          const dc = log.length - prev.length, dm = Math.round(totalMin - prevMin);
+          const arrow = dc > 0 ? '📈' : dc < 0 ? '📉' : '➡️';
+          html += `<p style="font-size:0.8em; color:var(--muted); margin-bottom:8px;">${arrow} לעומת התקופה הקודמת (${prev.length} אימונים): ${dc >= 0 ? '+' : ''}${dc} אימונים · ${dm >= 0 ? '+' : ''}${dm} דקות</p>`;
+        }
+      }
+
+      html += svg;
+      html += `<div style="display:flex; gap:14px; font-size:0.8em; color:var(--text2); margin:6px 0;"><span><span style="color:${COL_STRENGTH};">■</span> כוח / רוטינות</span><span><span style="color:${COL_CARDIO};">■</span> קרדיו</span>${goalLine ? '<span><span style="color:var(--gold);">┅</span> יעד שבועי</span>' : ''}</div>`;
+      html += '<div id="bucketInfo" style="font-size:0.8em; color:var(--info); min-height:1.3em;">לחצי על עמודה לפרטים</div>';
+
+      // Breakdown by type
+      const types = {};
+      log.forEach(e => {
+        const k = e.kind === 'cardio' ? e.name : '💪 רוטינות כוח';
+        const t = types[k] || (types[k] = { count: 0, min: 0, cardio: e.kind === 'cardio' });
+        t.count++; t.min += (e.totalSeconds || 0) / 60;
+      });
+      const typeRows = Object.entries(types).sort((a, b) => b[1].min - a[1].min);
+      if (typeRows.length) {
+        const maxMin = typeRows[0][1].min || 1;
+        html += '<p style="font-size:0.85em; color:var(--gold); margin:12px 0 6px 0;">🗂️ לפי סוג אימון:</p>';
+        html += typeRows.map(([name, t]) => `
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+            <span style="font-size:0.75em; width:110px; flex-shrink:0;">${name}</span>
+            <div style="flex:1; background:var(--line); border-radius:4px; height:10px; overflow:hidden;"><div style="width:${Math.round(t.min / maxMin * 100)}%; height:100%; background:${t.cardio ? COL_CARDIO : COL_STRENGTH};"></div></div>
+            <span style="font-size:0.72em; color:var(--muted); width:78px; text-align:left;">${t.count}× · ${Math.round(t.min)} דק'</span>
+          </div>`).join('');
+      }
+
+      // Insights
+      const notes = [];
+      const streak = weeklyStreak(fullLog);
+      if (streak >= 1) notes.push(`🔥 ${streak} שבועות ברצף שעמדת ביעד השבועי`);
+      if (log.length >= 4) {
+        const byDay = [0, 0, 0, 0, 0, 0, 0];
+        log.forEach(e => { byDay[new Date(e.date + 'T00:00:00').getDay()]++; });
+        const best = byDay.indexOf(Math.max(...byDay));
+        notes.push(`📅 היום שהכי הרבה התאמנת בו: יום ${HEB_DAYS[best]} (${byDay[best]} אימונים)`);
+      }
+      const activeBuckets = buckets.filter(b => b.sC + b.cC > 0);
+      if (!info.daily && activeBuckets.length) {
+        const bestW = activeBuckets.reduce((m, b) => (b.sM + b.cM) > (m.sM + m.cM) ? b : m);
+        notes.push(`🏅 השבוע החזק ביותר בטווח: ${bestW.long.replace('שבוע מ-', '')} (${Math.round(bestW.sM + bestW.cM)} דקות)`);
+      }
+      if (notes.length) html += '<div style="margin-top:12px; font-size:0.8em; color:var(--info); line-height:1.7;">' + notes.map(t => `<div>${t}</div>`).join('') + '</div>';
+      html += '</div>';
+      return html;
+    }
+
+
+    // ===== Themes =====
+    const THEMES = [
+      { id: 'forest', name: 'ירוק יער', desc: 'שנהב וירוק עמוק, רגוע וטבעי', bg: '#F6F3EC', ac: '#2F5D50' },
+      { id: 'plum', name: 'שזיף', desc: 'ורדרד-שזיף חם ואלגנטי', bg: '#F8F3F1', ac: '#7E3F5C' },
+      { id: 'denim', name: 'כחול דנים', desc: 'כחול נקי ואוורירי', bg: '#F4F5F4', ac: '#1F5A8A' },
+      { id: 'amethyst', name: 'אמטיסט', desc: 'סגול רך ואפרפר', bg: '#F6F4F1', ac: '#6A5A9C' },
+      { id: 'night', name: 'מצב לילה 🌙', desc: 'כחול לילה כהה, נעים לערב', bg: '#0F1620', ac: '#7DB0E3' }
+    ];
+    function currentTheme() {
+      return document.documentElement.getAttribute('data-theme') || 'forest';
+    }
+    function updateThemeColorMeta() {
+      const t = THEMES.find(x => x.id === currentTheme()) || THEMES[0];
+      const m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.setAttribute('content', t.bg);
+    }
+    function applyTheme(id) {
+      document.documentElement.setAttribute('data-theme', id);
+      try { localStorage.setItem('theme', id); } catch (e) {}
+      updateThemeColorMeta();
+      renderThemeOptions();
+      // re-render the screen that is visible so colors computed in JS refresh too
+      if (state.screen === 'log') renderLog();
+    }
+    function renderThemeOptions() {
+      const cur = currentTheme();
+      document.getElementById('themeOptions').innerHTML = THEMES.map(t => `
+        <button class="theme-opt ${t.id === cur ? 'active' : ''}" onclick="applyTheme('${t.id}')">
+          <span class="sw" style="background:${t.bg};"><i style="background:${t.ac};"></i></span>
+          <span style="flex:1;">${t.name}<small>${t.desc}</small></span>
+          <span style="color:var(--accent); font-size:1.2em;">${t.id === cur ? '✓' : ''}</span>
+        </button>`).join('');
+    }
+    function openThemePicker() {
+      renderThemeOptions();
+      document.getElementById('themeSheet').classList.remove('hidden');
+    }
+    function closeThemePicker() {
+      document.getElementById('themeSheet').classList.add('hidden');
+    }
+    updateThemeColorMeta();
+
+
+    // ===== Personal records =====
+    let pendingRecords = [];
+    function computeRecords(log) {
+      const r = { sessionMin: 0, sessionName: '', sessionDate: '', cardioMin: 0, cardioName: '', cardioDate: '', weekCount: 0, weekCountStart: '', weekMin: 0, weekMinStart: '' };
+      const wk = {};
+      log.forEach(e => {
+        const m = (e.totalSeconds || 0) / 60;
+        if (m > r.sessionMin) { r.sessionMin = m; r.sessionName = e.name; r.sessionDate = e.date; }
+        if (e.kind === 'cardio' && m > r.cardioMin) { r.cardioMin = m; r.cardioName = e.name; r.cardioDate = e.date; }
+        const k = localWeekStart(e.date);
+        const w = wk[k] || (wk[k] = { c: 0, m: 0 });
+        w.c++; w.m += m;
+      });
+      Object.entries(wk).forEach(([k, w]) => {
+        if (w.c > r.weekCount) { r.weekCount = w.c; r.weekCountStart = k; }
+        if (w.m > r.weekMin) { r.weekMin = w.m; r.weekMinStart = k; }
+      });
+      return r;
+    }
+    function diffRecords(before, after) {
+      const out = [];
+      if (before.sessionMin > 0 && after.sessionMin > before.sessionMin + 0.01) out.push(`האימון הארוך ביותר שלך: ${Math.round(after.sessionMin)} דקות`);
+      if (before.cardioMin > 0 && after.cardioMin > before.cardioMin + 0.01) out.push(`הקרדיו הארוך ביותר שלך: ${Math.round(after.cardioMin)} דקות`);
+      if (before.weekCount > 0 && after.weekCount > before.weekCount) out.push(`השבוע הכי עמוס: ${after.weekCount} אימונים`);
+      if (before.weekMin > 0 && after.weekMin > before.weekMin + 0.01) out.push(`הכי הרבה דקות בשבוע: ${Math.round(after.weekMin)}`);
+      return out;
+    }
+    function fmtDateShort(s) {
+      if (!s) return '';
+      const d = new Date(s + 'T00:00:00');
+      return d.getDate() + '/' + (d.getMonth() + 1) + '/' + String(d.getFullYear()).slice(2);
+    }
+    function recordsCardHtml(fullLog) {
+      const r = computeRecords(fullLog);
+      if (!fullLog.length) return '';
+      const thisWk = localWeekStart(fmtLocal(new Date()));
+      const cur = fullLog.filter(e => localWeekStart(e.date) === thisWk);
+      const curMin = cur.reduce((s, e) => s + (e.totalSeconds || 0), 0) / 60;
+      const row = (emoji, label, value, sub) => `<div style="display:flex; justify-content:space-between; align-items:baseline; padding:6px 0; border-bottom:1px solid var(--line);"><span style="font-size:0.85em;">${emoji} ${label}</span><span style="text-align:left;"><strong>${value}</strong><span style="display:block; font-size:0.7em; color:var(--muted);">${sub}</span></span></div>`;
+      let html = '<div style="background:var(--card); border-radius:10px; padding:14px; margin-bottom:16px;">';
+      html += '<p style="font-size:0.95em; color:var(--gold); margin-bottom:6px;">🏆 שיאים אישיים</p>';
+      html += row('⏱️', 'האימון הארוך ביותר', formatDuration(Math.round(r.sessionMin * 60)), `${r.sessionName} · ${fmtDateShort(r.sessionDate)}`);
+      if (r.cardioMin > 0) html += row('🏃', 'הקרדיו הארוך ביותר', formatDuration(Math.round(r.cardioMin * 60)), `${r.cardioName} · ${fmtDateShort(r.cardioDate)}`);
+      html += row('🔥', 'השבוע הכי עמוס', `${r.weekCount} אימונים`, `שבוע מ-${fmtDateShort(r.weekCountStart)} · השבוע: ${cur.length}`);
+      html += row('📊', 'הכי הרבה דקות בשבוע', formatDuration(Math.round(r.weekMin * 60)), `שבוע מ-${fmtDateShort(r.weekMinStart)} · השבוע: ${formatDuration(Math.round(curMin * 60))}`);
+      html += `<div style="font-size:0.8em; color:var(--info); padding-top:8px;">🔥 הרצף הארוך ביותר שלך: ${longestStreak(fullLog)} שבועות ברצף ביעד</div>`;
+      html += '</div>';
+      return html;
+    }
+    function longestStreak(fullLog) {
+      const perWeek = {};
+      fullLog.forEach(e => { const k = localWeekStart(e.date); perWeek[k] = (perWeek[k] || 0) + 1; });
+      const keys = Object.keys(perWeek).sort();
+      if (!keys.length) return 0;
+      let best = 0, run = 0, wk = keys[0];
+      const end = localWeekStart(fmtLocal(new Date()));
+      while (wk <= end) {
+        if ((perWeek[wk] || 0) >= stats.weeklyGoal) { run++; best = Math.max(best, run); } else run = 0;
+        wk = addDaysStr(wk, 7);
+      }
+      return best;
+    }
+
+    // ===== Area balance (week-by-week grid) =====
+    function areaBalanceHtml(fullLog) {
+      if (!fullLog.length) return '';
+      const n = Math.min(12, Math.max(4, logRange || 12));
+      const thisWk = localWeekStart(fmtLocal(new Date()));
+      const weeks = [];
+      for (let i = n - 1; i >= 0; i--) weeks.push(addDaysStr(thisWk, -7 * i));
+      const areaKeys = ['glutes', 'quads', 'back', 'core', 'chest', 'shoulders', 'arms'];
+      const grid = {}, last = {};
+      areaKeys.forEach(a => { grid[a] = weeks.map(() => 0); last[a] = ''; });
+      fullLog.forEach(e => {
+        const wi = weeks.indexOf(localWeekStart(e.date));
+        const tags = [];
+        if (e.kind === 'cardio') (CARDIO_AREAS[e.cardioType] || []).forEach(a => tags.push(a));
+        (e.exercises || []).forEach(ex => (ex.areas || []).forEach(a => tags.push(a)));
+        tags.forEach(a => {
+          if (!grid[a]) return;
+          if (wi >= 0) grid[a][wi]++;
+          if (e.date > last[a]) last[a] = e.date;
+        });
+      });
+      let maxCell = 1;
+      areaKeys.forEach(a => grid[a].forEach(v => { if (v > maxCell) maxCell = v; }));
+      const today = fmtLocal(new Date());
+      const daysAgo = s => Math.round((new Date(today + 'T00:00:00') - new Date(s + 'T00:00:00')) / 86400000);
+      const lastTxt = a => !last[a] ? 'עוד לא' : daysAgo(last[a]) === 0 ? 'היום' : daysAgo(last[a]) === 1 ? 'אתמול' : `לפני ${daysAgo(last[a])} ימים`;
+      const every = n <= 8 ? 1 : 2;
+      let html = '<div style="background:var(--card); border-radius:10px; padding:14px; margin-bottom:16px;">';
+      html += '<p style="font-size:0.95em; color:var(--gold); margin-bottom:4px;">⚖️ איזון בין אזורים, שבוע אחרי שבוע</p>';
+      html += '<p style="font-size:0.75em; color:var(--muted); margin-bottom:10px;">כל משבצת = כמה תרגילים באזור באותו שבוע. אפשר לראות אם אזור נעדר לאחרונה, גם אם בסך הכל יש בו הרבה.</p>';
+      const cols = `grid-template-columns: 78px repeat(${n}, 1fr) 62px;`;
+      html += `<div style="display:grid; ${cols} gap:3px; direction:ltr; align-items:center;">`;
+      html += '<span></span>' + weeks.map((w, i) => `<span style="font-size:0.58em; color:var(--muted); text-align:center;">${i % every === (n - 1) % every ? fmtDateShort(w).split('/').slice(0, 2).join('/') : ''}</span>`).join('') + '<span style="font-size:0.65em; color:var(--muted); text-align:center;">אומן לאחרונה</span>';
+      areaKeys.forEach(a => {
+        html += `<span style="font-size:0.72em; direction:rtl; text-align:right; padding-right:4px;">${AREAS[a] || a}</span>`;
+        grid[a].forEach(v => {
+          const t = v / maxCell;
+          const bg = v ? `color-mix(in srgb, var(--accent) ${Math.round((0.22 + 0.78 * t) * 100)}%, var(--card))` : 'var(--track)';
+          html += `<span style="height:24px; border-radius:4px; background:${bg}; font-size:0.7em; display:flex; align-items:center; justify-content:center; color:${v ? (t > 0.5 ? 'var(--onaccent)' : 'var(--text)') : 'var(--muted)'};">${v || '·'}</span>`;
+        });
+        html += `<span style="font-size:0.65em; color:${!last[a] || daysAgo(last[a]) > 14 ? 'var(--gold)' : 'var(--text2)'}; text-align:center; direction:rtl;">${lastTxt(a)}</span>`;
+      });
+      html += '</div>';
+      const recent = Math.min(3, n);
+      const missing = areaKeys.filter(a => grid[a].slice(-recent).every(v => v === 0));
+      if (missing.length) html += `<p style="font-size:0.8em; color:var(--gold); margin-top:10px;">⚠️ בלי אימון ב-${recent} השבועות האחרונים: ${missing.map(a => AREAS[a] || a).join(', ')}</p>`;
+      else html += `<p style="font-size:0.8em; color:var(--good); margin-top:10px;">✅ כל האזורים אומנו ב-${recent} השבועות האחרונים</p>`;
+      html += '</div>';
+      return html;
+    }
+
+    // ===== Backup / restore =====
+    function exportBackup() {
+      const out = { app: 'workout-pro', version: 1, exportedAt: new Date().toISOString(), data: {} };
+      ['workouts', 'stats', 'workoutLog', 'exerciseOverrides', 'cardioLast', 'theme'].forEach(k => {
+        const v = localStorage.getItem(k);
+        if (v !== null) out.data[k] = v;
+      });
+      const blob = new Blob([JSON.stringify(out)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `workout-pro-backup-${todayLocalStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+      try { localStorage.setItem('lastBackup', todayLocalStr()); } catch (e) {}
+      setTimeout(() => { if (document.getElementById('logContent')) renderLog(); }, 300);
+    }
+    function importBackup(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const obj = JSON.parse(reader.result);
+          if (!obj || obj.app !== 'workout-pro' || !obj.data) throw new Error('bad file');
+          if (!confirm('לשחזר מהגיבוי? הנתונים הנוכחיים באפליקציה (רוטינות, יומן והישגים) יוחלפו בנתוני הגיבוי.')) { input.value = ''; return; }
+          Object.entries(obj.data).forEach(([k, v]) => { if (typeof v === 'string') localStorage.setItem(k, v); });
+          alert('השחזור הצליח! האפליקציה תיטען מחדש.');
+          location.reload();
+        } catch (e) {
+          alert('הקובץ לא נראה כמו גיבוי של Workout Pro');
+          input.value = '';
+        }
+      };
+      reader.readAsText(file);
+    }
+    function backupCardHtml() {
+      let last = null;
+      try { last = localStorage.getItem('lastBackup'); } catch (e) {}
+      const status = last ? `גיבוי אחרון: ${fmtDateShort(last)}` : 'עוד לא גיבית. הנתונים נשמרים רק בטלפון הזה.';
+      return `<div style="background:var(--card); border-radius:10px; padding:14px; margin:16px 0;">
+        <p style="font-size:0.95em; color:var(--gold); margin-bottom:4px;">💾 גיבוי נתונים</p>
+        <p style="font-size:0.78em; color:var(--muted); margin-bottom:10px;">${status}</p>
+        <div style="display:flex; gap:8px;">
+          <button onclick="exportBackup()" class="success" style="flex:1; margin:0;">💾 שמור גיבוי</button>
+          <label style="flex:1; margin:0; background:var(--neutral); color:var(--onneutral); color:white; border-radius:5px; padding:10px; text-align:center; cursor:pointer; font-size:0.95em;">📂 שחזור מגיבוי<input type="file" accept=".json,application/json" onchange="importBackup(this)" style="display:none;"></label>
+        </div>
+      </div>`;
+    }
     function showLog() {
       showScreen('log');
+      renderLog();
+    }
+
+    function renderLog() {
       const content = document.getElementById('logContent');
       if (workoutLog.length === 0) {
-        content.innerHTML = '<p style="text-align:center; color:#999; padding:30px;">עדיין אין אימונים ביומן</p>';
+        content.innerHTML = '<p style="text-align:center; color:var(--muted); padding:30px;">עדיין אין אימונים ביומן</p>' + backupCardHtml();
         return;
       }
 
-      // ===== Aggregate stats across the whole log =====
+      // ===== Range selection (affects charts, map, area bars and the session list) =====
+      const rangeInfo = getLogRangeInfo();
+      const fullLog = workoutLog;
+      const log = rangeInfo.cutoff ? fullLog.filter(e => e.date >= rangeInfo.cutoff) : fullLog;
+
+      // ===== Aggregate stats across the selected range =====
       const areaCounts = {};
       let dynamicCount = 0, staticCount = 0, totalSeconds = 0;
-      workoutLog.forEach(entry => {
+      log.forEach(entry => {
         totalSeconds += entry.totalSeconds || 0;
         if (entry.kind === 'cardio') {
           (CARDIO_AREAS[entry.cardioType] || []).forEach(a => { areaCounts[a] = (areaCounts[a] || 0) + 1; });
@@ -1100,6 +1649,9 @@
         });
       });
       const rankedAreas = Object.entries(areaCounts).sort((a, b) => b[1] - a[1]);
+      // Always list every body area (including ones with 0), so nothing silently disappears
+      const barAreas = ['glutes', 'quads', 'back', 'core', 'chest', 'shoulders', 'arms']
+        .map(k => [k, areaCounts[k] || 0]).sort((x, y) => y[1] - x[1]);
       const maxCount = rankedAreas.length ? rankedAreas[0][1] : 1;
 
       // ===== This week vs last week (total minutes) =====
@@ -1112,106 +1664,109 @@
       const lastWeekSec = weekSeconds(lastWeekStartStr, thisWeekStart);
       const weekDiff = thisWeekSec - lastWeekSec;
 
-      let html = '<div style="background:#161616; border-radius:10px; padding:14px; margin-bottom:16px;">';
-      html += `<p style="font-size:0.9em; color:#93c5fd; margin-bottom:10px;">📊 סה"כ ${workoutLog.length} אימונים · ${formatDuration(totalSeconds)} אימון מצטבר</p>`;
-      const cardioEntries = workoutLog.filter(e => e.kind === 'cardio');
+      let html = buildLogChartsHtml(rangeInfo, fullLog, log);
+      html += areaBalanceHtml(fullLog) + recordsCardHtml(fullLog);
+      html += '<div style="background:var(--card); border-radius:10px; padding:14px; margin-bottom:16px;">';
+      html += `<p style="font-size:0.9em; color:var(--info); margin-bottom:10px;">📊 סה"כ ${log.length} אימונים · ${formatDuration(totalSeconds)} אימון מצטבר</p>`;
+      const cardioEntries = log.filter(e => e.kind === 'cardio');
       if (cardioEntries.length) {
         const cardioSec = cardioEntries.reduce((s, e) => s + (e.totalSeconds || 0), 0);
-        const strengthCount = workoutLog.length - cardioEntries.length;
+        const strengthCount = log.length - cardioEntries.length;
         const firstCardio = cardioEntries.reduce((m, e) => e.date < m ? e.date : m, cardioEntries[0].date);
         const weeksSpan = Math.max(1, Math.ceil((Date.now() - new Date(firstCardio + 'T00:00:00').getTime()) / (7 * 86400000)));
         const thisWeekCardioStart = getWeekStart(new Date());
         const cardioThisWeekSec = cardioEntries.filter(e => e.date >= thisWeekCardioStart).reduce((s, e) => s + (e.totalSeconds || 0), 0);
-        html += `<p style="font-size:0.85em; color:#67e8f9; margin-bottom:6px;">🏃 קרדיו ומכשירים: ${cardioEntries.length} אימונים · ${formatDuration(cardioSec)}</p>`;
-        html += `<p style="font-size:0.8em; color:#999; margin-bottom:10px;">השבוע: ${formatDuration(cardioThisWeekSec)} קרדיו · ממוצע שבועי: ${formatDuration(Math.round(cardioSec / weeksSpan))} · כוח ${strengthCount} מול קרדיו ${cardioEntries.length}</p>`;
+        html += `<p style="font-size:0.85em; color:var(--cardio-text); margin-bottom:6px;">🏃 קרדיו ומכשירים: ${cardioEntries.length} אימונים · ${formatDuration(cardioSec)}</p>`;
+        html += `<p style="font-size:0.8em; color:var(--muted); margin-bottom:10px;">השבוע: ${formatDuration(cardioThisWeekSec)} קרדיו · ממוצע שבועי: ${formatDuration(Math.round(cardioSec / weeksSpan))} · כוח ${strengthCount} מול קרדיו ${cardioEntries.length}</p>`;
       }
 
       if (lastWeekSec > 0 || thisWeekSec > 0) {
         const arrow = weekDiff > 0 ? '📈' : weekDiff < 0 ? '📉' : '➡️';
-        html += `<p style="font-size:0.85em; color:#ccc; margin-bottom:10px;">${arrow} השבוע: ${formatDuration(thisWeekSec)} (שבוע שעבר: ${formatDuration(lastWeekSec)})</p>`;
+        html += `<p style="font-size:0.85em; color:var(--text2); margin-bottom:10px;">${arrow} השבוע: ${formatDuration(thisWeekSec)} (שבוע שעבר: ${formatDuration(lastWeekSec)})</p>`;
       }
 
       if (rankedAreas.length) {
-        html += '<p style="font-size:0.85em; color:#fbbf24; margin-bottom:8px;">🗺️ מפת אזורים (בוהק = יותר אומן):</p>';
+        html += '<p style="font-size:0.85em; color:var(--gold); margin-bottom:8px;">🗺️ מפת אזורים (בוהק = יותר אומן):</p>';
         html += `
           <svg viewBox="0 0 400 220" style="width:100%; max-width:340px; display:block; margin:0 auto 10px auto;">
-            <text x="70" y="14" fill="#888" font-size="11" text-anchor="middle">קדמי</text>
-            <circle cx="70" cy="28" r="14" fill="#555"/>
-            <ellipse id="bm-shoulders-l" cx="50" cy="49" rx="12" ry="9" fill="#333"/>
-            <ellipse id="bm-shoulders-r" cx="90" cy="49" rx="12" ry="9" fill="#333"/>
-            <rect id="bm-chest" x="52" y="45" width="36" height="26" rx="7" fill="#333"/>
-            <rect id="bm-arms-l-f" x="34" y="53" width="11" height="50" rx="5" fill="#333"/>
-            <rect id="bm-arms-r-f" x="95" y="53" width="11" height="50" rx="5" fill="#333"/>
-            <rect id="bm-core" x="54" y="71" width="32" height="36" rx="5" fill="#333"/>
-            <rect id="bm-quads-l" x="54" y="107" width="14" height="62" rx="6" fill="#333"/>
-            <rect id="bm-quads-r" x="72" y="107" width="14" height="62" rx="6" fill="#333"/>
+            <text x="70" y="14" style="fill:var(--muted);" font-size="11" text-anchor="middle">קדמי</text>
+            <circle cx="70" cy="28" r="14" style="fill:var(--bm-head);"/>
+            <ellipse id="bm-shoulders-l" cx="50" cy="49" rx="12" ry="9" style="fill:var(--bm-empty);"/>
+            <ellipse id="bm-shoulders-r" cx="90" cy="49" rx="12" ry="9" style="fill:var(--bm-empty);"/>
+            <rect id="bm-chest" x="52" y="45" width="36" height="26" rx="7" style="fill:var(--bm-empty);"/>
+            <rect id="bm-arms-l-f" x="34" y="53" width="11" height="50" rx="5" style="fill:var(--bm-empty);"/>
+            <rect id="bm-arms-r-f" x="95" y="53" width="11" height="50" rx="5" style="fill:var(--bm-empty);"/>
+            <rect id="bm-core" x="54" y="71" width="32" height="36" rx="5" style="fill:var(--bm-empty);"/>
+            <rect id="bm-quads-l" x="54" y="107" width="14" height="62" rx="6" style="fill:var(--bm-empty);"/>
+            <rect id="bm-quads-r" x="72" y="107" width="14" height="62" rx="6" style="fill:var(--bm-empty);"/>
 
             <g transform="translate(200,0)">
-              <text x="70" y="14" fill="#888" font-size="11" text-anchor="middle">אחורי</text>
-              <circle cx="70" cy="28" r="14" fill="#555"/>
-              <ellipse id="bm-shoulders-l2" cx="50" cy="49" rx="12" ry="9" fill="#333"/>
-              <ellipse id="bm-shoulders-r2" cx="90" cy="49" rx="12" ry="9" fill="#333"/>
-              <rect id="bm-back" x="50" y="45" width="40" height="40" rx="7" fill="#333"/>
-              <rect id="bm-arms-l-b" x="34" y="53" width="11" height="50" rx="5" fill="#333"/>
-              <rect id="bm-arms-r-b" x="95" y="53" width="11" height="50" rx="5" fill="#333"/>
-              <rect id="bm-glutes" x="50" y="85" width="40" height="26" rx="10" fill="#333"/>
-              <rect x="54" y="111" width="14" height="58" rx="6" fill="#3a3a3a"/>
-              <rect x="72" y="111" width="14" height="58" rx="6" fill="#3a3a3a"/>
+              <text x="70" y="14" style="fill:var(--muted);" font-size="11" text-anchor="middle">אחורי</text>
+              <circle cx="70" cy="28" r="14" style="fill:var(--bm-head);"/>
+              <ellipse id="bm-shoulders-l2" cx="50" cy="49" rx="12" ry="9" style="fill:var(--bm-empty);"/>
+              <ellipse id="bm-shoulders-r2" cx="90" cy="49" rx="12" ry="9" style="fill:var(--bm-empty);"/>
+              <rect id="bm-back" x="50" y="45" width="40" height="40" rx="7" style="fill:var(--bm-empty);"/>
+              <rect id="bm-arms-l-b" x="34" y="53" width="11" height="50" rx="5" style="fill:var(--bm-empty);"/>
+              <rect id="bm-arms-r-b" x="95" y="53" width="11" height="50" rx="5" style="fill:var(--bm-empty);"/>
+              <rect id="bm-glutes" x="50" y="85" width="40" height="26" rx="10" style="fill:var(--bm-empty);"/>
+              <rect x="54" y="111" width="14" height="58" rx="6" style="fill:var(--bm-leg);"/>
+              <rect x="72" y="111" width="14" height="58" rx="6" style="fill:var(--bm-leg);"/>
             </g>
           </svg>`;
       }
 
       if (rankedAreas.length) {
-        html += '<p style="font-size:0.85em; color:#fbbf24; margin-bottom:6px;">💪 איפה הכי התמקדת:</p>';
-        html += rankedAreas.slice(0, 6).map(([area, count]) => `
+        html += '<p style="font-size:0.85em; color:var(--gold); margin-bottom:6px;">💪 איפה הכי התמקדת:</p>';
+        html += barAreas.map(([area, count]) => `
           <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
             <span style="font-size:0.75em; width:110px; flex-shrink:0;">${AREAS[area] || area}</span>
-            <div style="flex:1; background:#222; border-radius:4px; height:10px; overflow:hidden;">
-              <div style="width:${Math.round((count / maxCount) * 100)}%; height:100%; background:#7c3aed;"></div>
+            <div style="flex:1; background:var(--line); border-radius:4px; height:10px; overflow:hidden;">
+              <div style="width:${Math.round((count / maxCount) * 100)}%; height:100%; background:var(--accent);"></div>
             </div>
-            <span style="font-size:0.75em; color:#999; width:20px; text-align:left;">${count}</span>
+            <span style="font-size:0.75em; color:var(--muted); width:20px; text-align:left;">${count}</span>
           </div>
         `).join('');
 
-        if (workoutLog.length >= 3) {
+        if (log.length >= 3) {
           const allAreaKeys = ['glutes', 'quads', 'back', 'core', 'chest', 'shoulders', 'arms'];
           const leastTrained = [...allAreaKeys].sort((a, b) => (areaCounts[a] || 0) - (areaCounts[b] || 0))[0];
-          html += `<p style="font-size:0.8em; color:#93c5fd; margin-top:10px;">💡 האזור שהכי פחות עסקת בו: <strong>${AREAS[leastTrained]}</strong> — אולי שווה להוסיף ממנו תרגיל בפעם הבאה</p>`;
+          html += `<p style="font-size:0.8em; color:var(--info); margin-top:10px;">💡 האזור שהכי פחות עסקת בו: <strong>${AREAS[leastTrained]}</strong> (${areaCounts[leastTrained] || 0}) — אולי שווה להוסיף ממנו תרגיל בפעם הבאה</p>`;
         }
       }
 
       if (dynamicCount || staticCount) {
-        html += `<p style="font-size:0.8em; color:#999; margin-top:10px;">🔥 ${dynamicCount} חימומים דינמיים · 🧘 ${staticCount} מתיחות שחרור</p>`;
+        html += `<p style="font-size:0.8em; color:var(--muted); margin-top:10px;">🔥 ${dynamicCount} חימומים דינמיים · 🧘 ${staticCount} מתיחות שחרור</p>`;
       }
       html += '</div>';
 
       // ===== Individual sessions =====
-      html += workoutLog.map((entry, idx) => {
+      html += log.map((entry) => {
+        const idx = workoutLog.indexOf(entry);
         if (entry.kind === 'cardio') {
           const extras = [];
           if (entry.incline) extras.push(`שיפוע ${entry.incline}%`);
           if (entry.speed) extras.push(`${entry.speed} קמ"ש`);
           const cAreas = (CARDIO_AREAS[entry.cardioType] || []).map(a => AREAS[a] || a).join(' • ');
           return `
-        <div class="workout-item" style="border-right:3px solid #0e7490;">
+        <div class="workout-item" style="border-right:3px solid var(--cardio);">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <strong>${entry.name}</strong>
-            <button onclick="deleteCardioEntry(${idx})" style="margin:0; padding:2px 8px; background:#374151; font-size:0.85em;">🗑️</button>
+            <button onclick="deleteCardioEntry(${idx})" style="margin:0; padding:2px 8px; background:var(--neutral); color:var(--onneutral); font-size:0.85em;">🗑️</button>
           </div>
-          <p style="font-size:0.85em; color:#999; margin-top:4px;">${entry.date} · ${formatDuration(entry.totalSeconds)}${extras.length ? ' · ' + extras.join(' · ') : ''}</p>
-          ${cAreas ? `<p style="font-size:0.75em; color:#7c3aed; margin-top:4px;">${cAreas}</p>` : ''}
+          <p style="font-size:0.85em; color:var(--muted); margin-top:4px;">${entry.date} · ${formatDuration(entry.totalSeconds)}${extras.length ? ' · ' + extras.join(' · ') : ''}</p>
+          ${cAreas ? `<p style="font-size:0.75em; color:var(--accent); margin-top:4px;">${cAreas}</p>` : ''}
         </div>`;
         }
         const uniqueAreas = [...new Set((entry.exercises || []).flatMap(ex => (ex.areas || []).filter(a => a !== 'upper_body')))];        const tagsLine = uniqueAreas.length ? uniqueAreas.map(a => AREAS[a] || a).join(' • ') : '';
         return `
         <div class="workout-item">
           <strong>${entry.name}</strong>
-          <p style="font-size:0.85em; color:#999; margin-top:4px;">${entry.date} · ${entry.exerciseCount} תרגילים · ${formatTime(entry.totalSeconds)} דקות</p>
-          ${tagsLine ? `<p style="font-size:0.75em; color:#7c3aed; margin-top:4px;">${tagsLine}</p>` : ''}
+          <p style="font-size:0.85em; color:var(--muted); margin-top:4px;">${entry.date} · ${entry.exerciseCount} תרגילים · ${formatTime(entry.totalSeconds)} דקות</p>
+          ${tagsLine ? `<p style="font-size:0.75em; color:var(--accent); margin-top:4px;">${tagsLine}</p>` : ''}
         </div>`;
       }).join('');
 
-      content.innerHTML = html;
+      content.innerHTML = html + backupCardHtml();
       if (rankedAreas.length) colorBodyMap(areaCounts, maxCount);
     }
 
@@ -1401,8 +1956,7 @@
         state.workout.push(entry);
       }
       renderBuild();
-      const el = document.getElementById('workout-item-' + entry.id);
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // (no auto-scroll: stay on the exercise picker so several exercises can be added in a row)
 
       const staticMedia = resolveStaticMedia(ex.id);
       if (staticMedia) {
@@ -1517,25 +2071,25 @@
       const ytMatch = term.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
       if (ytMatch) {
         const youtubeId = ytMatch[1];
-        resultsDiv.innerHTML = '<p style="color:#888; font-size:0.8em;">בודקת אם ניתן להטמיע...</p>';
+        resultsDiv.innerHTML = '<p style="color:var(--muted); font-size:0.8em;">בודקת אם ניתן להטמיע...</p>';
         const embeddable = await checkEmbeddable(youtubeId);
         if (embeddable === false) {
-          resultsDiv.innerHTML = `<p style="color:#f87171; font-size:0.85em;">❌ הבעלים חסם הטמעה של הסרטון הזה. נסי קישור אחר (עדיף לא Shorts).</p>`;
+          resultsDiv.innerHTML = `<p style="color:var(--bad); font-size:0.85em;">❌ הבעלים חסם הטמעה של הסרטון הזה. נסי קישור אחר (עדיף לא Shorts).</p>`;
           return;
         }
         resultsDiv.innerHTML = `
-          <div style="background:#222; border-radius:8px; padding:10px;">
+          <div style="background:var(--line); border-radius:8px; padding:10px;">
             ${embeddable === null
-              ? '<p style="color:#fbbf24; font-size:0.75em; margin-bottom:6px;">⚠️ לא הצלחתי לוודא מראש - ננסה בכל זאת</p>'
-              : '<p style="color:#4ade80; font-size:0.75em; margin-bottom:6px;">✅ ניתן להטמיע</p>'}
+              ? '<p style="color:var(--gold); font-size:0.75em; margin-bottom:6px;">⚠️ לא הצלחתי לוודא מראש - ננסה בכל זאת</p>'
+              : '<p style="color:var(--good); font-size:0.75em; margin-bottom:6px;">✅ ניתן להטמיע</p>'}
             <img src="https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg" style="width:100%; border-radius:6px; margin-bottom:8px;">
             <div style="display:flex; gap:8px; margin-bottom:8px;">
               <div style="flex:1;">
-                <label style="font-size:0.75em; color:#999;">התחלה (שנ')</label>
+                <label style="font-size:0.75em; color:var(--muted);">התחלה (שנ')</label>
                 <input type="number" id="ytStart-${exId}" min="0" placeholder="0" style="width:100%; margin:0;">
               </div>
               <div style="flex:1;">
-                <label style="font-size:0.75em; color:#999;">סוף (שנ')</label>
+                <label style="font-size:0.75em; color:var(--muted);">סוף (שנ')</label>
                 <input type="number" id="ytEnd-${exId}" min="0" placeholder="עד הסוף" style="width:100%; margin:0;">
               </div>
             </div>
@@ -1544,20 +2098,20 @@
         return;
       }
 
-      resultsDiv.innerHTML = '<p style="color:#888; font-size:0.8em;">מחפש...</p>';
+      resultsDiv.innerHTML = '<p style="color:var(--muted); font-size:0.8em;">מחפש...</p>';
       debugLog(`חיפוש ידני: "${term}"...`);
       try {
         const url = `${API_BASE}/exercises?name=${encodeURIComponent(term)}&sortMethod=popularityRank&sortOrder=ascending&limit=6`;
         const res = await fetch(url, { headers: { 'X-WorkoutX-Key': API_KEY } });
         if (!res.ok) {
-          resultsDiv.innerHTML = `<p style="color:#f87171; font-size:0.8em;">שגיאה (${res.status}) - נסי שוב בעוד רגע</p>`;
+          resultsDiv.innerHTML = `<p style="color:var(--bad); font-size:0.8em;">שגיאה (${res.status}) - נסי שוב בעוד רגע</p>`;
           debugLog(`⏳ חיפוש ידני נכשל: HTTP ${res.status}`, true);
           return;
         }
         const raw = await res.json();
         const list = Array.isArray(raw) ? raw : (Array.isArray(raw.data) ? raw.data : []);
         if (list.length === 0) {
-          resultsDiv.innerHTML = '<p style="color:#888; font-size:0.8em;">לא נמצא כלום עבור המילה הזו</p>';
+          resultsDiv.innerHTML = '<p style="color:var(--muted); font-size:0.8em;">לא נמצא כלום עבור המילה הזו</p>';
           return;
         }
         manualSearchResults[exId] = list;
@@ -1568,7 +2122,7 @@
           </div>
         `).join('');
       } catch (e) {
-        resultsDiv.innerHTML = `<p style="color:#f87171; font-size:0.8em;">שגיאת רשת: ${e.message}</p>`;
+        resultsDiv.innerHTML = `<p style="color:var(--bad); font-size:0.8em;">שגיאת רשת: ${e.message}</p>`;
       }
     }
 
@@ -1841,7 +2395,7 @@
             ${ex.gifUrl ? `<img src="${ex.gifUrl}" alt="${ex.name}">` : '<div class="thumb-placeholder">אין<br>תמונה</div>'}
             <div class="name"><strong>${idx + 1}. ${ex.name}</strong></div>
           </div>
-          <p style="font-size:0.8em; color:#999;">עבודה ${ex.work} שנ' · מנוחה ${ex.rest} שנ'</p>
+          <p style="font-size:0.8em; color:var(--muted);">עבודה ${ex.work} שנ' · מנוחה ${ex.rest} שנ'</p>
         </div>
       `).join('');
     }
@@ -1907,8 +2461,8 @@
         wrap.innerHTML = `
           <div class="rest-screen">
             <p style="font-size:1.2em; margin-bottom:10px;">🏃 התכונני!</p>
-            <div style="font-size:4.5em; font-weight:bold; color:#fbbf24;">${state.countdownLeft}</div>
-            ${first.gifUrl ? `<img src="${first.gifUrl}" alt="${first.name}" style="max-width:55%; max-height:32vh; border-radius:14px; border:2px solid #fbbf24; margin-top:10px;">` : ''}
+            <div style="font-size:4.5em; font-weight:bold; color:var(--gold);">${state.countdownLeft}</div>
+            ${first.gifUrl ? `<img src="${first.gifUrl}" alt="${first.name}" style="max-width:55%; max-height:32vh; border-radius:14px; border:2px solid var(--gold); margin-top:10px;">` : ''}
             <p style="font-size:1.1em; font-weight:bold; margin-top:10px;">מתחילים עם: ${first.name}</p>
           </div>`;
         return;
@@ -1931,7 +2485,7 @@
               <div class="rest-label" style="margin-bottom:14px;">😌 מנוחה</div>
               <p class="next-label">👉 התרגיל הבא:</p>
               <p class="next-name" style="margin-bottom:10px;">${next.name}</p>
-              ${next.gifUrl ? `<img src="${next.gifUrl}" alt="${next.name}" style="max-width:60%; max-height:38vh; border-radius:14px; border:2px solid #fbbf24; opacity:0.75;">` : ''}
+              ${next.gifUrl ? `<img src="${next.gifUrl}" alt="${next.name}" style="max-width:60%; max-height:38vh; border-radius:14px; border:2px solid var(--gold); opacity:0.75;">` : ''}
             </div>`;
         } else {
           wrap.innerHTML = `<div class="rest-screen"><div class="big-emoji">🎉</div><p>כמעט סיימת!</p></div>`;
@@ -2078,6 +2632,17 @@
       renderWorkout();
     }
 
+    // Go back: during an exercise -> previous exercise; during rest -> the exercise that was just finished
+    function prevPhase() {
+      if (state.isCountdown) return;
+      if (state.isWorking && state.currentIdx > 0) state.currentIdx--;
+      state.isWorking = true;
+      state.timeLeft = state.workout[state.currentIdx].work;
+      playBeep(900, 200);
+      loadExerciseMedia();
+      renderWorkout();
+    }
+
     function resetWorkout() {
       clearInterval(state.timer);
       state.isRunning = false;
@@ -2144,7 +2709,7 @@
       const list = document.getElementById('workoutsList');
       if (state.savedWorkouts.length === 0) {
         organizer.classList.add('hidden');
-        list.innerHTML = '<p style="text-align: center; padding: 30px; color:#999;">עדיין אין רוטינות</p>';
+        list.innerHTML = '<p style="text-align: center; padding: 30px; color:var(--muted);">עדיין אין רוטינות</p>';
         return;
       }
       organizer.classList.remove('hidden');
@@ -2163,7 +2728,7 @@
       else if (routineSortMode === 'name') items.sort((a, b) => a.w.name.localeCompare(b.w.name));
 
       if (items.length === 0) {
-        list.innerHTML = '<p style="text-align: center; padding: 20px; color:#999;">אין רוטינות שמתאימות לסינון</p>';
+        list.innerHTML = '<p style="text-align: center; padding: 20px; color:var(--muted);">אין רוטינות שמתאימות לסינון</p>';
         return;
       }
 
@@ -2173,7 +2738,7 @@
           <p>${w.exercises.length} תרגילים${meta.hasStretch ? ' · כולל מתיחות' : ''}</p>
           <p class="routine-meta">⏱️ ${formatTime(meta.totalSeconds)} דקות</p>
           <div class="button-group">
-            <button onclick="previewWorkout(${w.id})" style="background:#374151;">👁️ תצוגה</button>
+            <button onclick="previewWorkout(${w.id})" style="background:var(--neutral); color:var(--onneutral);">👁️ תצוגה</button>
             <button class="success" onclick="loadWorkout(${w.id})" style="flex: 1;">▶️ התחל</button>
             <button class="danger" onclick="deleteWorkout(${w.id})">🗑️</button>
           </div>
@@ -2219,6 +2784,11 @@
       renderBuild();
     }
 
+    function scrollToPicker() {
+      const el = document.getElementById('pickerTop');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     function renderBuild() {
       populateFilters();
       const grid = document.getElementById('exercisesGrid');
@@ -2246,11 +2816,11 @@
         }
         const badge = ex.stretchType === 'dynamic' ? '🔥' : ex.stretchType === 'static' ? '🧘' : '';
         return `<button onclick="addExercise(${ex.id})" class="exercise-btn">${thumb}<span>${badge} ${ex.name}</span></button>`;
-      }).join('') || '<p style="grid-column:1/-1; text-align:center; color:#999; padding:15px;">אין תרגילים בקטגוריה הזו</p>';
+      }).join('') || '<p style="grid-column:1/-1; text-align:center; color:var(--muted); padding:15px;">אין תרגילים בקטגוריה הזו</p>';
 
       const selected = document.getElementById('selectedExercises');
       if (state.workout.length === 0) {
-        selected.innerHTML = '<p style="text-align: center; color: #999;">בחירת תרגילים למעלה</p>';
+        selected.innerHTML = '<p style="text-align: center; color: var(--muted);">בחירת תרגילים למעלה</p>';
       } else {
         selected.innerHTML = state.workout.map((ex, idx) => `
           <button class="insert-divider ${insertAtIndex === idx ? 'active' : ''}" onclick="setInsertPoint(${idx})">${insertAtIndex === idx ? '📍 הוספה תיכנס כאן ⬆' : '➕ הוסף תרגיל כאן'}</button>
@@ -2263,11 +2833,11 @@
                 : (ex.gifUrl ? `<img src="${ex.gifUrl}" alt="${ex.name}">` : '<div class="thumb-placeholder">אין<br>סרטון</div>')}
               <div class="name"><strong>${idx + 1}. ${ex.name}</strong></div>
               <div style="display:flex; flex-direction:column; gap:3px;">
-                <button onclick="moveExercise(${ex.id}, -1)" ${idx === 0 ? 'disabled style="margin:0;opacity:0.3;"' : 'style="margin:0;background:#374151;padding:4px 10px;"'}>▲</button>
-                <button onclick="moveExercise(${ex.id}, 1)" ${idx === state.workout.length - 1 ? 'disabled style="margin:0;opacity:0.3;"' : 'style="margin:0;background:#374151;padding:4px 10px;"'}>▼</button>
+                <button onclick="moveExercise(${ex.id}, -1)" ${idx === 0 ? 'disabled style="margin:0;opacity:0.3;"' : 'style="margin:0;background:var(--neutral); color:var(--onneutral);padding:4px 10px;"'}>▲</button>
+                <button onclick="moveExercise(${ex.id}, 1)" ${idx === state.workout.length - 1 ? 'disabled style="margin:0;opacity:0.3;"' : 'style="margin:0;background:var(--neutral); color:var(--onneutral);padding:4px 10px;"'}>▼</button>
               </div>
-              <button onclick="duplicateExercise(${ex.id})" style="margin:0; background:#374151; padding:8px;">📋</button>
-              <button onclick="toggleManualSearch(${ex.id})" style="margin:0; background:#374151; padding:8px;">🔍</button>
+              <button onclick="duplicateExercise(${ex.id})" style="margin:0; background:var(--neutral); color:var(--onneutral); padding:8px;">📋</button>
+              <button onclick="toggleManualSearch(${ex.id})" style="margin:0; background:var(--neutral); color:var(--onneutral); padding:8px;">🔍</button>
               <button class="danger" onclick="removeExercise(${ex.id})" style="margin: 0;">🗑️</button>
             </div>
             <div id="manualSearch-${ex.id}" class="manual-search hidden">
@@ -2286,7 +2856,8 @@
               </div>
             </div>
           </div>
-        `).join('') + `<button class="insert-divider ${insertAtIndex === state.workout.length ? 'active' : ''}" onclick="setInsertPoint(${state.workout.length})">${insertAtIndex === state.workout.length ? '📍 הוספה תיכנס כאן ⬆' : '➕ הוסף תרגיל בסוף'}</button>`;
+        `).join('') + `<button class="insert-divider ${insertAtIndex === state.workout.length ? 'active' : ''}" onclick="setInsertPoint(${state.workout.length})">${insertAtIndex === state.workout.length ? '📍 הוספה תיכנס כאן ⬆' : '➕ הוסף תרגיל בסוף'}</button>
+          <button onclick="scrollToPicker()" style="width:100%; margin:10px 0 4px 0; background:var(--accent); padding:12px;">⬆️ חזרה לבחירת תרגילים</button>`;
       }
 
       const nameInput = document.getElementById('workoutNameInput');

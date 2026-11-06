@@ -643,6 +643,8 @@ button.danger { background: color-mix(in srgb, var(--bad) 10%, transparent); col
         <input type="number" id="cardioSpeed" inputmode="decimal" min="0" max="40" step="0.1" placeholder="למשל 5.5" style="width:100%;">
         <label style="display:block; margin:12px 0 4px; color:var(--text2);">תאריך</label>
         <input type="date" id="cardioDate" style="width:100%;">
+        <label style="display:block; margin:12px 0 4px; color:var(--text2);">שעה - לא חובה</label>
+        <input type="time" id="cardioTime" style="width:100%;">
         <button class="success" onclick="saveCardio()" style="width:100%; font-size:1.15em; padding:15px; margin-top:20px;"><i class="ic ic-check"></i>שמור ביומן</button>
       </div>
     </div>
@@ -1042,7 +1044,10 @@ button.danger { background: color-mix(in srgb, var(--bad) 10%, transparent); col
         return { name: ex.name, areas: (base && base.areas) || [], stretchType: base ? base.stretchType : undefined };
       });
       const recBefore = computeRecords(workoutLog);
-      workoutLog.unshift({ date: todayStr, name: state.workoutName || (editingWorkoutId ? state.savedWorkouts.find(w => w.id === editingWorkoutId)?.name : '') || 'אימון', exerciseCount: state.workout.length, totalSeconds: state.workout.reduce((s, ex) => s + (ex.work || 0) + (ex.rest || 0), 0), exercises: exerciseDetails });
+      const _tot = state.workout.reduce((s, ex) => s + (ex.work || 0) + (ex.rest || 0), 0);
+      const _hm = d => String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+      // start/end clock times (HH:MM) so other apps (the health journal) can see when the workout happened
+      workoutLog.unshift({ date: todayStr, name: state.workoutName || (editingWorkoutId ? state.savedWorkouts.find(w => w.id === editingWorkoutId)?.name : '') || 'אימון', exerciseCount: state.workout.length, totalSeconds: _tot, exercises: exerciseDetails, time: _hm(new Date(Date.now() - _tot * 1000)), end: _hm(new Date()) });
       if (workoutLog.length > 1000) workoutLog = workoutLog.slice(0, 1000);
       saveLog();
       pendingRecords = diffRecords(recBefore, computeRecords(workoutLog));
@@ -1112,6 +1117,7 @@ button.danger { background: color-mix(in srgb, var(--bad) 10%, transparent); col
         document.getElementById('cardioSpeed').value = last && last.speed ? last.speed : '';
       } catch (e) {}
       document.getElementById('cardioDate').value = todayLocalStr();
+      { const n = new Date(); document.getElementById('cardioTime').value = String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0'); }
       renderCardioChips();
       showScreen('cardio');
     }
@@ -1149,6 +1155,8 @@ button.danger { background: color-mix(in srgb, var(--bad) 10%, transparent); col
         date, name: type.label, kind: 'cardio', cardioType: type.id,
         exerciseCount: 0, totalSeconds: Math.round(minutes * 60), exercises: []
       };
+      const cardioTime = document.getElementById('cardioTime').value;
+      if (cardioTime) entry.time = cardioTime;
       if (!isNaN(incline) && incline > 0) entry.incline = incline;
       if (!isNaN(speed) && speed > 0) entry.speed = speed;
       const recBefore = computeRecords(workoutLog);

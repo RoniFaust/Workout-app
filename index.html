@@ -1047,7 +1047,7 @@ button.danger { background: color-mix(in srgb, var(--bad) 10%, transparent); col
       const _tot = state.workout.reduce((s, ex) => s + (ex.work || 0) + (ex.rest || 0), 0);
       const _hm = d => String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
       // start/end clock times (HH:MM) so other apps (the health journal) can see when the workout happened
-      workoutLog.unshift({ date: todayStr, name: state.workoutName || (editingWorkoutId ? state.savedWorkouts.find(w => w.id === editingWorkoutId)?.name : '') || 'אימון', exerciseCount: state.workout.length, totalSeconds: _tot, exercises: exerciseDetails, time: _hm(new Date(Date.now() - _tot * 1000)), end: _hm(new Date()) });
+      workoutLog.unshift({ date: todayStr, name: state.workoutName || (editingWorkoutId ? state.savedWorkouts.find(w => w.id === editingWorkoutId)?.name : '') || 'אימון', exerciseCount: state.workout.length, totalSeconds: _tot, exercises: exerciseDetails, time: _hm(new Date(Date.now() - _tot * 1000)), end: _hm(new Date()), logged: new Date().toISOString() });
       if (workoutLog.length > 1000) workoutLog = workoutLog.slice(0, 1000);
       saveLog();
       pendingRecords = diffRecords(recBefore, computeRecords(workoutLog));
@@ -1157,6 +1157,7 @@ button.danger { background: color-mix(in srgb, var(--bad) 10%, transparent); col
       };
       const cardioTime = document.getElementById('cardioTime').value;
       if (cardioTime) entry.time = cardioTime;
+      entry.logged = new Date().toISOString(); // when it was saved — lets the tracker tell last night from today
       if (!isNaN(incline) && incline > 0) entry.incline = incline;
       if (!isNaN(speed) && speed > 0) entry.speed = speed;
       const recBefore = computeRecords(workoutLog);

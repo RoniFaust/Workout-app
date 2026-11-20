@@ -1019,7 +1019,7 @@ button.danger { background: color-mix(in srgb, var(--bad) 10%, transparent); col
 
     function recordCompletion() {
       const today = new Date();
-      const todayStr = today.toISOString().slice(0, 10);
+      const todayStr = todayLocalStr(); // local date (toISOString is UTC: 00:30 in Israel came out as the day before)
       const thisWeekStart = getWeekStart(today);
 
       if (stats.weekStart !== thisWeekStart) {
